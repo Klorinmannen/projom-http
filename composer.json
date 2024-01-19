@@ -1,0 +1,24 @@
+{
+    "name": "klorinmannen/projom-http",
+    "description": "Projom http module",
+    "autoload": {
+        "psr-4": {
+            "Projom\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Jonatan Fransson"
+        }
+    ],
+    "require-dev": {
+		"phpunit/phpunit": "*",
+        "klorinmannen/projom-util": "dev-main"
+    },
+    "repositories": [
+        {
+            "type": "git",
+            "url":  "git@github.com:Klorinmannen/projom-util.git"
+        }
+    ]
+}

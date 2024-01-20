@@ -12,7 +12,9 @@
         }
     ],
     "require-dev": {
-		"phpunit/phpunit": "*",
+		"phpunit/phpunit": "*"
+    },
+    "require": {
         "klorinmannen/projom-util": "dev-main"
     },
     "repositories": [

@@ -4,16 +4,15 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6731efdd738006202d64c69bc1406ceb",
-    "packages": [],
-    "packages-dev": [
+    "content-hash": "5190ba4052759224bddb0e8ac818a259",
+    "packages": [
         {
             "name": "klorinmannen/projom-util",
             "version": "dev-main",
             "source": {
                 "type": "git",
                 "url": "git@github.com:Klorinmannen/projom-util.git",
-                "reference": "a086d6cf617c39c86f948fb9a18a0146c1d74ba9"
+                "reference": "39959b5deec56482bd96230762d4e243323bbed4"
             },
             "require-dev": {
                 "phpunit/phpunit": "*"
@@ -31,8 +30,10 @@
                 }
             ],
             "description": "Projom util module",
-            "time": "2024-01-19T20:58:24+00:00"
-        },
+            "time": "2024-01-19T21:02:17+00:00"
+        }
+    ],
+    "packages-dev": [
         {
             "name": "myclabs/deep-copy",
             "version": "1.11.1",

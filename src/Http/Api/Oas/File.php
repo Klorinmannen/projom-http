@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Projom\Http\Api\Oas;
 
-use Projom\Util\File;
+use Projom\Util\File as UtilFile;
 use Projom\Http\Api\Pattern;
 
-class Repository
+class File
 {
 	private array $contract = [];
 	private string $mainContractFilePath = '';
@@ -52,7 +52,7 @@ class Repository
 
 	public function parseFile(string $fullFilePath): array
 	{
-		return File::parse($fullFilePath);
+		return UtilFile::parse($fullFilePath);
 	}
 
 	public function routeController(string $contractFilePath): string

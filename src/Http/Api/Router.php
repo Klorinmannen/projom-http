@@ -4,21 +4,29 @@ declare(strict_types=1);
 
 namespace Projom\Http\Api;
 
-use Projom\Auth\Service as AuthService;
-use Projom\Auth\Jwt;
+use Exception;
+
+use Projom\Http\Auth\Jwt;
 use Projom\Http\Response;
 use Projom\Http\Request;
 use Projom\Http\Api\RouteContractInterface;
-
-use Projom\System\SystemException;
+use Projom\Http\Auth\Jwt\Service;
+use Projom\Util\File as UtilFile;
 
 class Router
 {
-	private AuthService $authService;
-
-	public function __construct(AuthService $authService)
+	private Service $jwtService;
+	
+	public function __construct(Service $jwtService)
 	{
-		$this->authService = $authService;
+		$this->jwtService = $jwtService;
+	}
+
+	public static function create(string $JWTClaimsFilePath): Router
+	{
+		$JWTClaims = UtilFile::parse($JWTClaimsFilePath);
+		$JWTService = new Service($JWTClaims);
+		return new Router($JWTService);
 	}
 
 	public function start(
@@ -27,7 +35,7 @@ class Router
 	): void {
 
 		if (!$routeContract = $contract->match($request))
-			throw new SystemException(404);
+			throw new Exception('Not Found', 404);
 
 		$this->processRouteContract($request, $routeContract);
 	}
@@ -38,20 +46,26 @@ class Router
 	): void {
 
 		if (!$routeContract->verifyInputData($request))
-			throw new SystemException(400);
+			throw new Exception('Bad Request', 400);
 
 		if (!$routeContract->verifyController(ControllerBase::class))
-			throw new SystemException(501);
+			throw new Exception('Not Implemented', 501);
 
-		$response = $this->dispatch($request, $routeContract);
+		$jwt = new Jwt($request->authToken());
+		if ($routeContract->hasAuth())
+			if (!$this->jwtService->verify($jwt))
+				throw new Exception('Unauthorized', 401);
+
+		$response = $this->dispatch($jwt, $request, $routeContract);
 
 		if (!$routeContract->verifyResponse($response))
-			throw new SystemException(500);
+			throw new Exception('Internal Server Error', 500);
 
 		$response->send();
 	}
 
 	public function dispatch(
+		Jwt $jwt,
 		Request $request,
 		RouteContractInterface $routeContract
 	): Response {
@@ -66,13 +80,9 @@ class Router
 
 		$controller = $routeContract->controller();
 		$operation = $routeContract->operation();
-		$jwt = new Jwt($request->authToken());
-
-		$authorized = $this->authService->authorize($routeContract->hasAuth(), $controller, $operation, $jwt);
-		if ($authorized === false) 
-			throw new SystemException(401);
 
 		$controller = new $controller();
+		$controller->setJwt($jwt);
 		$controller->{$operation}(...$input);
 
 		return $controller->response();

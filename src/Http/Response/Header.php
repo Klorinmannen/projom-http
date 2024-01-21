@@ -9,32 +9,32 @@ use Projom\Http\ContentType;
 class Header
 {
     const APPLICATION_JSON = 'Content-Type: application/json; charset=utf-8';
-    const HTML_TEXT = 'Content-Type: text/html; charset=utf-8';
-    const PLAIN_TEXT = 'Content-Type: text/plain; charset=utf-8';
-    const CSS_TEXT = 'Content-Type: text/css; charset=utf-8';
-    const JAVASCRIPT_TEXT = 'Content-Type: text/javascript; charset=utf-8';
-    const CSV_TEXT = 'Content-Type: text/csv; charset=utf-8';
+    const TEXT_HTML = 'Content-Type: text/html; charset=utf-8';
+    const TEXT_PLAIN = 'Content-Type: text/plain; charset=utf-8';
+    const TEXT_CSS = 'Content-Type: text/css; charset=utf-8';
+    const TEXT_JAVASCRIPT = 'Content-Type: text/javascript; charset=utf-8';
+    const TEXT_CSV = 'Content-Type: text/csv; charset=utf-8';
 
-    public static function build(string $contentType): string
+    public static function convert(string $contentType): string
     {
         switch ($contentType) {
             case ContentType::APPLICATION_JSON:
                 return static::APPLICATION_JSON;
 
-            case ContentType::HTML_TEXT:
-                return static::HTML_TEXT;
+            case ContentType::TEXT_HTML:
+                return static::TEXT_HTML;
 
-            case ContentType::PLAIN_TEXT:
-                return static::PLAIN_TEXT;
+            case ContentType::TEXT_PLAIN:
+                return static::TEXT_PLAIN;
 
-            case ContentType::CSS_TEXT:
-                return static::CSS_TEXT;
+            case ContentType::TEXT_CSS:
+                return static::TEXT_CSS;
 
-            case ContentType::JAVASCRIPT_TEXT:
-                return static::JAVASCRIPT_TEXT;
+            case ContentType::TEXT_JAVASCRIPT:
+                return static::TEXT_JAVASCRIPT;
 
-            case ContentType::CSV_TEXT:
-                return static::CSV_TEXT;
+            case ContentType::TEXT_CSV:
+                return static::TEXT_CSV;
 
             default: // Refactor: More specific exception.
                 throw new \Exception('Invalid content type', 500);

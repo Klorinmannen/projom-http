@@ -17,12 +17,20 @@ class Request
     protected $queryParameterList = [];
     protected $pathParameterList = [];
 
-    public function __construct(
-        Input $input
-    ) {
+    public function __construct(Input $input) 
+    {
         $this->input = $input;
         $this->parseUrl($input->url());
     }
+
+	public static function create(): Request
+	{
+		$input = new Input(
+			$_REQUEST ?? [],
+			$_SERVER ?? []
+		);
+		return new Request($input);
+	}
 
     public function parseUrl(string $url): void
     {

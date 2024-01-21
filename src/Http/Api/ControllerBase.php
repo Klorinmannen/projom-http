@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace Projom\Http\Api;
 
-use Projom\Auth\Jwt;
-use Projom\Auth\Service as AuthService;
+use Projom\Http\Auth\Jwt;
 use Projom\Http\Response;
-use Projom\User;
-use Projom\User\Repository as UserRepository;
 
 /**
  * Base for resource controllers.
@@ -18,6 +15,12 @@ abstract class ControllerBase
     protected array $payload = [];
     protected int $statusCode = 200;
     protected string $contentType = 'application/json';
+    protected Jwt $jwt;
+
+    final public function setJwt(Jwt $jwt): void
+    {
+        $this->jwt = $jwt;
+    }
 
     final public function setPayload(array $payload): void
     {

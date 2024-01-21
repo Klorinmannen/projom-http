@@ -8,22 +8,30 @@ use Projom\Http\Request;
 use Projom\Http\Api\ContractInterface;
 use Projom\Http\Api\Oas\PathContract;
 use Projom\Http\Api\Oas\RouteContract;
-use Projom\Http\Api\Oas\Repository;
+use Projom\Http\Api\Oas\File;
 use Projom\Http\Api\RouteContractInterface;
 
 class Contract implements ContractInterface
 {
 	private array $contracts = [];
-	private Repository $repository;
+	private File $file;
 
-	public function __construct(Repository $repository)
+	public function __construct(File $file)
 	{
-		$this->repository = $repository;
+		$this->file = $file;
+	}
+
+	public static function create(string $apiContractFilePath): Contract
+	{
+		$file = new File($apiContractFilePath);
+		$contract = new Contract($file);
+		$contract->load();
+		return $contract;
 	}
 
 	public function load(): bool
 	{
-		if (!$contract = $this->repository->contract())
+		if (!$contract = $this->file->contract())
 			return false;
 
 		$this->contracts = $this->loadContract($contract);

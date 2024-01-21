@@ -20,11 +20,11 @@ class Data
 
             // In this case its assumed that the data is already encoded.
             // All elements are strings that can be appended.
-            case ContentType::HTML_TEXT:
-            case ContentType::PLAIN_TEXT:
-            case ContentType::CSS_TEXT:
-            case ContentType::JAVASCRIPT_TEXT:
-            case ContentType::CSV_TEXT:   
+            case ContentType::TEXT_HTML:
+            case ContentType::TEXT_PLAIN:
+            case ContentType::TEXT_CSS:
+            case ContentType::TEXT_JAVASCRIPT:
+            case ContentType::TEXT_CSV:   
                 return implode('', $data) ?? '';
 
             default: // Refactor: More specific exception.

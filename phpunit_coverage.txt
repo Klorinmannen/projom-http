@@ -1,0 +1,42 @@
+
+
+Code Coverage Report:      
+  2024-02-06 19:54:22      
+                           
+ Summary:                  
+  Classes: 72.22% (13/18)  
+  Methods: 91.57% (76/83)  
+  Lines:   92.39% (340/368)
+
+Projom\Http\Api\ControllerBase
+  Methods: 100.00% ( 4/ 4)   Lines: 100.00% (  8/  8)
+Projom\Http\Api\Oas\Contract
+  Methods:  60.00% ( 3/ 5)   Lines:  83.33% ( 25/ 30)
+Projom\Http\Api\Oas\File
+  Methods: 100.00% ( 6/ 6)   Lines: 100.00% ( 28/ 28)
+Projom\Http\Api\Oas\ParameterContract
+  Methods: 100.00% ( 6/ 6)   Lines: 100.00% ( 64/ 64)
+Projom\Http\Api\Oas\PathContract
+  Methods: 100.00% ( 7/ 7)   Lines: 100.00% ( 18/ 18)
+Projom\Http\Api\Oas\PayloadContract
+  Methods: 100.00% ( 3/ 3)   Lines: 100.00% ( 28/ 28)
+Projom\Http\Api\Oas\ResponseContract
+  Methods: 100.00% ( 3/ 3)   Lines: 100.00% ( 10/ 10)
+Projom\Http\Api\Oas\RouteContract
+  Methods: 100.00% ( 8/ 8)   Lines: 100.00% ( 31/ 31)
+Projom\Http\Api\Pattern
+  Methods: 100.00% ( 4/ 4)   Lines: 100.00% ( 33/ 33)
+Projom\Http\Api\Router
+  Methods:  66.67% ( 2/ 3)   Lines:  47.83% ( 11/ 23)
+Projom\Http\Header
+  Methods: 100.00% ( 1/ 1)   Lines: 100.00% (  7/  7)
+Projom\Http\Input
+  Methods: 100.00% ( 6/ 6)   Lines: 100.00% ( 13/ 13)
+Projom\Http\Request
+  Methods:  93.33% (14/15)   Lines:  86.49% ( 32/ 37)
+Projom\Http\Response
+  Methods: 100.00% ( 7/ 7)   Lines: 100.00% ( 16/ 16)
+Projom\Http\Response\Data
+  Methods: 100.00% ( 1/ 1)   Lines: 100.00% (  3/  3)
+Projom\Http\Response\Header
+  Methods: 100.00% ( 1/ 1)   Lines: 100.00% ( 13/ 13)

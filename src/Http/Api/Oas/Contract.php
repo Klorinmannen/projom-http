@@ -32,7 +32,7 @@ class Contract implements ContractInterface
 	public function load(): void
 	{
 		if (!$contract = $this->file->contract())
-			return false;
+			return;
 
 		$routeContracts = [];
 		foreach ($contract as $rawPattern => $contractDetails) {

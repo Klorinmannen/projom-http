@@ -10,6 +10,7 @@
 
 # White-list entire directories.
 !src/
+!tests/
 
 # Ignore crap files.
 **/*.*~

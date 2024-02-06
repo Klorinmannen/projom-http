@@ -10,19 +10,17 @@ use Projom\Http\Api\Oas\Contract;
 
 class Api
 {
-	private Router $router;
 	private Request $request;
 	private Contract $contract;
 
-	public function load(string $apiContractFilePath, string $JWTclaimsFilePath): void
+	public function __construct(string $apiContractFilePath)
 	{
 		$this->contract = Contract::create($apiContractFilePath);
-		$this->router = Router::create($JWTclaimsFilePath);
 		$this->request = Request::create();
 	}
 
 	public function start(): void
 	{
-		$this->router->start($this->request, $this->contract);
+		Router::start($this->request, $this->contract);
 	}
 }

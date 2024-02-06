@@ -29,18 +29,11 @@ class Contract implements ContractInterface
 		return $contract;
 	}
 
-	public function load(): bool
+	public function load(): void
 	{
 		if (!$contract = $this->file->contract())
 			return false;
 
-		$this->contracts = $this->loadContract($contract);
-
-		return true;
-	}
-
-	public function loadContract(array $contract): array 
-	{
 		$routeContracts = [];
 		foreach ($contract as $rawPattern => $contractDetails) {
 
@@ -66,7 +59,7 @@ class Contract implements ContractInterface
 		// Prioritzes paths.
 		$routeContracts = $this->sortRouteContracts($routeContracts);
 
-		return $routeContracts;
+		$this->contracts = $routeContracts;
 	}
 
 	public function sortRouteContracts(array $routeContracts): array

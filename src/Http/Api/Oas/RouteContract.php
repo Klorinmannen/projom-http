@@ -42,9 +42,6 @@ class RouteContract implements RouteContractInterface
 
     public function verifyInputData(Request $request): bool
     {
-        if (!$this->pathContract)
-            return false;
-            
         if ($pathParameters = $request->pathParameterList())
             if (!$this->pathContract->verifyPathParameters($pathParameters))
                 return false;
@@ -62,9 +59,6 @@ class RouteContract implements RouteContractInterface
 
     public function verifyController(string $controllerBaseClass): bool
     {
-        if (!$this->pathContract)
-            return false;
-
         if (!class_exists($this->routeController))
             return false;
 
@@ -80,18 +74,12 @@ class RouteContract implements RouteContractInterface
 
     public function verifyResponse(Response $response): bool
     {
-        if (!$this->pathContract)
-            return false;
-
         return $this->pathContract->verifyResponse($response);
     }
 
     public function hasAuth(): bool
     {
-        if (!$this->pathContract)
-            return false;
-
-        return $this->pathContract->auth();
+        return $this->pathContract->hasAuth();
     }
 
     public function controller(): string
@@ -101,9 +89,6 @@ class RouteContract implements RouteContractInterface
 
     public function operation(): string
     {
-        if (!$this->pathContract)
-            return '';
-
         return $this->pathContract->operation();
     }
 }

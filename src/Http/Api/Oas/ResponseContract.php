@@ -25,10 +25,11 @@ class ResponseContract
         int $statusCode,
         string $contentType
     ): bool {
-        if (!$responseContract = $this->responseContracts[$statusCode] ?? '')
+
+        if (!$responseContractContentType = $this->responseContracts[$statusCode] ?? '')
             return false;
 
-        if ($responseContract !== $contentType)
+        if ($responseContractContentType !== $contentType)
             return false;
 
         return true;

@@ -49,10 +49,9 @@ class ParameterContract
 
         // Nothing to check.
         if (!$pathContracts = $this->parameterContracts['path'] ?? [])
-            return true;        
+            return true;
 
-        // Strict controll.
-        // The path has a certain number of defined parameters.
+        // The input path parameter set cannot be bigger than the defined contract set.
         if (count($pathContracts) != count($inputParameters))
             return false;
 
@@ -108,8 +107,7 @@ class ParameterContract
         if (!$isSubset)
             return false;
 
-        // Select the subset.
-        // Only known query parameters are allowed - others are removed.
+        // Select the input subset.
         $namedParameterContractSubset = array_intersect_key(
             $namedQueryContracts,
             $inputParameters

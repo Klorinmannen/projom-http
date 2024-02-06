@@ -25,7 +25,7 @@ class Response
         $this->statusCode = $statusCode;
         $this->contentType  = $contentType;
 
-        $this->header = Header::build($contentType);
+        $this->header = Header::convert($contentType);
         $this->output = Data::encode(
             $payload,
             $contentType

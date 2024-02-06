@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Projom\Http\Api;
 
-use Projom\Http\Auth\Jwt;
 use Projom\Http\Response;
 
 /**
@@ -12,15 +11,11 @@ use Projom\Http\Response;
  */
 abstract class ControllerBase
 {
-    protected array $payload = [];
-    protected int $statusCode = 200;
-    protected string $contentType = 'application/json';
-    protected Jwt $jwt;
+    private array $payload = [];
+    private int $statusCode = 200;
+    private string $contentType = 'application/json';
 
-    final public function setJwt(Jwt $jwt): void
-    {
-        $this->jwt = $jwt;
-    }
+    abstract public function authorize(): bool;
 
     final public function setPayload(array $payload): void
     {

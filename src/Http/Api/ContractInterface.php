@@ -8,6 +8,6 @@ use Projom\Http\Request;
 
 interface ContractInterface
 {	
-	public function load(): bool;
+	public function load(): void;
 	public function match(Request $request): ?RouteContractInterface;
 }

@@ -62,7 +62,7 @@ class PathContract
 		return $this->operation;
 	}
 
-	public function auth(): bool
+	public function hasAuth(): bool
 	{
 		return $this->auth;
 	}

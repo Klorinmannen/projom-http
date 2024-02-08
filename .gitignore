@@ -13,6 +13,7 @@
 # White-list entire directories.
 !src/
 !tests/
+!.github/
 
 # Ignore crap files.
 **/*.*~

@@ -213,13 +213,13 @@ class RouteContractTest extends TestCase
 		return [
 			[
 				'routeController' => UserController::class,
-				'baseController' => ControllerBase::class,
+				'controllerBaseClass' => ControllerBase::class,
 				'operation' => 'get_by_id',
 				'expected' => true
 			],
 			[
 				'routeController' => 'NonExistentClass',
-				'baseController' => ControllerBase::class,
+				'controllerBaseClass' => ControllerBase::class,
 				'operation' => 'get_by_id',
 				'expected' => false
 			],
@@ -241,7 +241,7 @@ class RouteContractTest extends TestCase
 	#[DataProvider('provider_test_verifyController')]
 	public function test_verifyController(
 		string $routeController,
-		string $baseController,
+		string $controllerBaseClass,
 		string $operation,
 		bool $expected
 	): void {
@@ -265,7 +265,7 @@ class RouteContractTest extends TestCase
 
 		$routeContract->match($request);
 
-		$actual = $routeContract->verifyController($baseController);
+		$actual = $routeContract->verifyController($controllerBaseClass);
 		$this->assertEquals($expected, $actual);
 	}
 

@@ -16,7 +16,7 @@ class File
 	{
 		$contractFile = $this->parseFile($mainContractFilePath);
 		$this->contract = static::parseContract($contractFile);
-		$this->$mainContractFilePath = $mainContractFilePath;
+		$this->mainContractFilePath = $mainContractFilePath;
 	}
 
 	public function parseContract(array $contractFile): array

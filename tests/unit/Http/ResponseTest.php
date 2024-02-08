@@ -46,11 +46,11 @@ class ResponseTest extends TestCase
 	{
 		return [
 			'500' => [
-				'status_code' => 500,
+				'statusCode' => 500,
 				'expected' => 500
 			],
 			'Default status code' => [
-				'status_code' => 200,
+				'statusCode' => 200,
 				'expected' => 200
 			]
 		];
@@ -69,11 +69,11 @@ class ResponseTest extends TestCase
 	{
 		return [
 			'text/html' => [
-				'content_type' => ContentType::TEXT_HTML,
+				'contentType' => ContentType::TEXT_HTML,
 				'expected' => 'text/html'
 			],
 			'Default content type' => [
-				'content_type' => ContentType::APPLICATION_JSON,
+				'contentType' => ContentType::APPLICATION_JSON,
 				'expected' => 'application/json'
 			]
 		];
@@ -93,7 +93,7 @@ class ResponseTest extends TestCase
 		return [
 			'Empty payload' => [
 				'payload' => [],
-				'content_type' => ContentType::APPLICATION_JSON,
+				'contentType' => ContentType::APPLICATION_JSON,
 				'expected' => '[]'
 			],
 			'None empty payload' => [
@@ -101,12 +101,12 @@ class ResponseTest extends TestCase
 					'foo' => 'bar',
 					0 => 'zero'
 				],
-				'content_type' => ContentType::APPLICATION_JSON,
+				'contentType' => ContentType::APPLICATION_JSON,
 				'expected' => '{"foo":"bar","0":"zero"}'
 			],
 			'Empty payload with text/html content type' => [
 				'payload' => [],
-				'content_type' => ContentType::TEXT_HTML,
+				'contentType' => ContentType::TEXT_HTML,
 				'expected' => ''
 			],
 			'None empty payload with text/html content type' => [
@@ -116,7 +116,7 @@ class ResponseTest extends TestCase
 					'<h2>fizz</h2>',
 					'<p>buzz</p>',
 				],
-				'content_type' => ContentType::TEXT_HTML,
+				'contentType' => ContentType::TEXT_HTML,
 				'expected' => '<h1>foo</h1><p>bar</p><h2>fizz</h2><p>buzz</p>'
 			]
 		];
@@ -136,11 +136,11 @@ class ResponseTest extends TestCase
 	{
 		return [
 			'application/json' => [
-				'content_type' => ContentType::APPLICATION_JSON,
+				'contentType' => ContentType::APPLICATION_JSON,
 				'expected' => Header::APPLICATION_JSON
 			],
 			'text/html' => [
-				'content_type' => ContentType::TEXT_HTML,
+				'contentType' => ContentType::TEXT_HTML,
 				'expected' => Header::TEXT_HTML
 			]
 		];
@@ -163,8 +163,8 @@ class ResponseTest extends TestCase
 					'foo' => 'bar',
 					0 => 'zero'
 				],
-				'status_code' => 200,
-				'content_type' => ContentType::APPLICATION_JSON,
+				'statusCode' => 200,
+				'contentType' => ContentType::APPLICATION_JSON,
 				'expected' => [
 					'output' => '{"foo":"bar","0":"zero"}',
 					'header' => Header::APPLICATION_JSON,
@@ -178,8 +178,8 @@ class ResponseTest extends TestCase
 					'<h2>fizz</h2>',
 					'<p>buzz</p>',
 				],
-				'status_code' => 200,
-				'content_type' => ContentType::TEXT_HTML,
+				'statusCode' => 200,
+				'contentType' => ContentType::TEXT_HTML,
 				'expected' => [
 					'output' => '<h1>foo</h1><p>bar</p><h2>fizz</h2><p>buzz</p>',
 					'header' => Header::TEXT_HTML,

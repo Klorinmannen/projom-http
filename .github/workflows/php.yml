@@ -1,4 +1,4 @@
-name: Projom-core-test-suite
+name: PHPUnit
 
 on: [push]
 

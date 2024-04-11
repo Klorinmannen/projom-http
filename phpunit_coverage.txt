@@ -1,11 +1,11 @@
 
 
-Code Coverage Report:      
-  2024-02-08 20:13:28      
-                           
- Summary:                  
-  Classes: 72.22% (13/18)  
-  Methods: 91.57% (76/83)  
+Code Coverage Report:
+  2024-04-11 20:02:23
+
+ Summary:
+  Classes: 72.22% (13/18)
+  Methods: 91.57% (76/83)
   Lines:   92.39% (340/368)
 
 Projom\Http\Api\ControllerBase

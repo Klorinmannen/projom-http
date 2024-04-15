@@ -13,9 +13,9 @@ class ContractInterfaceTest extends TestCase
 	public function test_methods_exists(): void
 	{
 		$methods = [
-			'load',
-			'match',
+			'match'
 		];
+		
 		foreach ($methods as $method) 
 			$this->assertTrue(method_exists(ContractInterface::class, $method));
 

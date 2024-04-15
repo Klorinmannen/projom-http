@@ -36,7 +36,7 @@ class PatternTest extends TestCase
 	#[DataProvider('provider_test_create')]
 	public function test_create(string $route, string $expected): void
 	{
-		$actual = Pattern::create($route);
+		$actual = Pattern::build($route);
 		$this->assertEquals($expected, $actual);
 	}
 
@@ -114,7 +114,7 @@ class PatternTest extends TestCase
 
 	#[DataProvider('provider_test_fromType_invalid')]
 	public function test_fromType_invalid(string $type, string $expected): void
-	{			
+	{
 		$actual = Pattern::fromType($type);
 		$this->assertEquals($expected, $actual);
 	}

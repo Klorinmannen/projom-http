@@ -9,11 +9,8 @@ use Projom\Util\Json;
 
 class Data
 {
-    public static function encode(
-        array $data,
-        string $contentType
-    ): string {
-
+    public static function encode(array $data, string $contentType): string 
+    {
         switch ($contentType) {
             case ContentType::APPLICATION_JSON:
                 return Json::encode($data);

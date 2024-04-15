@@ -9,14 +9,25 @@ use Projom\Util\File;
 class Input
 {
 	private $request = [];
-	private $server	= [];
+	private $method = '';
+	private $url = '';
+	private $headers = [];
 
 	public function __construct(
 		array $request,
 		array $server
 	) {
 		$this->request = $request;
-		$this->server = $server;
+		$this->headers = $this->parseHeaders($server);
+		$this->method = $server['REQUEST_METHOD'] ?? '';
+		$this->url = $server['REQUEST_URI'] ?? '';
+	}
+
+	public function parseHeaders(array $server): array
+	{
+		$pattern = '/^HTTP_.*$/';
+		$resultKeys = preg_grep($pattern, array_keys($server));
+		return array_intersect_key($server, array_flip($resultKeys));
 	}
 
 	public function get(
@@ -39,18 +50,16 @@ class Input
 
 	public function method(): string
 	{
-		return $this->server['REQUEST_METHOD'] ?? '';
+		return $this->method;
 	}
 
 	public function url(): string
 	{
-		return $this->server['REQUEST_URI'] ?? '';
+		return $this->url;
 	}
 
 	public function headers(): array
 	{
-		$pattern = '/^HTTP_.*$/';
-		$resultKeys = preg_grep($pattern, array_keys($this->server));
-		return array_intersect_key($this->server, array_flip($resultKeys));
+		return $this->headers;
 	}
 }

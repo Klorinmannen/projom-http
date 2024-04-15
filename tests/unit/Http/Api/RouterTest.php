@@ -12,8 +12,9 @@ use Projom\Http\Request;
 use Projom\Http\Response;
 use Projom\Http\Api\ControllerBase;
 use Projom\Http\Api\ContractInterface;
+use Projom\Http\Api\Oas\Path;
 use Projom\Http\Api\Router;
-use Projom\Http\Api\RouteContractInterface;
+use Projom\Http\Api\PathContractInterface;
 
 class RouterStub_1 extends Router
 {
@@ -23,7 +24,7 @@ class RouterStub_1 extends Router
 
 	public static function dispatch(
 		Request $request,
-		RouteContractInterface $routeContract
+		PathContractInterface $pathContract
 	): Response {
 		return new Response(['message' => 'Hej']);
 	}
@@ -35,9 +36,9 @@ class RouterStub_2 extends Router
 	{
 	}
 
-	public static function processRouteContract(
+	public static function start(
 		Request $request,
-		RouteContractInterface $routeContract
+		ContractInterface $pathContract
 	): void {
 		return;
 	}
@@ -47,17 +48,25 @@ class RouterTest extends TestCase
 {
 	public function test_start(): void
 	{
-		$this->expectNotToPerformAssertions();
-
 		$input = new Input([], []);
 		$request = new Request($input);
 
-		$contract = $this->createMock(ContractInterface::class);
-		$routeContract = $this->createMock(RouteContractInterface::class);
-		$contract->method('match')->willReturn($routeContract);
+		$pathContract = $this->createMock(PathContractInterface::class);
+		$pathContract->method('hasAuth')->willReturn(true);
+		$pathContract->method('controller')->willReturn(ControllerBase::class);
+		$pathContract->method('operation')->willReturn('operation');
+		$pathContract->method('verifyInputPathParameters')->willReturn(true);
+		$pathContract->method('verifyInputQueryParameters')->willReturn(true);
+		$pathContract->method('verifyInputPayload')->willReturn(true);
+		$pathContract->method('verifyController')->willReturn(true);
+		$pathContract->method('verifyResponse')->willReturn(true);
 
-		$routerStub_3 = new RouterStub_2();
-		$routerStub_3->start($request, $contract);
+		$contract = $this->createMock(ContractInterface::class);
+		$contract->method('match')->willReturn($pathContract);
+
+		$this->expectOutputString('{"message":"Hej"}');
+		$routerStub_1 = new RouterStub_1();
+		$routerStub_1->start($request, $contract);
 	}
 
 	public function test_start_404(): void
@@ -69,76 +78,63 @@ class RouterTest extends TestCase
 		$contract->method('match')->willReturn(null);
 
 		$this->expectExceptionCode(404);
-		$routerStub_3 = new RouterStub_2();
-		$routerStub_3->start($request, $contract);
+		$routerStub_2 = new RouterStub_1();
+		$routerStub_2->start($request, $contract);
 	}
 
-	public function test_routeContract(): void
+	public function test_start_404_1(): void
 	{
 		$input = new Input([], []);
 		$request = new Request($input);
 
-		$routeContract = $this->createMock(RouteContractInterface::class);
-		$routeContract->method('hasAuth')->willReturn(true);
-		$routeContract->method('controller')->willReturn(ControllerBase::class);
-		$routeContract->method('operation')->willReturn('operation');
-		$routeContract->method('verifyInputData')->willReturn(true);
-		$routeContract->method('verifyController')->willReturn(true);
-		$routeContract->method('verifyResponse')->willReturn(true);
-
-		$this->expectOutputString('{"message":"Hej"}');
-		$routerStub_1 = new RouterStub_1();
-		$routerStub_1->processRouteContract($request, $routeContract);
-	}
-
-	public function test_routeContract_400(): void
-	{
-		$input = new Input([], []);
-		$request = new Request($input);
-
-		$routeContract = $this->createMock(RouteContractInterface::class);
-		$routeContract->method('verifyInputData')->willReturn(false);
+		$pathContract = $this->createMock(PathContractInterface::class);
+		$pathContract->method('verifyInputPathParameters')->willReturn(true);
+		$pathContract->method('verifyInputQueryParameters')->willReturn(true);
+		$pathContract->method('verifyInputPayload')->willReturn(true);
+		$pathContract->method('verifyController')->willReturn(false);
 
 		$contract = $this->createMock(ContractInterface::class);
-		$contract->method('match')->willReturn($routeContract);
+		$contract->method('match')->willReturn($pathContract);
+
+		$this->expectExceptionCode(404);
+		$routerStub_1 = new RouterStub_1();
+		$routerStub_1->start($request, $contract);
+	}
+
+	public function test_start_400(): void
+	{
+		$input = new Input([], []);
+		$request = new Request($input);
+
+		$pathContract = $this->createMock(PathContractInterface::class);
+		$pathContract->method('verifyInputPathParameters')->willReturn(false);
+		$pathContract->method('verifyController')->willReturn(true);
+
+		$contract = $this->createMock(ContractInterface::class);
+		$contract->method('match')->willReturn($pathContract);
 
 		$this->expectExceptionCode(400);
 		$routerStub_1 = new RouterStub_1();
-		$routerStub_1->processRouteContract($request, $routeContract);
+		$routerStub_1->start($request, $contract);
 	}
 
-	public function test_routeContract_501(): void
+	public function test_start_500(): void
 	{
 		$input = new Input([], []);
 		$request = new Request($input);
 
-		$routeContract = $this->createMock(RouteContractInterface::class);
-		$routeContract->method('verifyInputData')->willReturn(true);
-		$routeContract->method('verifyController')->willReturn(false);
+		$pathContract = $this->createMock(PathContractInterface::class);
+		$pathContract->method('verifyInputPathParameters')->willReturn(true);
+		$pathContract->method('verifyInputQueryParameters')->willReturn(true);
+		$pathContract->method('verifyInputPayload')->willReturn(true);
+		$pathContract->method('verifyController')->willReturn(true);
+		$pathContract->method('verifyResponse')->willReturn(false);
 
 		$contract = $this->createMock(ContractInterface::class);
-		$contract->method('match')->willReturn($routeContract);
-
-		$this->expectExceptionCode(501);
-		$routerStub_1 = new RouterStub_1();
-		$routerStub_1->processRouteContract($request, $routeContract);
-	}
-
-	public function test_routeContract_500(): void
-	{
-		$input = new Input([], []);
-		$request = new Request($input);
-
-		$routeContract = $this->createMock(RouteContractInterface::class);
-		$routeContract->method('verifyInputData')->willReturn(true);
-		$routeContract->method('verifyController')->willReturn(true);
-		$routeContract->method('verifyResponse')->willReturn(false);
-
-		$contract = $this->createMock(ContractInterface::class);
-		$contract->method('match')->willReturn($routeContract);
+		$contract->method('match')->willReturn($pathContract);
 
 		$this->expectExceptionCode(500);
 		$routerStub_1 = new RouterStub_1();
-		$routerStub_1->processRouteContract($request, $routeContract);
+		$routerStub_1->start($request, $contract);
 	}
 }

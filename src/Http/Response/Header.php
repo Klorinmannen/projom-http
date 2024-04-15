@@ -17,27 +17,14 @@ class Header
 
     public static function convert(string $contentType): string
     {
-        switch ($contentType) {
-            case ContentType::APPLICATION_JSON:
-                return static::APPLICATION_JSON;
-
-            case ContentType::TEXT_HTML:
-                return static::TEXT_HTML;
-
-            case ContentType::TEXT_PLAIN:
-                return static::TEXT_PLAIN;
-
-            case ContentType::TEXT_CSS:
-                return static::TEXT_CSS;
-
-            case ContentType::TEXT_JAVASCRIPT:
-                return static::TEXT_JAVASCRIPT;
-
-            case ContentType::TEXT_CSV:
-                return static::TEXT_CSV;
-
-            default: // Refactor: More specific exception.
-                throw new \Exception('Invalid content type', 500);
-        }
+        return match ($contentType) {
+            ContentType::APPLICATION_JSON => static::APPLICATION_JSON,
+            ContentType::TEXT_HTML => static::TEXT_HTML,
+            ContentType::TEXT_PLAIN => static::TEXT_PLAIN,
+            ContentType::TEXT_CSS => static::TEXT_CSS,
+            ContentType::TEXT_JAVASCRIPT => static::TEXT_JAVASCRIPT,
+            ContentType::TEXT_CSV => static::TEXT_CSV,
+            default => throw new \Exception('Invalid content type', 400),
+        };
     }
 }

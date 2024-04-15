@@ -11,26 +11,26 @@ class Request
 {
     protected $input = null;
 
-    protected $urlPath = '';
-    protected $parsedUrl = [];
-    protected $urlPathPartList = [];
-    protected $queryParameterList = [];
-    protected $pathParameterList = [];
+    protected string $urlPath = '';
+    protected array $parsedUrl = [];
+    protected array $urlPathPartList = [];
+    protected array $queryParameterList = [];
+    protected array $pathParameterList = [];
 
-    public function __construct(Input $input) 
+    public function __construct(Input $input)
     {
         $this->input = $input;
         $this->parseUrl($input->url());
     }
 
-	public static function create(): Request
-	{
-		$input = new Input(
-			$_REQUEST ?? [],
-			$_SERVER ?? []
-		);
-		return new Request($input);
-	}
+    public static function create(): Request
+    {
+        $input = new Input(
+            $_REQUEST ?? [],
+            $_SERVER ?? []
+        );
+        return new Request($input);
+    }
 
     public function parseUrl(string $url): void
     {

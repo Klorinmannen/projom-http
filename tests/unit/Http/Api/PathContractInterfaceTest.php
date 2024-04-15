@@ -5,26 +5,26 @@ declare(strict_types=1);
 namespace Projom\Tests\Unit\Http\Api;
 
 use PHPUnit\Framework\TestCase;
+use Projom\Http\Api\PathContractInterface;
 
-use Projom\Http\Api\RouteContractInterface;
-
-class RouteContractInterfaceTest extends TestCase
+class PathContractInterfaceTest extends TestCase
 {
 	public function test_methods_exists(): void
 	{
 		$methods = [
-			'match',
-			'verifyInputData',
+			'verifyInputPathParameters',
+			'verifyInputQueryParameters',
+			'verifyInputPayload',
 			'verifyController',
 			'verifyResponse',
-			'hasAuth',
 			'controller',
 			'operation',
+			'hasAuth'
 		];
 		foreach ($methods as $method) 
-			$this->assertTrue(method_exists(RouteContractInterface::class, $method));
+			$this->assertTrue(method_exists(PathContractInterface::class, $method));
 
-		$refletion = new \ReflectionClass(RouteContractInterface::class);
+		$refletion = new \ReflectionClass(PathContractInterface::class);
 		$this->assertEquals(count($methods), count($refletion->getMethods()));
 	}
 }

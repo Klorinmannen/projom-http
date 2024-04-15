@@ -31,7 +31,7 @@ class PayloadContractTest extends TestCase
 					'content' => [
 						'application/json' => []
 					],
-					'required' => 'false'
+					'required' => false
 				],
 				'expected' => [
 					'type' => 'application/json',
@@ -46,7 +46,7 @@ class PayloadContractTest extends TestCase
 				],
 				'expected' => [
 					'type' => 'application/json',
-					'required' => false
+					'required' => true
 				]
 			],
 			'Required bad name' => [
@@ -58,12 +58,12 @@ class PayloadContractTest extends TestCase
 				],
 				'expected' => [
 					'type' => 'application/json',
-					'required' => false
+					'required' => true
 				]
 			],
 			'Content missing' => [
 				'payloadContract' => [
-					'required' => 'true'
+					'required' => true
 				],
 				'expected' => [
 					'type' => '',
@@ -78,11 +78,9 @@ class PayloadContractTest extends TestCase
 	}
 
 	#[DataProvider('provider_test_parse')]
-	public function test_parse(
-		array $payloadContract,
-		array $expected
-	): void {
-		$payloadContractClass = new PayloadContract($payloadContract);
+	public function test_parse(array $payloadContract, array $expected): void
+	{
+		$payloadContractClass = PayloadContract::create($payloadContract);
 		$actual = $payloadContractClass->parse($payloadContract);
 		$this->assertEquals($expected, $actual);
 	}
@@ -105,7 +103,7 @@ class PayloadContractTest extends TestCase
 					'content' => [
 						'application/json' => []
 					],
-					'required' => 'false'
+					'required' => false
 				],
 				'inputPayload' => '',
 				'expected' => true
@@ -135,7 +133,7 @@ class PayloadContractTest extends TestCase
 					'required' => 'true'
 				],
 				'inputPayload' => '{}',
-				'expected' => false			
+				'expected' => false
 			],
 			'Bad type' => [
 				'payloadContract' => [
@@ -150,7 +148,7 @@ class PayloadContractTest extends TestCase
 			'Empty' => [
 				'payloadContract' => [],
 				'inputPayload' => '',
-				'expected' => true	
+				'expected' => true
 			]
 		];
 	}
@@ -161,7 +159,7 @@ class PayloadContractTest extends TestCase
 		string $inputPayload,
 		bool $expected
 	): void {
-		$payloadContractClass = new PayloadContract($payloadContract);
+		$payloadContractClass = PayloadContract::create($payloadContract);
 		$actual = $payloadContractClass->verify($inputPayload);
 		$this->assertEquals($expected, $actual);
 	}

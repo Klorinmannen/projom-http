@@ -22,7 +22,7 @@ class ParameterContractTest extends TestCase
 						'schema' => [
 							'type' => 'integer'
 						],
-						'required' => 'true'
+						'required' => true
 					],
 					[
 						'in' => 'path',
@@ -30,7 +30,7 @@ class ParameterContractTest extends TestCase
 						'schema' => [
 							'type' => 'string'
 						],
-						'required' => 'true'
+						'required' => true
 					],
 					[
 						'in' => 'query',
@@ -38,7 +38,7 @@ class ParameterContractTest extends TestCase
 						'schema' => [
 							'type' => 'integer'
 						],
-						'required' => 'false'
+						'required' => false
 					],
 					[
 						'in' => 'query',
@@ -46,7 +46,7 @@ class ParameterContractTest extends TestCase
 						'schema' => [
 							'type' => 'integer'
 						],
-						'required' => 'false'
+						'required' => false
 					]
 				],
 				'expected' => [
@@ -84,11 +84,9 @@ class ParameterContractTest extends TestCase
 	}
 
 	#[DataProvider('provider_test_ParseList')]
-	public function test_parseList(
-		array $parameterContracts,
-		array $expected
-	): void {
-		$parameterContract = new ParameterContract([]);
+	public function test_parseList(array $parameterContracts, array $expected): void
+	{
+		$parameterContract = ParameterContract::create([]);
 		$actual = $parameterContract->parseList($parameterContracts);
 		$this->assertEquals($expected, $actual);
 	}
@@ -120,7 +118,7 @@ class ParameterContractTest extends TestCase
 				[
 					'name' => 'id',
 					'type' => 'integer',
-					'required' => false
+					'required' => true
 				]
 			],
 			'Malformed required' => [
@@ -134,7 +132,7 @@ class ParameterContractTest extends TestCase
 				[
 					'name' => 'id',
 					'type' => 'integer',
-					'required' => false
+					'required' => true
 				]
 			],
 			'Missing type' => [
@@ -178,19 +176,16 @@ class ParameterContractTest extends TestCase
 				[
 					'name' => '',
 					'type' => '',
-					'required' => false
+					'required' => true
 				]
 			],
 		];
 	}
 
 	#[DataProvider('provider_test_parse')]
-	public function test_parse(
-		array $parameterContract,
-		array $expected
-	): void {
-		$parameterContractClass = new ParameterContract([]);
-
+	public function test_parse(array $parameterContract, array $expected): void
+	{
+		$parameterContractClass = ParameterContract::create([]);
 		$actual = $parameterContractClass->parse($parameterContract);
 		$this->assertEquals($expected, $actual);
 	}
@@ -383,12 +378,9 @@ class ParameterContractTest extends TestCase
 	}
 
 	#[DataProvider('provider_test_verifyPath')]
-	public function test_verifyPath(
-		array $parameterContract,
-		array $inputParameters,
-		bool $expected
-	): void {
-		$parameterContractClass = new ParameterContract($parameterContract);
+	public function test_verifyPath(array $parameterContract, array $inputParameters, bool $expected): void
+	{
+		$parameterContractClass = ParameterContract::create($parameterContract);
 		$actual = $parameterContractClass->verifyPath($inputParameters);
 		$this->assertEquals($expected, $actual);
 	}
@@ -473,7 +465,7 @@ class ParameterContractTest extends TestCase
 						],
 						'required' => 'false'
 					]
-					],
+				],
 				'inputParameters' => [],
 				'expected' => true
 			],
@@ -547,7 +539,7 @@ class ParameterContractTest extends TestCase
 					'sort' => 'desc',
 				],
 				'expected' => false
-			],			
+			],
 			'Empty' => [
 				'parameterContract' => [],
 				'inputParameters' => [],
@@ -557,12 +549,9 @@ class ParameterContractTest extends TestCase
 	}
 
 	#[DataProvider('provider_test_verifyQuery')]
-	public function test_verifyQuery(
-		array $parameterContract,
-		array $inputParameters,
-		bool $expected
-	): void {
-		$parameterContractClass = new ParameterContract($parameterContract);
+	public function test_verifyQuery(array $parameterContract, array $inputParameters, bool $expected): void
+	{
+		$parameterContractClass = ParameterContract::create($parameterContract);
 		$actual = $parameterContractClass->verifyQuery($inputParameters);
 		$this->assertEquals($expected, $actual);
 	}
@@ -599,16 +588,10 @@ class ParameterContractTest extends TestCase
 	}
 
 	#[DataProvider('provider_test_verify')]
-	public function test_verify(
-		string $inputParameter,
-		string $parameterContractType,
-		bool $expected
-	): void {
-		$parameterContractClass = new ParameterContract([]);
-		$actual = $parameterContractClass->verify(
-			$inputParameter,
-			$parameterContractType
-		);
+	public function test_verify(string $inputParameter,	string $parameterContractType, bool $expected): void
+	{
+		$parameterContractClass = ParameterContract::create([]);
+		$actual = $parameterContractClass->verify($inputParameter, $parameterContractType);
 		$this->assertEquals($expected, $actual);
 	}
 }

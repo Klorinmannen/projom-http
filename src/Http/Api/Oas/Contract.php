@@ -6,73 +6,68 @@ namespace Projom\Http\Api\Oas;
 
 use Projom\Http\Request;
 use Projom\Http\Api\ContractInterface;
+use Projom\Http\Api\Oas\Path;
 use Projom\Http\Api\Oas\PathContract;
-use Projom\Http\Api\Oas\RouteContract;
-use Projom\Http\Api\Oas\File;
-use Projom\Http\Api\RouteContractInterface;
+use Projom\Http\Api\PathContractInterface;
+use Projom\Http\Api\Pattern;
+use Projom\Util\File;
 
 class Contract implements ContractInterface
 {
 	private array $contracts = [];
-	private File $file;
+	private array $file = [];
 
-	public function __construct(File $file)
+	public function __construct(string $contractFilePath)
 	{
-		$this->file = $file;
+		$this->file = File::parse($contractFilePath);
+		$this->build();
 	}
 
-	public static function create(string $apiContractFilePath): Contract
+	public static function create(string $contractFilePath): Contract
 	{
-		$file = new File($apiContractFilePath);
-		$contract = new Contract($file);
-		$contract->load();
-		return $contract;
+		return new Contract($contractFilePath);
 	}
 
-	public function load(): void
+	private function build(): void
 	{
-		if (!$contract = $this->file->contract())
+		if (!$filePaths = $this->file['paths'] ?? [])
 			return;
 
-		$routeContracts = [];
-		foreach ($contract as $rawPattern => $contractDetails) {
+		$contracts = [];
+		foreach ($filePaths as $pathPattern => $path) {
 
-			if (!$routePathContracts = $contractDetails['route_path_contracts'] ?? [])
-				continue;
-
-			$pathContracts = [];
-			foreach ($routePathContracts as $httpMethod => $pathContract) {
+			$paths = [];
+			foreach ($path as $httpMethod => $pathDetails) {
 				$httpMethod = strtoupper($httpMethod);
-				$pathContracts[$httpMethod] = new PathContract($pathContract);
+				$paths[$httpMethod] = Path::create($pathDetails);
 			}
 
-			$routePattern = $contractDetails['route_pattern'];
-			$routeController = $contractDetails['route_controller'];
-
-			$routeContracts[$rawPattern] = new RouteContract(
-				$pathContracts,
-				$routePattern,
-				$routeController
-			);
+			$pattern = Pattern::build($pathPattern);
+			$contracts[$pathPattern] = [
+				$pattern,
+				$paths
+			];
 		}
 
-		// Prioritzes paths.
-		$routeContracts = $this->sortRouteContracts($routeContracts);
+		// Prioritzes/sorts paths.
+		ksort($contracts);
 
-		$this->contracts = $routeContracts;
+		$this->contracts = $contracts;
+		#var_dump($this->contracts['/users/{id}'][1]);
 	}
 
-	public function sortRouteContracts(array $routeContracts): array
+	public function match(Request $request): PathContractInterface|null
 	{
-		ksort($routeContracts);
-		return $routeContracts;
-	}
+		foreach ($this->contracts as [$pattern, $paths]) {
 
-	public function match(Request $request): ?RouteContractInterface
-	{
-		foreach ($this->contracts as $routeContract)
-			if ($routeContract->match($request))
-				return $routeContract;
+			if (!$request->matchPattern($pattern))
+				continue;
+
+			if (!$path = $paths[$request->httpMethod()] ?? null)
+				continue;
+
+			return PathContract::create($path);
+		}
 
 		return null;
 	}

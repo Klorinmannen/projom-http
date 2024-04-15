@@ -15,7 +15,12 @@ class PayloadContract
 	{
 		$this->payloadContract = $this->parse($payloadContract);
 	}
-	
+
+	public static function create(array $payloadContract = []): PayloadContract
+	{
+		return new PayloadContract($payloadContract);
+	}
+
 	public function parse(array $payloadContract): array
 	{
 		if (!$payloadContract)
@@ -25,11 +30,7 @@ class PayloadContract
 		if ($content = $payloadContract['content'] ?? [])
 			$type = key($content);
 
-		$required = false;
-		if (array_key_exists('required', $payloadContract))
-			$required = Bools::toBoolean($payloadContract['required']);
-		if ($required === null)
-			$required = false;
+		$required = (bool) ($payloadContract['required'] ?? true);
 
 		return [
 			'type' => $type,
@@ -37,7 +38,7 @@ class PayloadContract
 		];
 	}
 
-	public function verify(string $inputPayload): bool 
+	public function verify(string $inputPayload): bool
 	{
 		// Nothing to check.
 		if (!$this->payloadContract)
@@ -54,7 +55,7 @@ class PayloadContract
 			if (!$inputPayload)
 				return true;
 		}
-		
+
 		switch ($type) {
 			case 'application/json':
 				return Json::verify($inputPayload);

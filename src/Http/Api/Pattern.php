@@ -23,7 +23,7 @@ class Pattern
         ]
     ];
 
-    public static function create(string $route): string
+    public static function build(string $route): string
     {
         $routePattern = $route;
         foreach (static::PARAM_PATTERNS as $paramData) {
@@ -76,10 +76,8 @@ class Pattern
         return static::finalize($pattern);
     }
 
-    public static function test(
-        string $pattern,
-        string $subject
-    ): bool {
+    public static function test(string $pattern, string $subject): bool
+    {
         if (!$pattern || !$subject)
             return false;
         return preg_match($pattern, $subject) === 1;

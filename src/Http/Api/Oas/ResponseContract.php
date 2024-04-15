@@ -13,6 +13,11 @@ class ResponseContract
         $this->responseContracts = $this->parseList($responseContracts);
     }
 
+    public static function create(array $responseContracts): ResponseContract
+    {
+        return new ResponseContract($responseContracts);
+    }
+
     public function parseList(array $responseContracts): array
     {
         $contracts = [];

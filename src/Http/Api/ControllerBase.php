@@ -7,7 +7,7 @@ namespace Projom\Http\Api;
 use Projom\Http\Response;
 
 /**
- * Base for resource controllers.
+ * Base for resource controllers
  */
 abstract class ControllerBase
 {

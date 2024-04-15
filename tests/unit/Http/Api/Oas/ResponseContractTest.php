@@ -31,34 +31,32 @@ class ResponseContractTest extends TestCase
 					'200' => 'application/json',
 					'400' => 'application/json'
 				]
+			],
+			'Content missing' => [
+				'responseContracts' => [
+					'200' => [],
 				],
-				'Content missing' => [
-					'responseContracts' => [
-						'200' => [],
-						],
-					'expected' => [
-						'200' => '',
-					]
-				],
-				'Content empty' => [
-					'responseContracts' => [
-						'200' => [
-							'content' => []
-						]
-					],
-					'expected' => [
-						'200' => '',
-					]
+				'expected' => [
+					'200' => '',
 				]
+			],
+			'Content empty' => [
+				'responseContracts' => [
+					'200' => [
+						'content' => []
+					]
+				],
+				'expected' => [
+					'200' => '',
+				]
+			]
 		];
 	}
 
 	#[DataProvider('provider_test_parseList')]
-	public function test_parseList(
-		array $responseContracts,
-		array $expected
-	): void {
-		$responseContract = new ResponseContract($responseContracts);
+	public function test_parseList(array $responseContracts, array $expected): void
+	{
+		$responseContract = ResponseContract::create($responseContracts);
 		$acutal = $responseContract->parseList($responseContracts);
 		$this->assertEquals($expected, $acutal);
 	}
@@ -112,7 +110,7 @@ class ResponseContractTest extends TestCase
 		string $contentType,
 		bool $expected
 	): void {
-		$responseContract = new ResponseContract($responseContracts);
+		$responseContract = ResponseContract::create($responseContracts);
 		$actual = $responseContract->verify($statusCode, $contentType);
 		$this->assertEquals($expected, $actual);
 	}

@@ -8,58 +8,48 @@ use Exception;
 
 use Projom\Http\Response;
 use Projom\Http\Request;
-use Projom\Http\Api\RouteContractInterface;
+use Projom\Http\Api\PathContractInterface;
 
 class Router
 {
-	public static function start(
-		Request $request,
-		ContractInterface $contract
-	): void {
+	public static function start(Request $request, ContractInterface $contract): void
+	{
+		if (!$pathContract = $contract->match($request))
+			throw new Exception('Not found', 404);
 
-		if (!$routeContract = $contract->match($request))
-			throw new Exception('Not Found', 404);
+		if (!$pathContract->verifyController(ControllerBase::class))
+			throw new Exception('Not found', 404);
 
-		static::processRouteContract($request, $routeContract);
-	}
+		if (!$pathContract->verifyInputPathParameters($request->pathParameterList()))
+			throw new Exception('Provided path parameters are not valid', 400);
 
-	public static function processRouteContract(
-		Request $request,
-		RouteContractInterface $routeContract
-	): void {
+		if (!$pathContract->verifyInputQueryParameters($request->queryParameterList()))
+			throw new Exception('Provided query parameters are not valid', 400);
 
-		if (!$routeContract->verifyInputData($request))
-			throw new Exception('Bad Request', 400);
+		if (!$pathContract->verifyInputPayload($request->payload()))
+			throw new Exception('Provided payload is not valid', 400);
 
-		if (!$routeContract->verifyController(ControllerBase::class))
-			throw new Exception('Not Implemented', 501);
+		$response = static::dispatch($request, $pathContract);
 
-		$response = static::dispatch($request, $routeContract);
-
-		if (!$routeContract->verifyResponse($response))
-			throw new Exception('Internal Server Error', 500);
+		if (!$pathContract->verifyResponse($response->statusCode(), $response->contentType()))
+			throw new Exception('Provided response is not valid', 500);
 
 		$response->send();
 	}
 
-	public static function dispatch(
-		Request $request,
-		RouteContractInterface $routeContract
-	): Response {
-
-		$input = [];
-		if ($pathParameters = $request->pathParameterList())
-			$input[] = $pathParameters;
-		if ($queryParameters = $request->queryParameterList())
-			$input[] = $queryParameters;
-		if ($payload = $request->payload())
-			$input[] = $payload;
+	public static function dispatch(Request $request, PathContractInterface $routeContract): Response
+	{
+		$inputs = [
+			$request->pathParameterList(),
+			$request->queryParameterList(),
+			$request->payload()
+		];
 
 		$controller = $routeContract->controller();
 		$operation = $routeContract->operation();
 
 		$controller = new $controller();
-		$controller->{$operation}(...$input);
+		$controller->{$operation}(...$inputs);
 
 		return $controller->response();
 	}

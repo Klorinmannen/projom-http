@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Projom\Tests\Unit\Http;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 use Projom\Http\Header;
 
 class HeaderTest extends TestCase
 {
-    public static function provider_test_parseAuthHeader(): array
+    public static function provider_parseBearerAuthToken(): array
     {
         return [
             'Valid Bearer token' => [
@@ -37,9 +38,10 @@ class HeaderTest extends TestCase
         ];
     }
 
-    #[DataProvider('provider_test_parseAuthHeader')]
-    public function test_parseAuthHeader(string $authHeader, ?string $expected): void
+    #[Test]
+    #[DataProvider('provider_parseBearerAuthToken')]
+    public function parseBearerAuthToken(string $authHeader, null|string $expected): void
     {
-        $this->assertEquals($expected, Header::parseAuthHeader($authHeader));
+        $this->assertEquals($expected, Header::parseBearerAuthToken($authHeader));
     }
 }

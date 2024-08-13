@@ -5,16 +5,15 @@ declare(strict_types=1);
 namespace Projom\Http\Api\Oas;
 
 use Projom\Http\Api\Pattern;
-use Projom\Util\Bools;
 use Projom\Util\Math;
 
 class ParameterContract
 {
-    private array $parameterContracts = [];
+    private readonly array $parameterContracts;
 
     public function __construct(array $parameterContracts = [])
     {
-        $this->parameterContracts = $this->parseList($parameterContracts);
+        $this->parameterContracts = $this->parseContracts($parameterContracts);
     }
 
     public static function create(array $parameterContracts = []): ParameterContract
@@ -22,7 +21,7 @@ class ParameterContract
         return new ParameterContract($parameterContracts);
     }
 
-    public function parseList(array $paraameterContracts): array
+    public function parseContracts(array $paraameterContracts): array
     {
         $parsedParaameterContracts = [];
         foreach ($paraameterContracts as $parameterContract) {
@@ -36,6 +35,8 @@ class ParameterContract
     {
         $name = $parameterContract['name'] ?? '';
         $type = $parameterContract['schema']['type'] ?? '';
+
+        // Default to required - true, stricter safety precaution.
         $required = (bool) ($parameterContract['required'] ?? true);
 
         return [
@@ -62,10 +63,7 @@ class ParameterContract
             if ($parameterContract['required'] && !$inputParameters[$id])
                 return false;
 
-            $result = $this->verify(
-                (string)$inputParameters[$id],
-                $parameterContract['type']
-            );
+            $result = $this->verify((string) $inputParameters[$id], $parameterContract['type']);
             if (!$result)
                 return false;
         }
@@ -90,37 +88,25 @@ class ParameterContract
         if (count($inputParameters) > count($queryContracts))
             return false;
 
-        // Rekey on the name.
-        $namedQueryContracts = array_column(
-            $queryContracts,
-            null,
-            'name'
-        );
+        // Rekey on name.
+        $namedQueryContracts = array_column($queryContracts, null, 'name');
 
         // Is the input query parameters a subset of the defined set.
-        $isSubset = Math::isSubset(
-            $inputParameters,
-            $namedQueryContracts
-        );
+        $isSubset = Math::isSubset($inputParameters, $namedQueryContracts);
         if (!$isSubset)
             return false;
 
         // Select the input subset.
-        $namedParameterContractSubset = array_intersect_key(
-            $namedQueryContracts,
-            $inputParameters
-        );
+        $namedParameterContractSubset = array_intersect_key($namedQueryContracts, $inputParameters);
 
         // Test the input query parameters.
         foreach ($namedParameterContractSubset as $name => $queryData) {
 
+            // Parameter is required but not present.
             if ($queryData['required'] && !$inputParameters[$name])
                 return false;
 
-            $result = $this->verify(
-                (string)$inputParameters[$name],
-                $queryData['type']
-            );
+            $result = $this->verify((string) $inputParameters[$name], $queryData['type']);
             if (!$result)
                 return false;
         }

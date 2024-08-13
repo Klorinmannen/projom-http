@@ -9,8 +9,7 @@ use Projom\Http\Input;
 
 class Request
 {
-    protected $input = null;
-
+    protected null|Input $input = null;
     protected string $urlPath = '';
     protected array $parsedUrl = [];
     protected array $urlPathPartList = [];
@@ -23,12 +22,13 @@ class Request
         $this->parseUrl($input->url());
     }
 
-    public static function create(): Request
+    public static function create(null|Input $input = null): Request
     {
-        $input = new Input(
-            $_REQUEST ?? [],
-            $_SERVER ?? []
-        );
+        if ($input !== null)
+            return new Request($input);
+
+        $input = Input::create($_REQUEST ?? [], $_SERVER ?? []);
+
         return new Request($input);
     }
 
@@ -64,10 +64,10 @@ class Request
         return false;
     }
 
-    public function header(string $header): string
+    public function header(string $header): null|string
     {
         $headers = $this->input->headers();
-        return $headers[$header] ?? '';
+        return $headers[$header] ?? null;
     }
 
     public function authToken(): string
@@ -75,7 +75,7 @@ class Request
         if (!$authHeader = $this->header('HTTP_AUTHORIZATION'))
             return '';
 
-        if (!$token = Header::parseAuthHeader($authHeader))
+        if (!$token = Header::parseBearerAuthToken($authHeader))
             return '';
 
         return $token;

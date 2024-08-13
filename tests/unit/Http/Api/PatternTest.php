@@ -6,12 +6,12 @@ namespace Projom\Tests\Unit\Http\Api;
 
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
-
+use PHPUnit\Framework\Attributes\Test;
 use Projom\Http\Api\Pattern;
 
 class PatternTest extends TestCase
 {
-	public static function provider_test_create(): array
+	public static function provider_create(): array
 	{
 		return [
 			'id parameter' => [
@@ -33,14 +33,15 @@ class PatternTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_create')]
-	public function test_create(string $route, string $expected): void
+	#[Test]
+	#[DataProvider('provider_create')]
+	public function create(string $route, string $expected): void
 	{
 		$actual = Pattern::build($route);
 		$this->assertEquals($expected, $actual);
 	}
 
-	public static function provider_test_finalize(): array
+	public static function provider_finalize(): array
 	{
 		return [
 			'id pattern' => [
@@ -62,14 +63,15 @@ class PatternTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_finalize')]
-	public function test_finalize(string $pattern, string $expected): void
+	#[Test]
+	#[DataProvider('provider_finalize')]
+	public function finalize(string $pattern, string $expected): void
 	{
 		$actual = Pattern::finalize($pattern);
 		$this->assertEquals($expected, $actual);
 	}
 
-	public static function provider_test_fromType(): array
+	public static function provider_fromType(): array
 	{
 		return [
 			'id type' => [
@@ -95,14 +97,15 @@ class PatternTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_fromType')]
-	public function test_fromType(string $type, string $expected): void
+	#[Test]
+	#[DataProvider('provider_fromType')]
+	public function fromType(string $type, string $expected): void
 	{
 		$actual = Pattern::fromType($type);
 		$this->assertEquals($expected, $actual);
 	}
 
-	public static function provider_test_fromType_invalid(): array
+	public static function provider_fromType_invalid(): array
 	{
 		return [
 			[
@@ -112,14 +115,15 @@ class PatternTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_fromType_invalid')]
-	public function test_fromType_invalid(string $type, string $expected): void
+	#[Test]
+	#[DataProvider('provider_fromType_invalid')]
+	public function fromType_invalid(string $type, string $expected): void
 	{
 		$actual = Pattern::fromType($type);
 		$this->assertEquals($expected, $actual);
 	}
 
-	public static function provider_test_test(): array
+	public static function provider_test(): array
 	{
 		return [
 			'Good id' => [
@@ -170,8 +174,9 @@ class PatternTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_test')]
-	public function test_test(string $pattern, string $route, bool $expected): void
+	#[Test]
+	#[DataProvider('provider_test')]
+	public function test(string $pattern, string $route, bool $expected): void
 	{
 		$actual = Pattern::test($pattern, $route);
 		$this->assertEquals($expected, $actual);

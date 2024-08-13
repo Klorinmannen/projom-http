@@ -10,13 +10,12 @@ use Projom\Http\Api\Oas\ResponseContract;
 
 class Path
 {
-	private ParameterContract|null $parameterContract = null;
-	private PayloadContract|null $payloadContract = null;
-	private ResponseContract|null $responseContract = null;
-
-	private string $operation = '';
-	private string $resourceController = '';
-	private bool $auth = true;
+	private readonly ParameterContract $parameterContract;
+	private readonly PayloadContract $payloadContract;
+	private readonly ResponseContract $responseContract;
+	private readonly string $resourceOperation;
+	private readonly string $resourceController;
+	private readonly bool $auth;
 
 	public function __construct(array $pathDetails)
 	{
@@ -29,12 +28,13 @@ class Path
 		$responseContracts = $pathDetails['responses'] ?? [];
 		$this->responseContract = new ResponseContract($responseContracts);
 
-		if (array_key_exists('security', $pathDetails))
-			$this->auth = $pathDetails['security'] ? true : false;
+		$security = $pathDetails['security'] ?? [];
+		$this->auth = $security ? true : false;
 
-		$operaionDetails = explode('@', $pathDetails['operationId'] ?? '');
-		$this->resourceController = ucwords(str_replace('_', '\\', array_shift($operaionDetails) ?? ''), '\\');
-		$this->operation = array_shift($operaionDetails) ?? '';
+		[$resourceController, $resourceOperation] = $this->formatResourceOperation($pathDetails['operationId'] ?? '');
+
+		$this->resourceController = $resourceController;
+		$this->resourceOperation = $resourceOperation;
 	}
 
 	public static function create(array $pathDetails): Path
@@ -42,24 +42,36 @@ class Path
 		return new Path($pathDetails);
 	}
 
-	public function parameterContract(): ParameterContract|null
+	public function formatResourceOperation(string $operationId): array
+	{
+		$operationDetails = explode('@', $operationId);
+
+		$resourceController = array_shift($operationDetails) ?? '';
+		$resourceController = ucwords(str_replace('_', '\\',  $resourceController), '\\');
+
+		$resourceOperation = array_shift($operationDetails) ?? '';
+
+		return [$resourceController, $resourceOperation];
+	}
+
+	public function parameterContract(): ParameterContract
 	{
 		return $this->parameterContract;
 	}
 
-	public function payloadContract(): PayloadContract|null
+	public function payloadContract(): PayloadContract
 	{
 		return $this->payloadContract;
 	}
 
-	public function responseContract(): ResponseContract|null
+	public function responseContract(): ResponseContract
 	{
 		return $this->responseContract;
 	}
 
-	public function operation(): string
+	public function resourceOperation(): string
 	{
-		return $this->operation;
+		return $this->resourceOperation;
 	}
 
 	public function resourceController(): string

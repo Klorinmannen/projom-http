@@ -5,14 +5,16 @@ declare(strict_types=1);
 namespace Projom\Tests\Unit\Http\Api\Oas;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+
 use Projom\Http\Api\Oas\Path;
-use Projom\Http\Response;
 use Projom\Http\Api\Oas\PathContract;
+use Projom\Http\Response;
 
 class PathContractTest extends TestCase
 {
-	public static function provider_test_parameters(): array
+	public static function provider_parameters(): array
 	{
 		return [
 			'Good test' => [
@@ -50,14 +52,10 @@ class PathContractTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_parameters')]
-	public function test_parameters(
-		array $pathDetails,
-		array $inputPathParameters,
-		array $inputQueryParameters,
-		array $expected
-	): void {
-
+	#[Test]
+	#[DataProvider('provider_parameters')]
+	public function parameters(array $pathDetails, array $inputPathParameters, array $inputQueryParameters, array $expected): void
+	{
 		$path = Path::create($pathDetails);
 		$pathContract = PathContract::create($path);
 
@@ -68,7 +66,7 @@ class PathContractTest extends TestCase
 		$this->assertEquals($expected['query_parameters'], $actual);
 	}
 
-	public static function provider_test_payload(): array
+	public static function provider_payload(): array
 	{
 		return [
 			'Good payload input' => [
@@ -97,8 +95,9 @@ class PathContractTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_payload')]
-	public function test_payload(array $pathDetails, string $payload, bool $expected): void
+	#[Test]
+	#[DataProvider('provider_payload')]
+	public function payload(array $pathDetails, string $payload, bool $expected): void
 	{
 		$path = Path::create($pathDetails);
 		$pathContract = PathContract::create($path);
@@ -106,7 +105,7 @@ class PathContractTest extends TestCase
 		$this->assertEquals($expected, $actual);
 	}
 
-	public static function provider_test_response(): array
+	public static function provider_response(): array
 	{
 		return [
 			'Good response' => [
@@ -125,8 +124,9 @@ class PathContractTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_response')]
-	public function test_response(array $pathDetails, Response $response, bool $expected): void
+	#[Test]
+	#[DataProvider('provider_response')]
+	public function response(array $pathDetails, Response $response, bool $expected): void
 	{
 		$path = Path::create($pathDetails);
 		$pathContract = PathContract::create($path);
@@ -134,7 +134,7 @@ class PathContractTest extends TestCase
 		$this->assertEquals($expected, $actual);
 	}
 
-	public static function provider_test_operation(): array
+	public static function provider_operation(): array
 	{
 		return [
 			'Good operation' => [
@@ -145,8 +145,9 @@ class PathContractTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_operation')]
-	public function test_operation(array $pathDetails, string $expectedController, string $expectedOperation): void
+	#[Test]
+	#[DataProvider('provider_operation')]
+	public function operation(array $pathDetails, string $expectedController, string $expectedOperation): void
 	{
 		$path = Path::create($pathDetails);
 		$pathContract = PathContract::create($path);
@@ -158,7 +159,7 @@ class PathContractTest extends TestCase
 		$this->assertEquals($expectedController, $actual);
 	}
 
-	public static function provider_test_auth(): array
+	public static function provider_auth(): array
 	{
 		return [
 			'Good auth' => [
@@ -168,14 +169,17 @@ class PathContractTest extends TestCase
 				'expected' => true
 			],
 			'Bad auth' => [
-				'pathDetails' => ['security' => []],
+				'pathDetails' => [
+					'security' => []
+				],
 				'expected' => false
 			]
 		];
 	}
 
-	#[DataProvider('provider_test_auth')]
-	public function test_auth(array $pathDetails, bool $expected): void
+	#[Test]
+	#[DataProvider('provider_auth')]
+	public function auth(array $pathDetails, bool $expected): void
 	{
 		$path = Path::create($pathDetails);
 		$pathContract = PathContract::create($path);

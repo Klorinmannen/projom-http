@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Projom\Tests\Unit\Http;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 use Projom\Http\Input;
@@ -12,7 +13,7 @@ use Projom\Http\Request;
 
 class RequestTest extends TestCase
 {
-	public static function provider_test_parseUrl(): array
+	public static function provider_parseUrl(): array
 	{
 		return [
 			'Valid url' => [
@@ -82,11 +83,12 @@ class RequestTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_parseUrl')]
-	public function test_parseUrl(string $url, array $expected): void
+	#[Test]
+	#[DataProvider('provider_parseUrl')]
+	public function parseUrl(string $url, array $expected): void
 	{
-		$input = new Input([], []);
-		$request = new Request($input);
+		$input = Input::create([], []);
+		$request = Request::create($input);
 		$request->parseUrl($url);
 		$this->assertEquals($expected['parsedUrl'], $request->parsedUrl());
 		$this->assertEquals($expected['queryParameterList'], $request->queryParameterList());
@@ -94,7 +96,7 @@ class RequestTest extends TestCase
 		$this->assertEquals($expected['urlPathPartList'], $request->urlPathPartList());
 	}
 
-	public static function provider_test_matchPattern(): array
+	public static function provider_matchPattern(): array
 	{
 		return [
 			'Valid pattern' => [
@@ -117,16 +119,17 @@ class RequestTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_matchPattern')]
-	public function test_matchPattern(string $url, string $pattern, bool $expected): void
+	#[Test]
+	#[DataProvider('provider_matchPattern')]
+	public function matchPattern(string $url, string $pattern, bool $expected): void
 	{
-		$input = new Input([], []);
-		$request = new Request($input);
+		$input = Input::create([], []);
+		$request = Request::create($input);
 		$request->parseUrl($url);
 		$this->assertEquals($expected, $request->matchPattern($pattern));
 	}
 
-	public static function provider_test_empty(): array
+	public static function provider_empty(): array
 	{
 		return [
 			'Valid url' => [
@@ -141,16 +144,17 @@ class RequestTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_empty')]
-	public function test_empty(string $url, bool $expected): void
+	#[Test]
+	#[DataProvider('provider_empty')]
+	public function empty(string $url, bool $expected): void
 	{
-		$input = new Input([], []);
-		$request = new Request($input);
+		$input = Input::create([], []);
+		$request = Request::create($input);
 		$request->parseUrl($url);
 		$this->assertEquals($expected, $request->empty());
 	}
 
-	public static function provider_test_header(): array
+	public static function provider_header(): array
 	{
 		return [
 			'Valid header' => [
@@ -185,15 +189,16 @@ class RequestTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_header')]
-	public function test_header(array $server, string $header, string $expected): void
+	#[Test]
+	#[DataProvider('provider_header')]
+	public function header(array $server, string $header, string $expected): void
 	{
-		$input = new Input([], $server);
-		$request = new Request($input);
+		$input = Input::create([], $server);
+		$request = Request::create($input);
 		$this->assertEquals($expected, $request->header($header));
 	}
 
-	public static function provider_test_parseAuthHeader(): array
+	public static function provider_parseAuthHeader(): array
 	{
 		return [
 			'Valid auth header' => [
@@ -217,15 +222,16 @@ class RequestTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_parseAuthHeader')]
-	public function test_parseAuthHeader(array $server, ?string $expected): void
+	#[Test]
+	#[DataProvider('provider_parseAuthHeader')]
+	public function parseAuthHeader(array $server, ?string $expected): void
 	{
-		$input = new Input([], $server);
-		$request = new Request($input);
+		$input = Input::create([], $server);
+		$request = Request::create($input);
 		$this->assertEquals($expected, $request->authToken());
 	}
 
-	public static function provider_test_payload(): array
+	public static function provider_payload(): array
 	{
 		return [
 			'Valid payload' => [
@@ -245,15 +251,16 @@ class RequestTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_payload')]
-	public function test_payload(string $source, string $expected): void
+	#[Test]
+	#[DataProvider('provider_payload')]
+	public function payload(string $source, string $expected): void
 	{
-		$input = new Input([], []);
-		$request = new Request($input);
+		$input = Input::create([], []);
+		$request = Request::create($input);
 		$this->assertEquals($expected, $request->payload($source));
 	}
 
-	public static function provider_test_url(): array
+	public static function provider_url(): array
 	{
 		return [
 			'Valid url' => [
@@ -270,15 +277,16 @@ class RequestTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_url')]
-	public function test_url(array $server, string $expected): void
+	#[Test]
+	#[DataProvider('provider_url')]
+	public function url(array $server, string $expected): void
 	{
-		$input = new Input([], $server);
-		$request = new Request($input);
+		$input = Input::create([], $server);
+		$request = Request::create($input);
 		$this->assertEquals($expected, $request->url());
 	}
 
-	public static function provider_test_method(): array
+	public static function provider_method(): array
 	{
 		return [
 			'Valid method' => [
@@ -295,15 +303,16 @@ class RequestTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_method')]
-	public function test_method(array $server, string $expected): void
+	#[Test]
+	#[DataProvider('provider_method')]
+	public function method(array $server, string $expected): void
 	{
-		$input = new Input([], $server);
-		$request = new Request($input);
+		$input = Input::create([], $server);
+		$request = Request::create($input);
 		$this->assertEquals($expected, $request->httpMethod());
 	}
 
-	public static function provider_test_pathParameterList(): array
+	public static function provider_pathParameterList(): array
 	{
 		return [
 			'Valid url' => [
@@ -324,11 +333,12 @@ class RequestTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_pathParameterList')]
-	public function test_pathParameterList(array $server, string $pattern, array $expected): void
+	#[Test]
+	#[DataProvider('provider_pathParameterList')]
+	public function pathParameterList(array $server, string $pattern, array $expected): void
 	{
-		$input = new Input([], $server);
-		$request = new Request($input);
+		$input = Input::create([], $server);
+		$request = Request::create($input);
 		$request->matchPattern($pattern);
 		$this->assertEquals($expected, $request->pathParameterList());
 	}

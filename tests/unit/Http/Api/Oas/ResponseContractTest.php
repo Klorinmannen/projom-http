@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Projom\Tests\Unit\Http\Api\Oas;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 use Projom\Http\Api\Oas\ResponseContract;
 
 class ResponseContractTest extends TestCase
 {
-	public static function provider_test_parseList(): array
+	public static function provider_parseList(): array
 	{
 		return [
 			'Good test' => [
@@ -53,15 +54,16 @@ class ResponseContractTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_parseList')]
-	public function test_parseList(array $responseContracts, array $expected): void
+	#[Test]
+	#[DataProvider('provider_parseList')]
+	public function parseList(array $responseContracts, array $expected): void
 	{
 		$responseContract = ResponseContract::create($responseContracts);
-		$acutal = $responseContract->parseList($responseContracts);
+		$acutal = $responseContract->parseContracts($responseContracts);
 		$this->assertEquals($expected, $acutal);
 	}
 
-	public static function provider_test_verify(): array
+	public static function provider_verify(): array
 	{
 		return [
 			'Good test' => [
@@ -103,13 +105,10 @@ class ResponseContractTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_verify')]
-	public function test_verify(
-		array $responseContracts,
-		int $statusCode,
-		string $contentType,
-		bool $expected
-	): void {
+	#[Test]
+	#[DataProvider('provider_verify')]
+	public function verify(array $responseContracts, int $statusCode, string $contentType, bool $expected): void
+	{
 		$responseContract = ResponseContract::create($responseContracts);
 		$actual = $responseContract->verify($statusCode, $contentType);
 		$this->assertEquals($expected, $actual);

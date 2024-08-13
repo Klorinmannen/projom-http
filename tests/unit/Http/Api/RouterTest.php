@@ -4,52 +4,45 @@ declare(strict_types=1);
 
 namespace Projom\Tests\Unit\Http\Api;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\Attributes\DataProvider;
 
+use Projom\Http\Api\ControllerBase;
+use Projom\Http\Api\ContractInterface;
+use Projom\Http\Api\Oas\Contract;
+use Projom\Http\Api\PathContractInterface;
+use Projom\Http\Api\Router;
 use Projom\Http\Input;
 use Projom\Http\Request;
 use Projom\Http\Response;
-use Projom\Http\Api\ControllerBase;
-use Projom\Http\Api\ContractInterface;
-use Projom\Http\Api\Oas\Path;
-use Projom\Http\Api\Router;
-use Projom\Http\Api\PathContractInterface;
 
 class RouterStub_1 extends Router
 {
-	public function __construct()
-	{
-	}
+	public function __construct() {}
 
-	public static function dispatch(
-		Request $request,
-		PathContractInterface $pathContract
-	): Response {
-		return new Response(['message' => 'Hej']);
+	public static function dispatch(Request $request, PathContractInterface $pathContract): Response
+	{
+		return Response::create(['message' => 'Hej']);
 	}
 }
 
 class RouterStub_2 extends Router
 {
-	public function __construct()
-	{
-	}
+	public function __construct() {}
 
-	public static function start(
-		Request $request,
-		ContractInterface $pathContract
-	): void {
+	public static function start(Request $request, ContractInterface $pathContract): void
+	{
 		return;
 	}
 }
 
 class RouterTest extends TestCase
 {
-	public function test_start(): void
+	#[Test]
+	public function start(): void
 	{
-		$input = new Input([], []);
-		$request = new Request($input);
+		$input = Input::create([], []);
+		$request = Request::create($input);
 
 		$pathContract = $this->createMock(PathContractInterface::class);
 		$pathContract->method('hasAuth')->willReturn(true);
@@ -69,10 +62,11 @@ class RouterTest extends TestCase
 		$routerStub_1->start($request, $contract);
 	}
 
-	public function test_start_404(): void
+	#[Test]
+	public function start_404(): void
 	{
-		$input = new Input([], []);
-		$request = new Request($input);
+		$input = Input::create([], []);
+		$request = Request::create($input);
 
 		$contract = $this->createMock(ContractInterface::class);
 		$contract->method('match')->willReturn(null);
@@ -82,10 +76,11 @@ class RouterTest extends TestCase
 		$routerStub_2->start($request, $contract);
 	}
 
-	public function test_start_404_1(): void
+	#[Test]
+	public function start_404_1(): void
 	{
-		$input = new Input([], []);
-		$request = new Request($input);
+		$input = Input::create([], []);
+		$request = Request::create($input);
 
 		$pathContract = $this->createMock(PathContractInterface::class);
 		$pathContract->method('verifyInputPathParameters')->willReturn(true);
@@ -101,10 +96,11 @@ class RouterTest extends TestCase
 		$routerStub_1->start($request, $contract);
 	}
 
-	public function test_start_400(): void
+	#[Test]
+	public function start_400(): void
 	{
-		$input = new Input([], []);
-		$request = new Request($input);
+		$input = Input::create([], []);
+		$request = Request::create($input);
 
 		$pathContract = $this->createMock(PathContractInterface::class);
 		$pathContract->method('verifyInputPathParameters')->willReturn(false);
@@ -118,10 +114,11 @@ class RouterTest extends TestCase
 		$routerStub_1->start($request, $contract);
 	}
 
-	public function test_start_500(): void
+	#[Test]
+	public function start_500(): void
 	{
-		$input = new Input([], []);
-		$request = new Request($input);
+		$input = Input::create([], []);
+		$request = Request::create($input);
 
 		$pathContract = $this->createMock(PathContractInterface::class);
 		$pathContract->method('verifyInputPathParameters')->willReturn(true);
@@ -130,7 +127,7 @@ class RouterTest extends TestCase
 		$pathContract->method('verifyController')->willReturn(true);
 		$pathContract->method('verifyResponse')->willReturn(false);
 
-		$contract = $this->createMock(ContractInterface::class);
+		$contract = $this->createMock(Contract::class);
 		$contract->method('match')->willReturn($pathContract);
 
 		$this->expectExceptionCode(500);

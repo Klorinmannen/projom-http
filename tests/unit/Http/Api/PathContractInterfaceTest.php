@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Projom\Tests\Unit\Http\Api;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Projom\Http\Api\PathContractInterface;
 
 class PathContractInterfaceTest extends TestCase
 {
-	public function test_methods_exists(): void
+	#[Test]
+	public function methods_exists(): void
 	{
 		$methods = [
 			'verifyInputPathParameters',
@@ -21,7 +23,7 @@ class PathContractInterfaceTest extends TestCase
 			'operation',
 			'hasAuth'
 		];
-		foreach ($methods as $method) 
+		foreach ($methods as $method)
 			$this->assertTrue(method_exists(PathContractInterface::class, $method));
 
 		$refletion = new \ReflectionClass(PathContractInterface::class);

@@ -10,7 +10,7 @@ class ResponseContract
 
     public function  __construct(array $responseContracts)
     {
-        $this->responseContracts = $this->parseList($responseContracts);
+        $this->responseContracts = $this->parseContracts($responseContracts);
     }
 
     public static function create(array $responseContracts): ResponseContract
@@ -18,7 +18,7 @@ class ResponseContract
         return new ResponseContract($responseContracts);
     }
 
-    public function parseList(array $responseContracts): array
+    public function parseContracts(array $responseContracts): array
     {
         $contracts = [];
         foreach ($responseContracts as $statusCode => $responseContract)
@@ -26,11 +26,8 @@ class ResponseContract
         return $contracts;
     }
 
-    public function verify(
-        int $statusCode,
-        string $contentType
-    ): bool {
-
+    public function verify(int $statusCode, string $contentType): bool
+    {
         if (!$responseContractContentType = $this->responseContracts[$statusCode] ?? '')
             return false;
 

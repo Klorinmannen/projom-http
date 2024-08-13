@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Projom\Tests\Unit\Http\Api\Oas;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 use Projom\Http\Api\Oas\ParameterContract;
 
 class ParameterContractTest extends TestCase
 {
-	public static function provider_test_ParseList(): array
+	public static function provider_ParseList(): array
 	{
 		return [
 			'Good test' => [
@@ -83,15 +84,16 @@ class ParameterContractTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_ParseList')]
-	public function test_parseList(array $parameterContracts, array $expected): void
+	#[Test]
+	#[DataProvider('provider_ParseList')]
+	public function parseList(array $parameterContracts, array $expected): void
 	{
 		$parameterContract = ParameterContract::create([]);
-		$actual = $parameterContract->parseList($parameterContracts);
+		$actual = $parameterContract->parseContracts($parameterContracts);
 		$this->assertEquals($expected, $actual);
 	}
 
-	public static function provider_test_parse(): array
+	public static function provider_parse(): array
 	{
 		return [
 			'Good test' => [
@@ -182,15 +184,16 @@ class ParameterContractTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_parse')]
-	public function test_parse(array $parameterContract, array $expected): void
+	#[Test]
+	#[DataProvider('provider_parse')]
+	public function parse(array $parameterContract, array $expected): void
 	{
 		$parameterContractClass = ParameterContract::create([]);
 		$actual = $parameterContractClass->parse($parameterContract);
 		$this->assertEquals($expected, $actual);
 	}
 
-	public static function provider_test_verifyPath(): array
+	public static function provider_verifyPath(): array
 	{
 		return [
 			'Good test' => [
@@ -377,15 +380,16 @@ class ParameterContractTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_verifyPath')]
-	public function test_verifyPath(array $parameterContract, array $inputParameters, bool $expected): void
+	#[Test]
+	#[DataProvider('provider_verifyPath')]
+	public function verifyPath(array $parameterContract, array $inputParameters, bool $expected): void
 	{
 		$parameterContractClass = ParameterContract::create($parameterContract);
 		$actual = $parameterContractClass->verifyPath($inputParameters);
 		$this->assertEquals($expected, $actual);
 	}
 
-	public static function provider_test_verifyQuery(): array
+	public static function provider_verifyQuery(): array
 	{
 		return [
 			'Good test' => [
@@ -548,15 +552,16 @@ class ParameterContractTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_verifyQuery')]
-	public function test_verifyQuery(array $parameterContract, array $inputParameters, bool $expected): void
+	#[Test]
+	#[DataProvider('provider_verifyQuery')]
+	public function verifyQuery(array $parameterContract, array $inputParameters, bool $expected): void
 	{
 		$parameterContractClass = ParameterContract::create($parameterContract);
 		$actual = $parameterContractClass->verifyQuery($inputParameters);
 		$this->assertEquals($expected, $actual);
 	}
 
-	public static function provider_test_verify(): array
+	public static function provider_verify(): array
 	{
 		return [
 			'Good test' => [
@@ -587,8 +592,9 @@ class ParameterContractTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_verify')]
-	public function test_verify(string $inputParameter,	string $parameterContractType, bool $expected): void
+	#[Test]
+	#[DataProvider('provider_verify')]
+	public function verify(string $inputParameter,	string $parameterContractType, bool $expected): void
 	{
 		$parameterContractClass = ParameterContract::create([]);
 		$actual = $parameterContractClass->verify($inputParameter, $parameterContractType);

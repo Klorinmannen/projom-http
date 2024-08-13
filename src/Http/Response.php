@@ -9,27 +9,24 @@ use Projom\Http\Response\Header;
 
 class Response
 {
-    private array $payload = [];
-    private int $statusCode = 0;
-    private string $contentType = '';
-    private string $header = '';
-    private string $output = '';
- 
-    public function __construct(
-        array $payload,
-        int $statusCode = 200,
-        string $contentType = 'application/json'
-    ) {    
-        
+    private readonly array $payload;
+    private readonly int $statusCode;
+    private readonly string $contentType;
+    private readonly string $header;
+    private readonly string $output;
+
+    public function __construct(array $payload, int $statusCode, string $contentType)
+    {
         $this->payload = $payload;
         $this->statusCode = $statusCode;
         $this->contentType  = $contentType;
-
         $this->header = Header::convert($contentType);
-        $this->output = Data::encode(
-            $payload,
-            $contentType
-        );
+        $this->output = Data::encode($payload, $contentType);
+    }
+
+    public static function create(array $payload, int $statusCode = 200, string $contentType = 'application/json'): Response
+    {
+        return new Response($payload, $statusCode, $contentType);
     }
 
     public function payload(): array
@@ -60,7 +57,7 @@ class Response
     public function send(): void
     {
         http_response_code($this->statusCode);
-        header($this->header);       
+        header($this->header);
         echo $this->output;
     }
 }

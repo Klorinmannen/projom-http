@@ -6,7 +6,7 @@ namespace Projom\Http;
 
 class Header
 {
-    public static function parseAuthHeader(string $authHeader): ?string
+    public static function parseBearerAuthToken(string $authHeader): null|string
     {
         if (!$authHeader)
             return null;
@@ -15,7 +15,9 @@ class Header
         if (strpos($authHeader, 'Bearer') === false)
             return null;
 
-        $token = str_replace('Bearer', '', $authHeader);
-        return trim($token);
+        $authToken = str_replace('Bearer', '', $authHeader);
+        $bearerAuthToken = trim($authToken);
+
+        return $bearerAuthToken;
     }
 }

@@ -8,19 +8,22 @@ use Projom\Util\File;
 
 class Input
 {
-	private $request = [];
-	private $method = '';
-	private $url = '';
-	private $headers = [];
+	private readonly array $request;
+	private readonly string $method;
+	private readonly string $url;
+	private readonly array $headers;
 
-	public function __construct(
-		array $request,
-		array $server
-	) {
+	public function __construct(array $request, array $server)
+	{
 		$this->request = $request;
 		$this->headers = $this->parseHeaders($server);
 		$this->method = $server['REQUEST_METHOD'] ?? '';
 		$this->url = $server['REQUEST_URI'] ?? '';
+	}
+
+	public static function create(array $request, array $server): Input
+	{
+		return new Input($request, $server);
 	}
 
 	public function parseHeaders(array $server): array
@@ -30,18 +33,13 @@ class Input
 		return array_intersect_key($server, array_flip($resultKeys));
 	}
 
-	public function get(
-		string $key,
-		mixed $default = ''
-	): mixed {
+	public function get(string $key, mixed $default = null): mixed
+	{
 		return $this->request[$key] ?? $default;
 	}
 
 	public function data(string $source): string
 	{
-		if (!$source)
-			return '';
-
 		if (!File::isReadable($source))
 			return '';
 

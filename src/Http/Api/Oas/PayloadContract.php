@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Projom\Http\Api\Oas;
 
-use Projom\Util\Bools;
 use Projom\Util\Json;
 
 class PayloadContract
@@ -13,7 +12,7 @@ class PayloadContract
 
 	public function __construct(array $payloadContract = [])
 	{
-		$this->payloadContract = $this->parse($payloadContract);
+		$this->payloadContract = $this->parseContracts($payloadContract);
 	}
 
 	public static function create(array $payloadContract = []): PayloadContract
@@ -21,7 +20,7 @@ class PayloadContract
 		return new PayloadContract($payloadContract);
 	}
 
-	public function parse(array $payloadContract): array
+	public function parseContracts(array $payloadContract): array
 	{
 		if (!$payloadContract)
 			return [];

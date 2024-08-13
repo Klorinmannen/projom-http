@@ -26,13 +26,8 @@ class Pattern
     public static function build(string $route): string
     {
         $routePattern = $route;
-        foreach (static::PARAM_PATTERNS as $paramData) {
-            $routePattern = preg_replace(
-                $paramData['parameter'],
-                $paramData['pattern'],
-                $routePattern
-            );
-        }
+        foreach (static::PARAM_PATTERNS as $paramData)
+            $routePattern = preg_replace($paramData['parameter'], $paramData['pattern'], $routePattern);
 
         $routePattern = preg_replace('/\//', '\/', $routePattern);
 
@@ -45,9 +40,8 @@ class Pattern
             return '';
 
         $template = '/^{{pattern}}$/';
-        $vars = [
-            'pattern' => $pattern
-        ];
+        $vars = ['pattern' => $pattern];
+        
         return Template::bind($template, $vars);
     }
 

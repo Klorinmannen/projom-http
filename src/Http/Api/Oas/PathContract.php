@@ -11,14 +11,13 @@ use Projom\Http\Api\PathContractInterface;
 
 class PathContract implements PathContractInterface
 {
-    private ParameterContract|null $parameterContract = null;
-    private PayloadContract|null $payloadContract = null;
-    private ResponseContract|null $responseContract = null;
-
-    private Path $path;
-    private string $resourceController = '';
-    private string $operation = '';
-    private bool $auth = true;
+    private readonly ParameterContract $parameterContract;
+    private readonly PayloadContract $payloadContract;
+    private readonly ResponseContract $responseContract;
+    private readonly Path $path;
+    private readonly string $resourceController;
+    private readonly string $resourceOperation;
+    private readonly bool $auth;
 
     public function __construct(Path $path)
     {
@@ -37,7 +36,7 @@ class PathContract implements PathContractInterface
         $this->payloadContract = $this->path->payloadContract();
         $this->responseContract = $this->path->responseContract();
         $this->resourceController = $this->path->resourceController();
-        $this->operation = $this->path->operation();
+        $this->resourceOperation = $this->path->resourceOperation();
         $this->auth = $this->path->hasAuth();
     }
 
@@ -46,7 +45,7 @@ class PathContract implements PathContractInterface
         if (!class_exists($this->resourceController))
             return false;
 
-        if (!method_exists($this->resourceController, $this->operation))
+        if (!method_exists($this->resourceController, $this->resourceOperation))
             return false;
 
         if (!is_subclass_of($this->resourceController, $controllerBaseClass))
@@ -57,22 +56,22 @@ class PathContract implements PathContractInterface
 
     public function verifyInputPathParameters(array $pathParameterList): bool
     {
-        return $this?->parameterContract->verifyPath($pathParameterList) ?? false;
+        return $this->parameterContract->verifyPath($pathParameterList) ?? false;
     }
 
     public function verifyInputQueryParameters(array $queryParameterList): bool
     {
-        return $this?->parameterContract->verifyQuery($queryParameterList) ?? false;
+        return $this->parameterContract->verifyQuery($queryParameterList) ?? false;
     }
 
     public function verifyInputPayload(string $payload): bool
     {
-        return $this?->payloadContract->verify($payload) ?? false;
+        return $this->payloadContract->verify($payload) ?? false;
     }
 
     public function verifyResponse(int $statusCode, string $contentType): bool
     {
-        return $this?->responseContract->verify($statusCode, $contentType) ?? false;
+        return $this->responseContract->verify($statusCode, $contentType) ?? false;
     }
 
     public function controller(): string
@@ -82,7 +81,7 @@ class PathContract implements PathContractInterface
 
     public function operation(): string
     {
-        return $this->operation;
+        return $this->resourceOperation;
     }
 
     public function hasAuth(): bool

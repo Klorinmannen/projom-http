@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Projom\Tests\Unit\Http\Response;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 use Projom\Http\ContentType;
@@ -12,7 +13,7 @@ use Projom\Http\Response\Header;
 
 class HeaderTest extends TestCase
 {
-	public static function provider_test_convert(): array
+	public static function provider_convert(): array
 	{
 		return [
 			'application/json' => [
@@ -42,16 +43,16 @@ class HeaderTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_convert')]
-	public function test_convert(
-		string $contentType,
-		string $expected
-	): void {
+	#[Test]
+	#[DataProvider('provider_convert')]
+	public function convert(string $contentType, string $expected): void
+	{
 		$actual = Header::convert($contentType);
 		$this->assertEquals($expected, $actual);
 	}
 
-	public function test_convert_exception(): void
+	#[Test]
+	public function convert_exception(): void
 	{
 		$this->expectException(\Exception::class);
 		$this->expectExceptionMessage('Invalid content type');

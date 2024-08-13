@@ -15,6 +15,17 @@ abstract class ControllerBase
     private int $statusCode = 200;
     private string $contentType = 'application/json';
 
+    protected readonly array $pathParameters;
+    protected readonly array $queryParameters;
+    protected readonly string $requestPayload;
+
+    public function __construct(array $pathParameters, array $queryParameters, string $requestPayload)
+    {
+        $this->pathParameters = $pathParameters;
+        $this->queryParameters = $queryParameters;
+        $this->requestPayload = $requestPayload;
+    }
+
     abstract public function authorize(): bool;
 
     final public function setPayload(array $payload): void
@@ -34,10 +45,6 @@ abstract class ControllerBase
 
     final public function response(): Response
     {
-        return new Response(
-            $this->payload,
-            $this->statusCode,
-            $this->contentType
-        );
+        return Response::create($this->payload, $this->statusCode, $this->contentType);
     }
 }

@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Projom\Tests\Unit\Http;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 use Projom\Http\Input;
 
 class InputTest extends TestCase
 {
-	public static function provider_test_get(): array
+	public static function provider_get(): array
 	{
 		return [
 			'Valid input' => [
@@ -41,20 +42,22 @@ class InputTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_get')]
-	public function test_get(array $request, string $key, string $default, string $expected): void
+	#[Test]
+	#[DataProvider('provider_get')]
+	public function get(array $request, string $key, string $default, string $expected): void
 	{
-		$input = new Input($request, []);
+		$input = Input::create($request, []);
 		$this->assertEquals($expected, $input->get($key, $default));
 	}
 
-	public function test_data(): void
+	#[Test]
+	public function data(): void
 	{
-		$input = new Input([], []);
+		$input = Input::create([], []);
 		$this->assertEquals('', $input->data('php://input'));
 	}
 
-	public static function provider_test_method(): array
+	public static function provider_method(): array
 	{
 		return [
 			'Valid method' => [
@@ -71,14 +74,15 @@ class InputTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_method')]
-	public function test_method(array $server, string $expected): void
+	#[Test]
+	#[DataProvider('provider_method')]
+	public function method(array $server, string $expected): void
 	{
-		$input = new Input([], $server);
+		$input = Input::create([], $server);
 		$this->assertEquals($expected, $input->method());
 	}
 
-	public static function provider_test_url(): array
+	public static function provider_url(): array
 	{
 		return [
 			'Valid URL' => [
@@ -95,14 +99,15 @@ class InputTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_url')]
-	public function test_url(array $server, string $expected): void
+	#[Test]
+	#[DataProvider('provider_url')]
+	public function url(array $server, string $expected): void
 	{
-		$input = new Input([], $server);
+		$input = Input::create([], $server);
 		$this->assertEquals($expected, $input->url());
 	}
 
-	public static function provider_test_headers(): array
+	public static function provider_headers(): array
 	{
 		return [
 			'Valid headers' => [
@@ -123,10 +128,11 @@ class InputTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_headers')]
-	public function test_headers(array $server, array $expected): void
+	#[Test]
+	#[DataProvider('provider_headers')]
+	public function headers(array $server, array $expected): void
 	{
-		$input = new Input([], $server);
+		$input = Input::create([], $server);
 		$this->assertEquals($expected, $input->headers());
 	}
 }

@@ -2,7 +2,7 @@
 
 namespace Projom\Http\Api;
 
-enum Contracts: string
+enum Contract: string
 {
 	case OAS = 'oas';
 }

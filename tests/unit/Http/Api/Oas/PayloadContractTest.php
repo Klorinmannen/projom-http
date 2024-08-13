@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Projom\Tests\Unit\Http\Api\Oas;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 use Projom\Http\Api\Oas\PayloadContract;
 
 class PayloadContractTest extends TestCase
 {
-	public static function provider_test_parse(): array
+	public static function provider_parse(): array
 	{
 		return [
 			'Good test' => [
@@ -77,15 +78,16 @@ class PayloadContractTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_parse')]
-	public function test_parse(array $payloadContract, array $expected): void
+	#[Test]
+	#[DataProvider('provider_parse')]
+	public function parse(array $payloadContract, array $expected): void
 	{
 		$payloadContractClass = PayloadContract::create($payloadContract);
-		$actual = $payloadContractClass->parse($payloadContract);
+		$actual = $payloadContractClass->parseContracts($payloadContract);
 		$this->assertEquals($expected, $actual);
 	}
 
-	public static function provider_test_verify(): array
+	public static function provider_verify(): array
 	{
 		return [
 			'Good test' => [
@@ -153,12 +155,10 @@ class PayloadContractTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_verify')]
-	public function test_verify(
-		array $payloadContract,
-		string $inputPayload,
-		bool $expected
-	): void {
+	#[Test]
+	#[DataProvider('provider_verify')]
+	public function verify(array $payloadContract, string $inputPayload, bool $expected): void
+	{
 		$payloadContractClass = PayloadContract::create($payloadContract);
 		$actual = $payloadContractClass->verify($inputPayload);
 		$this->assertEquals($expected, $actual);

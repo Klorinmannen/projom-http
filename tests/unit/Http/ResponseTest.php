@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Projom\Tests\Unit\Http;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 use Projom\Http\ContentType;
@@ -13,7 +14,7 @@ use Projom\Http\Response\Header;
 
 class ResponseTest extends TestCase
 {
-	public static function provider_test_payload(): array
+	public static function provider_payload(): array
 	{
 		return [
 			'Empty payload' => [
@@ -33,16 +34,15 @@ class ResponseTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_payload')]
-	public function test_payload(
-		array $payload,
-		array $expected
-	): void {
-		$response = new Response($payload);
+	#[Test]
+	#[DataProvider('provider_payload')]
+	public function payload(array $payload, array $expected): void
+	{
+		$response = Response::create($payload);
 		$this->assertEquals($expected, $response->payload());
 	}
 
-	public static function provider_test_statusCode(): array
+	public static function provider_statusCode(): array
 	{
 		return [
 			'500' => [
@@ -56,16 +56,15 @@ class ResponseTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_statusCode')]
-	public function test_statusCode(
-		int $statusCode,
-		int $expected
-	): void {
-		$response = new Response([], $statusCode);
+	#[Test]
+	#[DataProvider('provider_statusCode')]
+	public function statusCode(int $statusCode, int $expected): void
+	{
+		$response = Response::create([], $statusCode);
 		$this->assertEquals($expected, $response->statusCode());
 	}
 
-	public static function provider_test_contentType(): array
+	public static function provider_contentType(): array
 	{
 		return [
 			'text/html' => [
@@ -79,16 +78,15 @@ class ResponseTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_contentType')]
-	public function test_contentType(
-		string $contentType,
-		string $expected
-	): void {
-		$response = new Response([], 200, $contentType);
+	#[Test]
+	#[DataProvider('provider_contentType')]
+	public function contentType(string $contentType, string $expected): void
+	{
+		$response = Response::create([], 200, $contentType);
 		$this->assertEquals($expected, $response->contentType());
 	}
 
-	public static function provider_test_output(): array
+	public static function provider_outputs(): array
 	{
 		return [
 			'Empty payload' => [
@@ -122,17 +120,15 @@ class ResponseTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_output')]
-	public function test_output(
-		array $payload,
-		string $contentType,
-		string $expected
-	): void {
-		$response = new Response($payload, 200, $contentType);
+	#[Test]
+	#[DataProvider('provider_outputs')]
+	public function outputs(array $payload, string $contentType, string $expected): void
+	{
+		$response = Response::create($payload, 200, $contentType);
 		$this->assertEquals($expected, $response->output());
 	}
 
-	public static function provider_test_header(): array
+	public static function provider_header(): array
 	{
 		return [
 			'application/json' => [
@@ -146,16 +142,15 @@ class ResponseTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_header')]
-	public function test_header(
-		string $contentType,
-		string $expected
-	): void {
-		$response = new Response([], 200, $contentType);
+	#[Test]
+	#[DataProvider('provider_header')]
+	public function header(string $contentType, string $expected): void
+	{
+		$response = Response::create([], 200, $contentType);
 		$this->assertEquals($expected, $response->header());
 	}
 
-	public static function provider_test_sendAndExit(): array
+	public static function provider_sendAndExit(): array
 	{
 		return [
 			'application/json' => [
@@ -189,15 +184,11 @@ class ResponseTest extends TestCase
 		];
 	}
 
-	#[DataProvider('provider_test_sendAndExit')]
-	public function test_sendAndExit(
-		array $payload,
-		int $statusCode,
-		string $contentType,
-		array $expected
-	): void {
-
-		$response = new Response($payload, $statusCode, $contentType);
+	#[Test]
+	#[DataProvider('provider_sendAndExit')]
+	public function sendAndExit(array $payload, int $statusCode, string $contentType, array $expected): void
+	{
+		$response = Response::create($payload, $statusCode, $contentType);
 
 		$this->expectOutputString($expected['output']);
 		$response->send();

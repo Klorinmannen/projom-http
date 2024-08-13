@@ -14,13 +14,12 @@ use Projom\Util\File;
 
 class Contract implements ContractInterface
 {
-	private array $contracts = [];
-	private array $file = [];
+	private readonly array $contracts;
 
 	public function __construct(string $contractFilePath)
 	{
-		$this->file = File::parse($contractFilePath);
-		$this->build();
+		$file = File::parse($contractFilePath);
+		$this->build($file);
 	}
 
 	public static function create(string $contractFilePath): Contract
@@ -28,10 +27,9 @@ class Contract implements ContractInterface
 		return new Contract($contractFilePath);
 	}
 
-	private function build(): void
+	private function build(array $file): void
 	{
-		if (!$filePaths = $this->file['paths'] ?? [])
-			return;
+		$filePaths = $file['paths'] ?? [];
 
 		$contracts = [];
 		foreach ($filePaths as $pathPattern => $path) {
@@ -43,27 +41,24 @@ class Contract implements ContractInterface
 			}
 
 			$pattern = Pattern::build($pathPattern);
-			$contracts[$pathPattern] = [
-				$pattern,
-				$paths
-			];
+			$contracts[$pathPattern] = [$pattern, $paths];
 		}
 
-		// Prioritzes/sorts paths.
+		// Prioritze paths.
 		ksort($contracts);
 
 		$this->contracts = $contracts;
-		#var_dump($this->contracts['/users/{id}'][1]);
 	}
 
-	public function match(Request $request): PathContractInterface|null
+	public function match(Request $request): null|PathContractInterface
 	{
 		foreach ($this->contracts as [$pattern, $paths]) {
 
 			if (!$request->matchPattern($pattern))
 				continue;
 
-			if (!$path = $paths[$request->httpMethod()] ?? null)
+			$path = $paths[$request->httpMethod()] ?? null;
+			if ($path === null)
 				continue;
 
 			return PathContract::create($path);

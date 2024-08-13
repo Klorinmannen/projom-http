@@ -8,5 +8,5 @@ use Projom\Http\Request;
 
 interface ContractInterface
 {
-	public function match(Request $request): PathContractInterface|null;
+	public function match(Request $request): null|PathContractInterface;
 }

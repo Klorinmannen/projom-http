@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: ["main", "dev"]
+  schedule:
+    - cron: "0 4 * * 3"
+
+jobs:
+  unit-tests:
+    name: PHPUnit tests on ubuntu-latest
+    runs-on: [ubuntu-latest]
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: mbstring, pdo_mysql
+          coverage: xdebug
+          tools: composer
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress
+
+      - name: Run coverage report
+        run: ./vendor/bin/phpunit --coverage-text="phpunit_coverage.txt"
+
+      - name: Coverage summary
+        run: cat phpunit_coverage.txt >> $GITHUB_STEP_SUMMARY
+
+  psalm-security-scan:
+    name: Psalm static security analysis on ubuntu-latest
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read # For actions/checkout to fetch code
+      security-events: write # For github/codeql-action/upload-sarif to upload results
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Psalm security scan
+        uses: docker://ghcr.io/psalm/psalm-github-actions
+        with:
+          security_analysis: true
+          show_info: true
+          report_file: results.sarif
+        continue-on-error: true
+
+      - name: Upload security analysis results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif

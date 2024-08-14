@@ -45,6 +45,11 @@ abstract class ControllerBase
         return $this->pathParameters[$key] ?? null;
     }
 
+    final protected function nextPathParameter(): mixed
+    {
+        return array_shift($this->pathParameters);
+    }
+
     final protected function queryParameter(string $key): mixed
     {
         return $this->queryParameters[$key] ?? null;

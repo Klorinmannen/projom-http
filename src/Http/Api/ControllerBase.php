@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Projom\Http\Api;
 
 use Projom\Http\Response;
+use Projom\Util\Json;
 
 /**
  * Base for resource controllers
@@ -18,6 +19,7 @@ abstract class ControllerBase
     protected readonly array $pathParameters;
     protected readonly array $queryParameters;
     protected readonly string $requestPayload;
+    protected readonly null|array $decodedPayload;
 
     public function __construct(array $pathParameters, array $queryParameters, string $requestPayload)
     {
@@ -27,6 +29,26 @@ abstract class ControllerBase
     }
 
     abstract public function authorize(): bool;
+
+    final protected function decodeJsonPayload(): void
+    {
+        $this->decodedPayload = Json::decode($this->requestPayload);
+    }
+
+    final protected function payload(string $key): mixed
+    {
+        return $this->requestPayload[$key] ?? null;
+    }
+
+    final protected function pathParameter(string $key): mixed
+    {
+        return $this->pathParameters[$key] ?? null;
+    }
+
+    final protected function queryParameter(string $key): mixed
+    {
+        return $this->queryParameters[$key] ?? null;
+    }
 
     final public function setPayload(array $payload): void
     {

@@ -18,8 +18,7 @@ class Contract implements ContractInterface
 
 	public function __construct(string $contractFilePath)
 	{
-		$file = File::parse($contractFilePath);
-		$this->build($file);
+		$this->build($contractFilePath);
 	}
 
 	public static function create(string $contractFilePath): Contract
@@ -27,17 +26,25 @@ class Contract implements ContractInterface
 		return new Contract($contractFilePath);
 	}
 
-	private function build(array $file): void
+	private function build(string $contractFilePath): void
 	{
+		$contracts = [];
+
+		$file = File::parse($contractFilePath);
 		$filePaths = $file['paths'] ?? [];
 
-		$contracts = [];
 		foreach ($filePaths as $pathPattern => $path) {
 
 			$paths = [];
-			foreach ($path as $httpMethod => $pathDetails) {
-				$httpMethod = strtoupper($httpMethod);
-				$paths[$httpMethod] = Path::create($pathDetails);
+			foreach ($path as $key => $pathDetails) {
+
+				$newPath = [];
+				if ($key === '$ref')
+					$newPath = $this->buildRefPaths($pathDetails, dirname($contractFilePath));
+				else
+					$newPath = $this->buildPath($key, $pathDetails);
+
+				$paths = [...$paths, ...$newPath];
 			}
 
 			$pattern = Pattern::build($pathPattern);
@@ -48,6 +55,28 @@ class Contract implements ContractInterface
 		ksort($contracts);
 
 		$this->contracts = $contracts;
+	}
+
+	private function buildPath(string $httpMethod, array $pathDetails): array
+	{
+		$httpMethod = strtoupper($httpMethod);
+		$path = Path::create($pathDetails);
+		return [$httpMethod => $path];
+	}
+
+	private function buildRefPaths(string $ref, string $contractDirectory): array
+	{
+		[$relativeFilename, $refname] = explode('#/', $ref);
+
+		$refFilepath = $contractDirectory . '/' . $relativeFilename;
+		$file = File::parse($refFilepath);
+
+		$paths = [];
+		$path = $file[$refname] ?? [];
+		foreach ($path as $httpMethod => $pathDetails)
+			$paths[] = $this->buildPath($httpMethod, $pathDetails);
+
+		return $paths;
 	}
 
 	public function match(Request $request): null|PathContractInterface

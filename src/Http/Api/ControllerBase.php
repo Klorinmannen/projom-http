@@ -19,7 +19,6 @@ abstract class ControllerBase
     protected readonly array $pathParameters;
     protected readonly array $queryParameters;
     protected readonly string $requestPayload;
-    protected readonly null|array $decodedPayload;
 
     public function __construct(array $pathParameters, array $queryParameters, string $requestPayload)
     {
@@ -30,19 +29,14 @@ abstract class ControllerBase
 
     abstract public function authorize(): bool;
 
-    final protected function decodeJsonPayload(): void
+    final protected function decodePayloadJSON(): array
     {
-        $this->decodedPayload = Json::decode($this->requestPayload);
+        return Json::decode($this->requestPayload);
     }
 
     final protected function payload(string $key): mixed
     {
         return $this->requestPayload[$key] ?? null;
-    }
-
-    final protected function pathParameter(string $key): mixed
-    {
-        return $this->pathParameters[$key] ?? null;
     }
 
     final protected function nextPathParameter(): mixed

@@ -3,8 +3,6 @@ name: CI
 on:
   push:
     branches: ["main", "dev"]
-  schedule:
-    - cron: "0 4 * * 3"
 
 jobs:
   unit-tests:

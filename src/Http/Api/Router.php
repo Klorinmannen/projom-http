@@ -21,7 +21,7 @@ class Router
 		if (!$pathContract->verifyInputPathParameters($request->pathParameterList()))
 			throw new \Exception('Provided path parameters are not valid', 400);
 
-		if (!$pathContract->verifyInputQueryParameters($request->queryParameterList()))
+		if (!$pathContract->verifyInputQueryParameters($request->queryParameters()))
 			throw new \Exception('Provided query parameters are not valid', 400);
 
 		if (!$pathContract->verifyInputPayload($request->payload()))
@@ -38,7 +38,7 @@ class Router
 	public static function dispatch(Request $request, PathContractInterface $pathContract): Response
 	{
 		$pathController = $pathContract->controller();
-		$controller = new $pathController($request->pathParameterList(), $request->queryParameterList(), $request->payload());
+		$controller = new $pathController($request->pathParameterList(), $request->queryParameters(), $request->payload());
 
 		$operation = $pathContract->operation();
 		$controller->{$operation}();

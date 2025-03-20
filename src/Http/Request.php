@@ -13,8 +13,8 @@ class Request
     protected string $urlPath = '';
     protected array $parsedUrl = [];
     protected array $urlPathPartList = [];
-    protected array $queryParameterList = [];
-    protected array $pathParameterList = [];
+    protected array $queryParameters = [];
+    protected array $pathParameters = [];
 
     public function __construct(Input $input)
     {
@@ -27,7 +27,7 @@ class Request
         if ($input !== null)
             return new Request($input);
 
-        $input = Input::create($_REQUEST ?? [], $_SERVER ?? []);
+        $input = Input::create($_REQUEST ?? [], $_SERVER ?? [], file_get_contents('php://input') ?: '');
 
         return new Request($input);
     }
@@ -37,7 +37,7 @@ class Request
         $this->parsedUrl = parse_url($url);
 
         $queryList = $this->parsedUrl['query'] ?? '';
-        parse_str($queryList, $this->queryParameterList);
+        parse_str($queryList, $this->queryParameters);
 
         $this->urlPath = $this->parsedUrl['path'] ?? '';
 
@@ -50,7 +50,7 @@ class Request
         if (!$pattern)
             return false;
 
-        $result = preg_match($pattern, $this->urlPath, $this->pathParameterList) === 1;
+        $result = preg_match($pattern, $this->urlPath, $this->pathParameters) === 1;
         if ($result)
             return true;
 
@@ -81,9 +81,9 @@ class Request
         return $token;
     }
 
-    public function payload(string $source = 'php://input'): string
+    public function payload(): string
     {
-        return $this->input->data($source);
+        return $this->input->payload();
     }
 
     public function url(): string
@@ -96,6 +96,11 @@ class Request
         return $this->input->method();
     }
 
+    public function method(): Method
+    {
+        return Method::tryFrom($this->httpMethod());
+    }
+
     public function parsedUrl(): array
     {
         return $this->parsedUrl;
@@ -106,14 +111,14 @@ class Request
         return $this->urlPath;
     }
 
-    public function queryParameterList(): array
+    public function queryParameters(): array
     {
-        return $this->queryParameterList;
+        return $this->queryParameters;
     }
 
     public function pathParameterList(): array
     {
-        return $this->pathParameterList;
+        return $this->pathParameters;
     }
 
     public function urlPathPartList(): array

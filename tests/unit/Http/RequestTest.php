@@ -91,7 +91,7 @@ class RequestTest extends TestCase
 		$request = Request::create($input);
 		$request->parseUrl($url);
 		$this->assertEquals($expected['parsedUrl'], $request->parsedUrl());
-		$this->assertEquals($expected['queryParameterList'], $request->queryParameterList());
+		$this->assertEquals($expected['queryParameterList'], $request->queryParameters());
 		$this->assertEquals($expected['urlPath'], $request->urlPath());
 		$this->assertEquals($expected['urlPathPartList'], $request->urlPathPartList());
 	}

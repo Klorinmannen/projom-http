@@ -10,20 +10,22 @@ class Input
 {
 	private readonly array $request;
 	private readonly string $method;
+	private readonly string $payload;
 	private readonly string $url;
 	private readonly array $headers;
 
-	public function __construct(array $request, array $server)
+	public function __construct(array $request, array $server, string $payload)
 	{
 		$this->request = $request;
 		$this->headers = $this->parseHeaders($server);
-		$this->method = $server['REQUEST_METHOD'] ?? '';
+		$this->payload = $payload;
+		$this->method = strtoupper($server['REQUEST_METHOD'] ?? '');
 		$this->url = $server['REQUEST_URI'] ?? '';
 	}
 
-	public static function create(array $request, array $server): Input
+	public static function create(array $request, array $server, string $payload): Input
 	{
-		return new Input($request, $server);
+		return new Input($request, $server, $payload);
 	}
 
 	public function parseHeaders(array $server): array
@@ -38,12 +40,9 @@ class Input
 		return $this->request[$key] ?? $default;
 	}
 
-	public function data(string $source): string
+	public function payload(): string
 	{
-		if (!File::isReadable($source))
-			return '';
-
-		return file_get_contents($source);
+		return $this->payload;
 	}
 
 	public function method(): string

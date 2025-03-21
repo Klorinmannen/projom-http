@@ -4,33 +4,37 @@ declare(strict_types=1);
 
 namespace Projom\Http\Route;
 
+use Projom\Http\Route\Pattern;
+
 class Parameter
 {
-	public static function verifyQuery(array $inputQueryParameters, array $queryParameterDefinition): bool
+	public static function verifyQuery(array $inputQueryParameters, array $expectedQueryParameters): bool
 	{
 		// Nothing to check.
-		if (! $queryParameterDefinition || ! $inputQueryParameters)
+		if (! $expectedQueryParameters)
 			return true;
 
-		// The input query parameter set cannot be bigger than the defined set.
-		if (count($inputQueryParameters) > count($queryParameterDefinition))
+		// No input query parameters but there is a definition.
+		if (! $inputQueryParameters && $expectedQueryParameters)
 			return false;
 
-		$queryParameterDefinition = static::normalize($queryParameterDefinition);
+		// The input query parameter set cannot be bigger than the expected set.
+		if (count($inputQueryParameters) > count($expectedQueryParameters))
+			return false;
 
-		// Rekey on name.
-		$namedQueryParameterDefinitions = array_column($queryParameterDefinition, null, 'name');
+		$normalizedExpectedQueryParameters = static::normalize($expectedQueryParameters);
+		$namedExpectedQueryParameter = static::rekeyOnName($normalizedExpectedQueryParameters);
 
-		// Is the input query parameters a subset of the defined set.
-		$isSubset = static::isSubset($inputQueryParameters, $namedQueryParameterDefinitions);
+		// Is the input query parameters a subset of the expected set. 
+		// Atleast one of the expected query parameters must be present in the input query parameters.
+		$isSubset = static::isSubset($inputQueryParameters, $namedExpectedQueryParameter);
 		if (! $isSubset)
 			return false;
 
-		// Select the input subset.
-		$namedQueryParameterDefinitionSubset = array_intersect_key($namedQueryParameterDefinitions, $inputQueryParameters);
+		$namedExpectedQueryParameterSubset = static::selectSubset($inputQueryParameters, $namedExpectedQueryParameter);
 
 		// Test the input query parameters.
-		foreach ($namedQueryParameterDefinitionSubset as $name => $parameterData) {
+		foreach ($namedExpectedQueryParameterSubset as $name => $parameterData) {
 
 			// Parameter is required but not present.
 			if ($parameterData['required'])
@@ -45,10 +49,15 @@ class Parameter
 		return true;
 	}
 
-	private static function normalize(array $parameterDefinitions): array
+	private static function rekeyOnName(array $expectedQueryParameters): array
+	{
+		return array_column($expectedQueryParameters, null, 'name');
+	}
+
+	private static function normalize(array $expectedParameters): array
 	{
 		$normalized = [];
-		foreach ($parameterDefinitions as $name => $type)
+		foreach ($expectedParameters as $name => $type)
 			$normalized[] = [
 				'name' => $name,
 				'type' => $type,
@@ -57,17 +66,20 @@ class Parameter
 		return $normalized;
 	}
 
-	private static function isSubset(array $inputParameters, array $namedQueryParameterDefinitions): bool
+	private static function isSubset(array $inputParameters, array $namedExpectedQueryParameters): bool
 	{
-		// The input query parameters must be a subset of the defined set.
-		$diff = array_diff_key($inputParameters, $namedQueryParameterDefinitions);
-		return count($diff) === 0;
+		$diff = array_diff_key($inputParameters, $namedExpectedQueryParameters);
+		return count($diff) < count($namedExpectedQueryParameters);
+	}
+
+	private static function selectSubset(array $inputParameters, array $namedExpectedQueryParameters): array
+	{
+		return array_intersect_key($namedExpectedQueryParameters, $inputParameters);
 	}
 
 	private static function verify(string $inputParameter, string $type): bool
 	{
-        if (!$parameterPattern = Pattern::fromType($type))
-            return false;
-        return Pattern::test($parameterPattern, $inputParameter);
+		$parameterPattern = Pattern::fromType($type);
+		return Pattern::test($parameterPattern, $inputParameter);
 	}
 }

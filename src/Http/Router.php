@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Projom\Http;
 
 use Closure;
+use Exception;
+
+use Projom\Http\Request;
+use Projom\Http\Route;
 use Projom\Http\Route\Handler;
-use Projom\Http\Route\RouteObject;
 
 class Router
 {
@@ -19,7 +22,7 @@ class Router
 
 	public function addRoute(string $path, Handler $handler, Closure $routeDefinition): void
 	{
-		$this->routes[$path] = $routeDefinition(RouteObject::create($path, $handler));
+		$this->routes[$path] = $routeDefinition(Route::create($path, $handler));
 	}
 
 	public function dispatch(Request $request): void
@@ -29,12 +32,12 @@ class Router
 		$route->execute($request);
 	}
 
-	private function match(Request $request): RouteObject
+	private function match(Request $request): Route
 	{
 		foreach ($this->routes as $route)
 			if ($route->match($request))
 				return $route;
 
-		throw new \Exception('Not found', 404);
+		throw new Exception('Not found', 404);
 	}
 }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Projom\Http\Route;
 
+use Exception;
+
 class Controller
 {
 	public function get(array $pathParamers, array $queryParameters, string $payload): void
@@ -28,6 +30,6 @@ class Controller
 
 	private function methodNotImplemented(): void
 	{
-		throw new \Exception("Method not implemented", 405);
+		throw new Exception('Method not implemented', 405);
 	}
 }

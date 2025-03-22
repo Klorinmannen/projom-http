@@ -7,6 +7,7 @@ namespace Projom\Http;
 use Closure;
 use Exception;
 
+use Projom\Http\OAS;
 use Projom\Http\Request;
 use Projom\Http\Route;
 use Projom\Http\Route\Handler;
@@ -15,9 +16,13 @@ class Router
 {
 	private array $routes = [];
 
-	public function __construct(array $routes = [])
+	public function __construct() {}
+
+	public function loadOAS(string $filePath): void
 	{
-		$this->routes = $routes;
+		$routes = OAS::load($filePath);
+		$this->routes = array_merge($this->routes, $routes);
+		ksort($this->routes);
 	}
 
 	public function addRoute(string $path, Handler $handler, Closure $routeDefinition): void
@@ -28,8 +33,9 @@ class Router
 	public function dispatch(Request $request): void
 	{
 		$route = $this->match($request);
+		$route->setup();
 		$route->verify();
-		$route->execute($request);
+		$route->execute();
 	}
 
 	private function match(Request $request): Route

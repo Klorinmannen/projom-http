@@ -55,9 +55,9 @@ class Handler
 			throw new Exception('Handler class invalid', 500);
 	}
 
-	public function call(array $params): void
+	public function call(array $path, array $query, string $payload): void
 	{
 		[$class, $method] = $this->handler;
-		(new $class)->{$method}($params['path'], $params['query'], $params['payload']);
+		(new $class)->{$method}($path, $query, $payload);
 	}
 }

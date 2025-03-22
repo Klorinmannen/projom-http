@@ -7,7 +7,7 @@ namespace Projom\Http;
 use Projom\Http\Route\DataInterface;
 use Projom\Http\Route\Handler;
 
-interface RouteInterface
+interface RoutePublicInterface
 {
 	public function get(null|Handler $handler = null): DataInterface;
 	public function post(null|Handler $handler = null): DataInterface;

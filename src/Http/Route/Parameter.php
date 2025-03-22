@@ -8,13 +8,38 @@ use Projom\Http\Route\Pattern;
 
 class Parameter
 {
+    public static function verifyPath(array $inputParameters, array $expectedQueryParameters): bool
+    {
+        // Nothing to check.
+        if (! $expectedQueryParameters)
+            return true;
+
+        // The input path parameter set cannot be bigger than the defined contract set.
+        if (count($expectedQueryParameters) != count($inputParameters))
+            return false;
+
+        // Test input parameters.
+        foreach ($expectedQueryParameters as $id => $parameterContract) {
+
+            // Parameter is required but not present.
+            if ($parameterContract['required'] && !$inputParameters[$id])
+                return false;
+
+            $result = static::verify((string) $inputParameters[$id], $parameterContract['type']);
+            if (!$result)
+                return false;
+        }
+
+        return true;
+    }
+
 	public static function verifyQuery(array $inputQueryParameters, array $expectedQueryParameters): bool
 	{
 		// Nothing to check.
 		if (! $expectedQueryParameters)
 			return true;
 
-		// No input query parameters but there is a definition.
+		// No input query parameters but we are expecting.
 		if (! $inputQueryParameters && $expectedQueryParameters)
 			return false;
 
@@ -22,8 +47,7 @@ class Parameter
 		if (count($inputQueryParameters) > count($expectedQueryParameters))
 			return false;
 
-		$normalizedExpectedQueryParameters = static::normalize($expectedQueryParameters);
-		$namedExpectedQueryParameter = static::rekeyOnName($normalizedExpectedQueryParameters);
+		$namedExpectedQueryParameter = static::rekeyOnName($expectedQueryParameters);
 
 		// Is the input query parameters a subset of the expected set. 
 		// Atleast one of the expected query parameters must be present in the input query parameters.
@@ -54,7 +78,7 @@ class Parameter
 		return array_column($expectedQueryParameters, null, 'name');
 	}
 
-	private static function normalize(array $expectedParameters): array
+	public static function normalize(array $expectedParameters): array
 	{
 		$normalized = [];
 		foreach ($expectedParameters as $name => $type)

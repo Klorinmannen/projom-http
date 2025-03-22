@@ -7,22 +7,15 @@ namespace Projom\Http;
 use Exception;
 
 use Projom\Http\Method;
-use Projom\Http\Request;
-use Projom\Http\RouteInterface;
+use Projom\Http\RoutePublicInterface;
 use Projom\Http\Route\Data;
 use Projom\Http\Route\DataInterface;
 use Projom\Http\Route\Handler;
 use Projom\Http\Route\Parameter;
-use Projom\Http\Route\Pattern;
 use Projom\Http\Route\Payload;
 
-class Route implements RouteInterface
+class Route extends RouteBase implements RoutePublicInterface
 {
-	private readonly string $path;
-	private Handler $handler;
-	private array $methodData = [];
-	private array $matched = [];
-
 	public function __construct(string $path, Handler $handler)
 	{
 		$this->handler = $handler;
@@ -67,52 +60,18 @@ class Route implements RouteInterface
 		return $data;
 	}
 
-	private function hasMethod(Method $method): bool
+	public function setup(): void
 	{
-		return array_key_exists($method->name, $this->methodData);
-	}
-
-	public function match(Request $request): bool
-	{
-		$pattern = Pattern::create($this->path);
-		if (preg_match($pattern, $request->urlPath(), $matches) === 0)
-			return false;
-
-		$method = $request->method();
-		if (! $this->hasMethod($method))
-			throw new Exception('Method not allowed', 405);
-
-		$data = $this->methodData[$method->name];
-
+		$data = $this->matched['data'];
+		$method = $this->matched['method'];
 		if ($data->hasHandler())
 			$this->handler = $data->handler();
-
 		if ($this->handler->requiresDefaultMethod())
 			$this->handler->setDefaultMethod($method);
-
-		$this->matched = [
-			'method' => $method->name,
-			'params' => [
-				'path' => array_slice($matches, 1),
-				'query' => $request->queryParameters(),
-				'payload' => $request->payload()
-			],
-			'data' => $data,
-		];
-
-		return true;
 	}
 
-	public function verify(): void
+	protected function verifyData(): void
 	{
-		if (! $this->matched)
-			throw new Exception('Not found', 404);
-
-		if ($this->handler === null)
-			throw new Exception('Route handler missing', 500);
-
-		$this->handler->verify();
-
 		$data = $this->matched['data'];
 		$params = $this->matched['params'];
 		$expectedInput = $data->expectedInput();
@@ -120,12 +79,8 @@ class Route implements RouteInterface
 		if (! Payload::verify($params['payload'], $expectedInput['payload']))
 			throw new Exception('Provided payload does not match expected', 400);
 
-		if (! Parameter::verifyQuery($params['query'], $expectedInput['query']))
+		$normalizedQueryParams = Parameter::normalize($expectedInput['query']);
+		if (! Parameter::verifyQuery($params['query'], $normalizedQueryParams))
 			throw new Exception('Provided query parameters does not match expected', 400);
-	}
-
-	public function execute(): void
-	{
-		$this->handler->call($this->matched['params']);
 	}
 }

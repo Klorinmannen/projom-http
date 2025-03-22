@@ -15,9 +15,6 @@ class Router
 		if (!$pathContract = $contract->match($request))
 			throw new \Exception('Not found', 404);
 
-		if (!$pathContract->verifyController(ControllerBase::class))
-			throw new \Exception('Not found', 404);
-
 		if (!$pathContract->verifyInputPathParameters($request->pathParameterList()))
 			throw new \Exception('Provided path parameters are not valid', 400);
 

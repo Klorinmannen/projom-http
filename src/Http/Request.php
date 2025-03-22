@@ -4,22 +4,19 @@ declare(strict_types=1);
 
 namespace Projom\Http;
 
-use Projom\Http\Header;
 use Projom\Http\Input;
 
 class Request
 {
     protected null|Input $input = null;
-    protected string $urlPath = '';
+    protected string $path = '';
     protected array $parsedUrl = [];
-    protected array $urlPathPartList = [];
     protected array $queryParameters = [];
-    protected array $pathParameters = [];
 
     public function __construct(Input $input)
     {
         $this->input = $input;
-        $this->parseUrl($input->url());
+        $this->parseUrl();
     }
 
     public static function create(null|Input $input = null): Request
@@ -32,36 +29,19 @@ class Request
         return new Request($input);
     }
 
-    public function parseUrl(string $url): void
+    private function parseUrl(): void
     {
-        $this->parsedUrl = parse_url($url);
+        $this->parsedUrl = parse_url($this->input->url());
 
         $queryList = $this->parsedUrl['query'] ?? '';
         parse_str($queryList, $this->queryParameters);
 
-        $this->urlPath = $this->parsedUrl['path'] ?? '';
-
-        $urlPath = trim($this->urlPath, '/');
-        $this->urlPathPartList = $urlPath ? explode('/', $urlPath) : [];
-    }
-
-    public function matchPattern(string $pattern): bool
-    {
-        if (!$pattern)
-            return false;
-
-        $result = preg_match($pattern, $this->urlPath, $this->pathParameters) === 1;
-        if ($result)
-            return true;
-
-        return false;
+        $this->path = $this->parsedUrl['path'] ?? '';
     }
 
     public function empty(): bool
     {
-        if (!$this->urlPath)
-            return true;
-        return false;
+        return empty($this->path);
     }
 
     public function header(string $header): null|string
@@ -70,59 +50,23 @@ class Request
         return $headers[$header] ?? null;
     }
 
-    public function authToken(): string
-    {
-        if (!$authHeader = $this->header('HTTP_AUTHORIZATION'))
-            return '';
-
-        if (!$token = Header::parseBearerAuthToken($authHeader))
-            return '';
-
-        return $token;
-    }
-
     public function payload(): string
     {
         return $this->input->payload();
     }
 
-    public function url(): string
-    {
-        return $this->input->url();
-    }
-
-    public function httpMethod(): string
-    {
-        return $this->input->method();
-    }
-
     public function method(): Method
     {
-        return Method::tryFrom($this->httpMethod());
+        return Method::from($this->input->method());
     }
 
-    public function parsedUrl(): array
+    public function path(): string
     {
-        return $this->parsedUrl;
-    }
-
-    public function urlPath(): string
-    {
-        return $this->urlPath;
+        return $this->path;
     }
 
     public function queryParameters(): array
     {
         return $this->queryParameters;
-    }
-
-    public function pathParameterList(): array
-    {
-        return $this->pathParameters;
-    }
-
-    public function urlPathPartList(): array
-    {
-        return $this->urlPathPartList;
     }
 }

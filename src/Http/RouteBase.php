@@ -19,7 +19,7 @@ abstract class RouteBase
 	public function match(Request $request): bool
 	{
 		$pattern = Pattern::create($this->path);
-		if (preg_match($pattern, $request->urlPath(), $matches) === 0)
+		if (preg_match($pattern, $request->path(), $matches) === 0)
 			return false;
 
 		$method = $request->method();

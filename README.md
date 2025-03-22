@@ -8,11 +8,8 @@
 [phpunit-ci-badge]: https://github.com/Klorinmannen/projom-http/workflows/PHPUnit/badge.svg
 
 ### Project goals
-* Selective scope support parsing api specifications
-* Routing
-* Handling requests and responses
-* Should be easy to understand and use
-* Lightweight
+* Routing requests
+* Support a selective scope of OAS 3.0.
 
 ### Docs
 Visit the repository [wiki](https://github.com/Klorinmannen/projom-http/wiki) pages.

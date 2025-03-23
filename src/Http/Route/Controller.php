@@ -5,25 +5,28 @@ declare(strict_types=1);
 namespace Projom\Http\Route;
 
 use Exception;
+use Projom\Http\Request;
 
-class Controller
+abstract class Controller
 {
-	public function get(array $pathParamers, array $queryParameters, string $payload): void
+	abstract public function __construct(Request $request);
+
+	public function get(): void
 	{
 		$this->methodNotImplemented();
 	}
 
-	public function post(array $pathParamers, array $queryParameters, string $payload): void
+	public function post(): void
 	{
 		$this->methodNotImplemented();
 	}
 
-	public function put(array $pathParamers, array $queryParameters, string $payload): void
+	public function put(): void
 	{
 		$this->methodNotImplemented();
 	}
 
-	public function delete(array $pathParamers, array $queryParameters, string $payload): void
+	public function delete(): void
 	{
 		$this->methodNotImplemented();
 	}

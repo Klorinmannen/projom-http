@@ -55,32 +55,28 @@ class Route extends RouteBase implements RoutePublicInterface
 
 	private function addPath(Method $method, null|Handler $handler): DataInterface
 	{
-		$data = new Data($handler);
+		$data = new Data($method, $handler);
 		$this->methodData[$method->name] = $data;
 		return $data;
 	}
 
 	public function setup(): void
 	{
-		$data = $this->matched['data'];
-		$method = $this->matched['method'];
-		if ($data->hasHandler())
-			$this->handler = $data->handler();
+		if ($this->matchedData->hasHandler())
+			$this->handler = $this->matchedData->handler();
 		if ($this->handler->requiresDefaultMethod())
-			$this->handler->setDefaultMethod($method);
+			$this->handler->setDefaultMethod($this->matchedData->method());
 	}
 
-	protected function verifyData(): void
+	protected function verifyData(Request $request): void
 	{
-		$data = $this->matched['data'];
-		$params = $this->matched['params'];
-		$expectedInput = $data->expectedInput();
+		$expectedInput = $this->matchedData->expectedInput();
 
-		if (! Payload::verify($params['payload'], $expectedInput['payload']))
+		if (! Payload::verify($request->payload(), $expectedInput['payload']))
 			throw new Exception('Provided payload does not match expected', 400);
 
 		$normalizedQueryParams = Parameter::normalize($expectedInput['query']);
-		if (! Parameter::verifyQuery($params['query'], $normalizedQueryParams))
+		if (! Parameter::verifyQuery($request->queryParameters(), $normalizedQueryParams))
 			throw new Exception('Provided query parameters does not match expected', 400);
 	}
 }

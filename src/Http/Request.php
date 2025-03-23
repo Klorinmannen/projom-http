@@ -13,6 +13,7 @@ class Request
     protected array $parsedUrl = [];
     protected array $headers = [];
     protected array $queryParameters = [];
+    protected array $pathParameters = [];
 
     public function __construct(Input $input)
     {
@@ -41,16 +42,16 @@ class Request
         $this->path = $this->parsedUrl['path'] ?? '';
     }
 
-	private function parseHeaders(): void
-	{
+    private function parseHeaders(): void
+    {
         if ($this->input === null)
             return;
-        
-		$pattern = '/^HTTP_.+$/';
+
+        $pattern = '/^HTTP_.+$/';
         $serverKeys = array_keys($this->input->server);
-		$foundHttpKeys = preg_grep($pattern, $serverKeys);
-		$this->headers = array_intersect_key($this->input->server, array_flip($foundHttpKeys));
-	}
+        $foundHttpKeys = preg_grep($pattern, $serverKeys);
+        $this->headers = array_intersect_key($this->input->server, array_flip($foundHttpKeys));
+    }
 
     public function empty(): bool
     {
@@ -65,13 +66,13 @@ class Request
         return $this->headers[$header] ?? null;
     }
 
-	public function vars(null|string $key = null, mixed $default = null): mixed
-	{
+    public function vars(null|string $key = null, mixed $default = null): mixed
+    {
         if ($key === null)
             return $this->input->request;
 
-		return $this->input->request[$key] ?? $default;
-	}
+        return $this->input->request[$key] ?? $default;
+    }
 
     public function payload(): string
     {
@@ -91,5 +92,15 @@ class Request
     public function queryParameters(): array
     {
         return $this->queryParameters;
+    }
+
+    public function pathParameters(): array
+    {
+        return $this->pathParameters;
+    }
+
+    public function setPathParameters(array $pathParameters): void
+    {
+        $this->pathParameters = $pathParameters;
     }
 }

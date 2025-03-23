@@ -7,6 +7,7 @@ namespace Projom\Http\Route;
 use Exception;
 
 use Projom\Http\Method;
+use Projom\Http\Request;
 use Projom\Http\Route\Controller;
 
 class Handler
@@ -55,9 +56,8 @@ class Handler
 			throw new Exception('Handler class invalid', 500);
 	}
 
-	public function call(array $path, array $query, string $payload): void
-	{
+	public function call(Request $request): void {
 		[$class, $method] = $this->handler;
-		(new $class)->{$method}($path, $query, $payload);
+		(new $class($request))->{$method}();
 	}
 }

@@ -34,8 +34,8 @@ class Router
 	{
 		$route = $this->match($request);
 		$route->setup();
-		$route->verify();
-		$route->execute();
+		$route->verify($request);
+		$route->execute($request);
 	}
 
 	private function match(Request $request): Route

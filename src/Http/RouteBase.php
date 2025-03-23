@@ -14,7 +14,7 @@ abstract class RouteBase
 	protected string $path = '';
 	protected null|Handler $handler = null;
 	protected array $methodData = [];
-	protected array $matched = [];
+	protected null|object $matchedData = null;
 
 	public function match(Request $request): bool
 	{
@@ -26,17 +26,8 @@ abstract class RouteBase
 		if (! $this->hasMethod($method))
 			throw new Exception('Method not allowed', 405);
 
-		$data = $this->methodData[$method->name];
-
-		$this->matched = [
-			'method' => $method,
-			'params' => [
-				'path' => array_slice($matches, 1),
-				'query' => $request->queryParameters(),
-				'payload' => $request->payload()
-			],
-			'data' => $data,
-		];
+		$request->setPathParameters(array_slice($matches, 1));
+		$this->matchedData = $this->methodData[$method->name];
 
 		return true;
 	}
@@ -47,11 +38,11 @@ abstract class RouteBase
 	}
 
 	abstract public function setup(): void;
-	abstract protected function verifyData(): void;
+	abstract protected function verifyData(Request $request): void;
 
-	public function verify(): void
+	public function verify(Request $request): void
 	{
-		if (! $this->matched)
+		if (! $this->matchedData)
 			throw new Exception('Not found', 404);
 
 		if ($this->handler === null)
@@ -59,11 +50,11 @@ abstract class RouteBase
 
 		$this->handler->verify();
 
-		$this->verifyData();
+		$this->verifyData($request);
 	}
 
-	public function execute(): void
-	{		
-		$this->handler->call(...$this->matched['params']);
+	public function execute(Request $request): void
+	{
+		$this->handler->call($request);
 	}
 }

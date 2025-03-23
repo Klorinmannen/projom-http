@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Projom\Http\OAS;
 
 use Exception;
+
 use Projom\Http\Method;
+use Projom\Http\Request;
 use Projom\Http\Route\Handler;
 use Projom\Http\RouteBase;
 
@@ -23,26 +25,22 @@ class Route extends RouteBase
 
 	public function setup(): void
 	{
-		$data = $this->matched['data'];
-		$controller = $data->controllerDetails['controller'];
-		$controllerMethod = $data->controllerDetails['method'];
+		$controller = $this->matchedData->controllerDetails['controller'];
+		$controllerMethod = $this->matchedData->controllerDetails['method'];
 		$this->handler = Handler::create($controller, $controllerMethod);
 	}
 
-	protected function verifyData(): void
+	protected function verifyData(Request $request): void
 	{
-		$data = $this->matched['data'];
-		$params = $this->matched['params'];
-
-		$normalizedPathParams = Parameter::normalize($data->expectedParameters['path'] ?? []);
-		if (! Parameter::verifyPath($params['path'], $normalizedPathParams))
+		$normalizedPathParams = Parameter::normalize($this->matchedData->expectedParameters['path'] ?? []);
+		if (! Parameter::verifyPath($request->pathParameters(), $normalizedPathParams))
 			throw new Exception('Provided path parameters does not match expected', 400);
 
-		$normalizedQueryParams = Parameter::normalize($data->expectedParameters['query'] ?? []);
-		if (! Parameter::verifyQuery($params['query'], $normalizedQueryParams))
+		$normalizedQueryParams = Parameter::normalize($this->matchedData->expectedParameters['query'] ?? []);
+		if (! Parameter::verifyQuery($request->queryParameters(), $normalizedQueryParams))
 			throw new Exception('Provided query parameters does not match expected', 400);
 
-		if (! Payload::verify($params['payload'], $data->expectedPayload ?? []))
+		if (! Payload::verify($request->payload(), $this->matchedData->expectedPayload ?? []))
 			throw new Exception('Provided payload does not match expected', 400);
 	}
 }

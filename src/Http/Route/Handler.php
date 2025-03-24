@@ -46,14 +46,15 @@ class Handler
 		[$class, $method] = $this->handler;
 
 		if (! class_exists($class))
-			throw new Exception('Handler class does not exist', 500);
+			throw new Exception("Handler class: $class, does not exist", 500);
 
 		// Note: This will match methods by its name, captialization does not matter.
 		if (! method_exists($class, $method))
-			throw new Exception('Handler class method does not exist', 500);
+			throw new Exception("Handler class method: $method, does not exist", 500);
 
-		if (! is_subclass_of($class, Controller::class))
-			throw new Exception('Handler class invalid', 500);
+		$base = Controller::class;
+		if (! is_subclass_of($class, $base))
+			throw new Exception("Handler class has to be a child of: $base", 500);
 	}
 
 	public function call(Request $request): void {

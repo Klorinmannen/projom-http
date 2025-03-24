@@ -8,38 +8,51 @@ use Projom\Http\Route\Pattern;
 
 class Parameter
 {
-    public static function verifyPath(array $inputParameters, array $expectedQueryParameters): bool
-    {
-        // Nothing to check.
-        if (! $expectedQueryParameters)
-            return true;
-
-        // The input path parameter set cannot be bigger than the defined contract set.
-        if (count($expectedQueryParameters) != count($inputParameters))
-            return false;
-
-        // Test input parameters.
-        foreach ($expectedQueryParameters as $id => $parameterContract) {
-
-            // Parameter is required but not present.
-            if ($parameterContract['required'] && !$inputParameters[$id])
-                return false;
-
-            $result = static::verify((string) $inputParameters[$id], $parameterContract['type']);
-            if (!$result)
-                return false;
-        }
-
-        return true;
-    }
-
-	public static function verifyQuery(array $inputQueryParameters, array $expectedQueryParameters): bool
+	public static function verifyPath(array $inputParameters, array $expectedQueryParameters): bool
 	{
-		// Nothing to check.
+		// Nothing to check against.
 		if (! $expectedQueryParameters)
 			return true;
 
-		// No input query parameters but we are expecting.
+		// The input path parameter set cannot be bigger than the expected set.
+		if (count($inputParameters) != count($expectedQueryParameters))
+			return false;
+
+		$result = static::test($inputParameters, $expectedQueryParameters);
+		if (! $result)
+			return false;
+
+		return true;
+	}
+
+	private static function test(array $inputParameters, array $expectedParameters): bool
+	{
+		foreach ($expectedParameters as $id => $parameterData) {
+
+			// Parameter is required but not present.
+			if ($parameterData['required'])
+				if (! array_key_exists($id, $inputParameters))
+					return false;
+
+			$result = static::verify((string) $inputParameters[$id], $parameterData['type']);
+			if (! $result)
+				return false;
+		}
+
+		return true;
+	}
+
+	public static function verifyQuery(array $inputQueryParameters, array $expectedQueryParameters): bool
+	{
+		// Nothing to check against.
+		if (! $expectedQueryParameters)
+			return true;
+
+		/* 
+			Note: 
+			This check can be removed or conditioned to make the input query parameters optional.
+			Making the check less strict and allows for more flexibility.
+		*/
 		if (! $inputQueryParameters && $expectedQueryParameters)
 			return false;
 
@@ -49,33 +62,29 @@ class Parameter
 
 		$namedExpectedQueryParameter = static::rekeyOnName($expectedQueryParameters);
 
-		// Is the input query parameters a subset of the expected set. 
-		// Atleast one of the expected query parameters must be present in the input query parameters.
+		/* 
+			Note: 
+			This check can be removed or conditioned, allowing for unknown parameters to be present in the set.
+			Maing the check less strict and allows for more flexibility.
+			The selectSubset method will filter out the known parameters instead.
+		*/
 		$isSubset = static::isSubset($inputQueryParameters, $namedExpectedQueryParameter);
 		if (! $isSubset)
 			return false;
 
 		$namedExpectedQueryParameterSubset = static::selectSubset($inputQueryParameters, $namedExpectedQueryParameter);
 
-		// Test the input query parameters.
-		foreach ($namedExpectedQueryParameterSubset as $name => $parameterData) {
-
-			// Parameter is required but not present.
-			if ($parameterData['required'])
-				if (! array_key_exists($name, $inputQueryParameters))
-					return false;
-
-			$result = static::verify((string) $inputQueryParameters[$name], $parameterData['type']);
-			if (! $result)
-				return false;
-		}
+		$result = static::test($inputQueryParameters, $namedExpectedQueryParameterSubset);
+		if (! $result)
+			return false;
 
 		return true;
 	}
 
 	private static function rekeyOnName(array $expectedQueryParameters): array
 	{
-		return array_column($expectedQueryParameters, null, 'name');
+		$namedExpectedQueryParameter = array_column($expectedQueryParameters, null, 'name');
+		return $namedExpectedQueryParameter;
 	}
 
 	public static function normalize(array $expectedParameters): array
@@ -90,15 +99,19 @@ class Parameter
 		return $normalized;
 	}
 
-	private static function isSubset(array $inputParameters, array $namedExpectedQueryParameters): bool
+	private static function isSubset(array $inputQueryParameters, array $namedExpectedQueryParameters): bool
 	{
-		$diff = array_diff_key($inputParameters, $namedExpectedQueryParameters);
-		return count($diff) < count($namedExpectedQueryParameters);
+		// The input query parameters must be a subset of the expected query parameters.
+		// Any extra query parameters are not allowed.
+		$diff = array_diff_key($inputQueryParameters, $namedExpectedQueryParameters);
+		$isSubset = count($diff) === 0;
+		return $isSubset;
 	}
 
-	private static function selectSubset(array $inputParameters, array $namedExpectedQueryParameters): array
+	private static function selectSubset(array $inputQueryParameters, array $namedExpectedQueryParameters): array
 	{
-		return array_intersect_key($namedExpectedQueryParameters, $inputParameters);
+		$subset = array_intersect_key($namedExpectedQueryParameters, $inputQueryParameters);
+		return $subset;
 	}
 
 	private static function verify(string $inputParameter, string $type): bool

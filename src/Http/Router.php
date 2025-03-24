@@ -38,7 +38,7 @@ class Router
 		$route->execute($request);
 	}
 
-	private function match(Request $request): Route
+	private function match(Request $request): RouteBase
 	{
 		foreach ($this->routes as $route)
 			if ($route->match($request))

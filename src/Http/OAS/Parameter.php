@@ -17,7 +17,7 @@ class Parameter extends RouteParameter
             $name = $parameterData['name'] ?? '';
             $type = $parameterData['schema']['type'] ?? '';
 
-            // Default to required - true, stricter safety precaution.
+            // Default to required: true for stricter safety precaution.
             $required = (bool) ($parameterData['required'] ?? true);
 
             $normalized[$in][] = [

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Projom\Http;
 
+use Closure;
 use Exception;
 
 use Projom\Http\Route\Handler;
@@ -41,7 +42,9 @@ abstract class RouteBase
 	public function processMiddlewares(Request $request): void
 	{
 		foreach ($this->middlewares as $middleware)
-			$middleware->process($request);
+			$middleware instanceof Closure
+				? $middleware($request)
+				: $middleware->process($request);
 	}
 
 	abstract public function setup(): void;

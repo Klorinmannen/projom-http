@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Projom\Http;
 
+use Closure;
 use Exception;
 
 use Projom\Http\Method;
@@ -22,7 +23,7 @@ class Route extends RouteBase implements RouteInterface
 		$this->path = $path;
 	}
 
-	public function addMiddleware(MiddlewareInterface $middleware): void
+	public function addMiddleware(MiddlewareInterface|Closure $middleware): void
 	{
 		array_unshift($this->middlewares, $middleware);
 	}

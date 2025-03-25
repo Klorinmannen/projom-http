@@ -26,7 +26,7 @@ class Router
 		ksort($this->routes);
 	}
 
-	public function addMiddleware(MiddlewareInterface $middleware): void
+	public function addMiddleware(MiddlewareInterface|Closure $middleware): void
 	{
 		array_unshift($this->middlewares, $middleware);
 	}
@@ -50,7 +50,9 @@ class Router
 	private function processMiddlewares(Request $request): void
 	{
 		foreach ($this->middlewares as $middleware)
-			$middleware->process($request);
+			$middleware instanceof Closure
+				? $middleware($request)
+				: $middleware->process($request);
 	}
 
 	private function match(Request $request): RouteBase

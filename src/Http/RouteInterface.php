@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Projom\Http;
 
+use Closure;
+
 use Projom\Http\Route\DataInterface;
 use Projom\Http\Route\Handler;
 
@@ -14,5 +16,5 @@ interface RouteInterface
 	public function put(null|Handler $handler = null): DataInterface;
 	public function delete(null|Handler $handler = null): DataInterface;
 	public function group(array $methods): void;
-	public function addMiddleware(MiddlewareInterface $middleware): void;
+	public function addMiddleware(MiddlewareInterface|Closure $middleware): void;
 }

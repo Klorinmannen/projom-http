@@ -57,7 +57,8 @@ class Handler
 			throw new Exception("Handler class has to be a child of: $base", 500);
 	}
 
-	public function call(Request $request): void {
+	public function call(Request $request): void
+	{
 		[$class, $method] = $this->handler;
 		(new $class($request))->{$method}();
 	}

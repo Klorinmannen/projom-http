@@ -8,6 +8,6 @@ class Security
 {
 	public static function normalize(array $security): bool 
 	{
-		return ($security ?? false) ? true : false;
+		return $security ? true : false;
 	}
 }

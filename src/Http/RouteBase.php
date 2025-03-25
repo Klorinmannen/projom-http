@@ -15,6 +15,7 @@ abstract class RouteBase
 	protected null|Handler $handler = null;
 	protected array $methodData = [];
 	protected null|object $matchedData = null;
+	protected array $middlewares = [];
 
 	public function match(Request $request): bool
 	{
@@ -35,6 +36,12 @@ abstract class RouteBase
 	private function hasMethod(Method $method): bool
 	{
 		return array_key_exists($method->name, $this->methodData);
+	}
+
+	public function processMiddlewares(Request $request): void
+	{
+		foreach ($this->middlewares as $middleware)
+			$middleware->process($request);
 	}
 
 	abstract public function setup(): void;

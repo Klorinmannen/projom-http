@@ -7,19 +7,24 @@ namespace Projom\Http;
 use Exception;
 
 use Projom\Http\Method;
-use Projom\Http\RoutePublicInterface;
+use Projom\Http\RouteInterface;
 use Projom\Http\Route\Data;
 use Projom\Http\Route\DataInterface;
 use Projom\Http\Route\Handler;
 use Projom\Http\Route\Parameter;
 use Projom\Http\Route\Payload;
 
-class Route extends RouteBase implements RoutePublicInterface
+class Route extends RouteBase implements RouteInterface
 {
 	public function __construct(string $path, Handler $handler)
 	{
 		$this->handler = $handler;
 		$this->path = $path;
+	}
+
+	public function addMiddleware(MiddlewareInterface $middleware): void
+	{
+		array_unshift($this->middlewares, $middleware);
 	}
 
 	public static function create(string $path, mixed $handler): Route

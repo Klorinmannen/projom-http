@@ -15,6 +15,7 @@ use Projom\Http\Route\Handler;
 class Router
 {
 	private array $routes = [];
+	private array $middlewares = [];
 
 	public function __construct() {}
 
@@ -25,6 +26,11 @@ class Router
 		ksort($this->routes);
 	}
 
+	public function addMiddleware(MiddlewareInterface $middleware): void
+	{
+		array_unshift($this->middlewares, $middleware);
+	}
+
 	public function addRoute(string $path, Handler $handler, Closure $routeDefinition): void
 	{
 		$this->routes[$path] = $routeDefinition(Route::create($path, $handler));
@@ -32,10 +38,19 @@ class Router
 
 	public function dispatch(Request $request): void
 	{
+		$this->processMiddlewares($request);
+
 		$route = $this->match($request);
+		$route->processMiddlewares($request);
 		$route->setup();
 		$route->verify($request);
 		$route->execute($request);
+	}
+
+	private function processMiddlewares(Request $request): void
+	{
+		foreach ($this->middlewares as $middleware)
+			$middleware->process($request);
 	}
 
 	private function match(Request $request): RouteBase

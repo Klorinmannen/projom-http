@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Projom\Http\Route;
 
 use Exception;
+
 use Projom\Http\Request;
 
 abstract class Controller

@@ -28,7 +28,7 @@ class Router
 
 	public function addMiddleware(MiddlewareInterface|Closure $middleware): void
 	{
-		array_unshift($this->middlewares, $middleware);
+		$this->middlewares[] = $middleware;
 	}
 
 	public function addRoute(string $path, Handler $handler, Closure $routeDefinition): void

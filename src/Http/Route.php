@@ -25,7 +25,7 @@ class Route extends RouteBase implements RouteInterface
 
 	public function addMiddleware(MiddlewareInterface|Closure $middleware): void
 	{
-		array_unshift($this->middlewares, $middleware);
+		$this->middlewares[] = $middleware;
 	}
 
 	public static function create(string $path, mixed $handler): Route

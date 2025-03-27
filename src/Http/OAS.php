@@ -58,8 +58,6 @@ class OAS
 
 		$file = file_get_contents($filePath);
 		$fileData = static::decodeFile($file, $filePath);
-		if (! $fileData)
-			throw new Exception("Invalid JSON: $filePath", 500);
 
 		return $fileData;
 	}

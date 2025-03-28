@@ -79,9 +79,9 @@ class Request
         return $this->input->payload;
     }
 
-    public function method(): Method
+    public function method(): null|Method
     {
-        return Method::from($this->input->server['REQUEST_METHOD'] ?? '');
+        return Method::tryFrom($this->input->server['REQUEST_METHOD'] ?? '');
     }
 
     public function path(): string

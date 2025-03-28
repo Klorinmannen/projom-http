@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Projom\Http;
 
-use Projom\Http\Input;
+use Projom\Http\Request\Input;
 
 class Request
 {
@@ -27,7 +27,7 @@ class Request
         if ($input !== null)
             return new Request($input);
 
-        $input = Input::create($_REQUEST ?? [], $_SERVER ?? [], file_get_contents('php://input') ?: '');
+        $input = Input::create();
 
         return new Request($input);
     }

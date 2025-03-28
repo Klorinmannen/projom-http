@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Projom\Http;
+namespace Projom\Http\Request;
 
 class Input
 {
@@ -17,8 +17,8 @@ class Input
 		$this->payload = $payload;
 	}
 
-	public static function create(array $request, array $server, string $payload): Input
+	public static function create(): Input
 	{
-		return new Input($request, $server, $payload);
+		return new Input($_REQUEST ?? [], $_SERVER ?? [], file_get_contents('php://input') ?: '');
 	}
 }

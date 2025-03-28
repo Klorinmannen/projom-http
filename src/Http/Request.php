@@ -4,22 +4,22 @@ declare(strict_types=1);
 
 namespace Projom\Http;
 
-use Projom\Http\Header;
-use Projom\Http\Input;
+use Projom\Http\Request\Input;
 
 class Request
 {
     protected null|Input $input = null;
-    protected string $urlPath = '';
+    protected string $path = '';
     protected array $parsedUrl = [];
-    protected array $urlPathPartList = [];
-    protected array $queryParameterList = [];
-    protected array $pathParameterList = [];
+    protected array $headers = [];
+    protected array $queryParameters = [];
+    protected array $pathParameters = [];
 
     public function __construct(Input $input)
     {
         $this->input = $input;
-        $this->parseUrl($input->url());
+        $this->parseUrl();
+        $this->parseHeaders();
     }
 
     public static function create(null|Input $input = null): Request
@@ -27,97 +27,80 @@ class Request
         if ($input !== null)
             return new Request($input);
 
-        $input = Input::create($_REQUEST ?? [], $_SERVER ?? []);
+        $input = Input::create();
 
         return new Request($input);
     }
 
-    public function parseUrl(string $url): void
+    private function parseUrl(): void
     {
-        $this->parsedUrl = parse_url($url);
+        $this->parsedUrl = parse_url($this->input->server['REQUEST_URI'] ?? '');
 
         $queryList = $this->parsedUrl['query'] ?? '';
-        parse_str($queryList, $this->queryParameterList);
+        parse_str($queryList, $this->queryParameters);
 
-        $this->urlPath = $this->parsedUrl['path'] ?? '';
-
-        $urlPath = trim($this->urlPath, '/');
-        $this->urlPathPartList = $urlPath ? explode('/', $urlPath) : [];
+        $this->path = $this->parsedUrl['path'] ?? '';
     }
 
-    public function matchPattern(string $pattern): bool
+    private function parseHeaders(): void
     {
-        if (!$pattern)
-            return false;
+        if ($this->input === null)
+            return;
 
-        $result = preg_match($pattern, $this->urlPath, $this->pathParameterList) === 1;
-        if ($result)
-            return true;
-
-        return false;
+        $pattern = '/^HTTP_.+$/';
+        $serverKeys = array_keys($this->input->server);
+        $foundHttpKeys = preg_grep($pattern, $serverKeys);
+        $this->headers = array_intersect_key($this->input->server, array_flip($foundHttpKeys));
     }
 
     public function empty(): bool
     {
-        if (!$this->urlPath)
-            return true;
-        return false;
+        return empty($this->path);
     }
 
-    public function header(string $header): null|string
+    public function headers(null|string $header = null): null|array|string
     {
-        $headers = $this->input->headers();
-        return $headers[$header] ?? null;
+        if ($header === null)
+            return $this->headers;
+
+        return $this->headers[$header] ?? null;
     }
 
-    public function authToken(): string
+    public function vars(null|string $key = null, mixed $default = null): mixed
     {
-        if (!$authHeader = $this->header('HTTP_AUTHORIZATION'))
-            return '';
+        if ($key === null)
+            return $this->input->request;
 
-        if (!$token = Header::parseBearerAuthToken($authHeader))
-            return '';
-
-        return $token;
+        return $this->input->request[$key] ?? $default;
     }
 
-    public function payload(string $source = 'php://input'): string
+    public function payload(): string
     {
-        return $this->input->data($source);
+        return $this->input->payload;
     }
 
-    public function url(): string
+    public function method(): null|Method
     {
-        return $this->input->url();
+        return Method::tryFrom($this->input->server['REQUEST_METHOD'] ?? '');
     }
 
-    public function httpMethod(): string
+    public function path(): string
     {
-        return $this->input->method();
+        return $this->path;
     }
 
-    public function parsedUrl(): array
+    public function queryParameters(): array
     {
-        return $this->parsedUrl;
+        return $this->queryParameters;
     }
 
-    public function urlPath(): string
+    public function pathParameters(): array
     {
-        return $this->urlPath;
+        return $this->pathParameters;
     }
 
-    public function queryParameterList(): array
+    public function setPathParameters(array $pathParameters): void
     {
-        return $this->queryParameterList;
-    }
-
-    public function pathParameterList(): array
-    {
-        return $this->pathParameterList;
-    }
-
-    public function urlPathPartList(): array
-    {
-        return $this->urlPathPartList;
+        $this->pathParameters = $pathParameters;
     }
 }

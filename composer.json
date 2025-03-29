@@ -1,6 +1,11 @@
 {
     "name": "klorinmannen/projom-http",
     "description": "Projom http module",
+    "license": "MIT",
+    "type": "library",
+    "keywords": [
+        "routing"
+    ],
     "autoload": {
         "psr-4": {
             "Projom\\": "src/"

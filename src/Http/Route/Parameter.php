@@ -65,8 +65,8 @@ class Parameter
 		/* 
 			Note: 
 			This check can be removed or conditioned, allowing for unknown parameters to be present in the set.
-			Maing the check less strict and allows for more flexibility.
-			The selectSubset method will filter out the known parameters instead.
+			Making the check less strict and allows for more flexibility.
+			The selectSubset method will filter out the unknown parameters instead.
 		*/
 		$isSubset = static::isSubset($inputQueryParameters, $namedExpectedQueryParameter);
 		if (! $isSubset)

@@ -11,4 +11,8 @@ enum Method: string
 	case PUT = 'PUT';
 	case PATCH = 'PATCH';
 	case DELETE = 'DELETE';
+	case HEAD = 'HEAD';
+	case OPTIONS = 'OPTIONS';
+	case TRACE = 'TRACE';
+	case CONNECT = 'CONNECT';
 }

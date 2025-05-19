@@ -6,19 +6,22 @@ namespace Projom\Http\Request;
 
 class Input
 {
-	public array $request;
-	public array $server;
-	public string $payload;
-
-	public function __construct(array $request, array $server, string $payload)
-	{
-		$this->request = $request;
-		$this->server = $server;
-		$this->payload = $payload;
-	}
+	public function __construct(
+		public array $request,
+		public array $server,
+		public array $files,
+		public array $cookies,
+		public string $payload
+	) {}
 
 	public static function create(): Input
 	{
-		return new Input($_REQUEST ?? [], $_SERVER ?? [], file_get_contents('php://input') ?: '');
+		return new Input(
+			$_REQUEST ?? [],
+			$_SERVER ?? [],
+			$_FILES ?? [],
+			$_COOKIE ?? [],
+			file_get_contents('php://input') ?: ''
+		);
 	}
 }

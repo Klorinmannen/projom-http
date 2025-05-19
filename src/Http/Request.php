@@ -74,6 +74,22 @@ class Request
         return $this->input->request[$key] ?? $default;
     }
 
+    public function files(null|string $key = null): null|array
+    {
+        if ($key === null)
+            return $this->input->files;
+
+        return $this->input->files[$key] ?? null;
+    }
+
+    public function cookies(null|string $key = null): null|array
+    {
+        if ($key === null)
+            return $this->input->cookies;
+
+        return $this->input->cookies[$key] ?? null;
+    }
+
     public function payload(): string
     {
         return $this->input->payload;

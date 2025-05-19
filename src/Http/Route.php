@@ -33,45 +33,45 @@ class Route extends RouteBase implements RouteInterface
 		return new Route($path, $handler);
 	}
 
-	public function get(null|Handler $handler = null): DataInterface
+	public function get(string $controllerMethod = ''): DataInterface
 	{
-		return $this->addPath(Method::GET, $handler);
+		return $this->addPath(Method::GET, $controllerMethod);
 	}
 
-	public function post(null|Handler $handler = null): DataInterface
+	public function post(string $controllerMethod = ''): DataInterface
 	{
-		return $this->addPath(Method::POST, $handler);
+		return $this->addPath(Method::POST, $controllerMethod);
 	}
 
-	public function put(null|Handler $handler = null): DataInterface
+	public function put(string $controllerMethod = ''): DataInterface
 	{
-		return $this->addPath(Method::PUT, $handler);
+		return $this->addPath(Method::PUT, $controllerMethod);
 	}
 
-	public function delete(null|Handler $handler = null): DataInterface
+	public function delete(string $controllerMethod = ''): DataInterface
 	{
-		return $this->addPath(Method::DELETE, $handler);
+		return $this->addPath(Method::DELETE, $controllerMethod);
 	}
 
 	public function group(array $methods): void
 	{
 		foreach ($methods as $method)
-			$this->addPath($method, null);
+			$this->addPath($method);
 	}
 
-	private function addPath(Method $method, null|Handler $handler): DataInterface
+	private function addPath(Method $method, string $controllerMethod = ''): DataInterface
 	{
-		$data = new Data($method, $handler);
+		$data = Data::create($method, $controllerMethod);
 		$this->methodData[$method->name] = $data;
 		return $data;
 	}
 
 	public function setup(): void
 	{
-		if ($this->matchedData->hasHandler())
-			$this->handler = $this->matchedData->handler();
-		if ($this->handler->requiresDefaultMethod())
-			$this->handler->setDefaultMethod($this->matchedData->method());
+		if ($this->matchedData->hasControllerMethod())
+			$this->handler->setMethod($this->matchedData->controllerMethod());
+		elseif (! $this->handler->hasMethod())
+			$this->handler->setMethod($this->matchedData->method());
 	}
 
 	protected function verifyData(Request $request): void

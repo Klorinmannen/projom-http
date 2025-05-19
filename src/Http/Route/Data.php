@@ -5,20 +5,21 @@ declare(strict_types=1);
 namespace Projom\Http\Route;
 
 use Projom\Http\Method;
-use Projom\Http\Route\Handler;
 use Projom\Http\Route\DataInterface;
 
 class Data implements DataInterface
 {
-	private readonly Method $method;
-	private readonly null|Handler $handler;
 	private bool $expectsPayload = false;
 	private array $expectsQueryParameters = [];
 
-	public function __construct(Method $method, null|Handler $handler)
+	public function __construct(
+		private Method $method,
+		private string $controllerMethod
+	) {}
+
+	public static function create(Method $method, string $controllerMethod = ''): Data
 	{
-		$this->method = $method;
-		$this->handler = $handler;
+		return new Data($method, $controllerMethod);
 	}
 
 	public function method(): Method
@@ -26,14 +27,14 @@ class Data implements DataInterface
 		return $this->method;
 	}
 
-	public function handler(): null|Handler
+	public function controllerMethod(): string
 	{
-		return $this->handler;
+		return $this->controllerMethod;
 	}
 
-	public function hasHandler(): bool
+	public function hasControllerMethod(): bool
 	{
-		return $this->handler !== null;
+		return $this->controllerMethod !== '';
 	}
 
 	public function expectsPayload(bool $expectsPayload = true): Data

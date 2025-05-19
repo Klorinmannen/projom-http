@@ -6,60 +6,55 @@ namespace Projom\Http\Route;
 
 use Exception;
 
-use Projom\Http\Method;
 use Projom\Http\Request;
 use Projom\Http\Route\Controller;
 
 class Handler
 {
-	private array $handler;
-	private bool $requiresDefaultMethod = false;
+	public function __construct(
+		private string $controller,
+		private string $method
+	) {}
 
-	public function __construct(string $handler, string $method)
+	public static function create(string $controller, string $method = ''): Handler
 	{
-		$this->handler = [$handler];
-		$this->requiresDefaultMethod = $method ? false : true;
-		if (! $this->requiresDefaultMethod)
-			$this->handler[] = $method;
+		return new Handler($controller, $method);
 	}
 
-	public static function create(string $handler, string $method = ''): Handler
+	public function hasMethod(): bool
 	{
-		return new Handler($handler, $method);
+		return $this->method !== '';
 	}
 
-	public function requiresDefaultMethod(): bool
+	public function setMethod(string $method): void
 	{
-		return $this->requiresDefaultMethod;
-	}
-
-	public function setDefaultMethod(Method $method): void
-	{
-		$this->handler[] = strtolower($method->name);
+		$this->method = $method;
 	}
 
 	public function verify(): void
 	{
-		if (count($this->handler) !== 2)
-			throw new Exception('Handler array requires two elements', 500);
+		if (!$this->controller)
+			throw new Exception('Handler missing controller', 500);
 
-		[$class, $method] = $this->handler;
+		if (!$this->method)
+			throw new Exception('Handler missing controller method', 500);
 
-		if (! class_exists($class))
-			throw new Exception("Handler class: $class, does not exist", 500);
+		if (! class_exists($this->controller))
+			throw new Exception("Controller: {$this->controller}, does not exist", 500);
 
 		// Note: This will match methods by its name, captialization does not matter.
-		if (! method_exists($class, $method))
-			throw new Exception("Handler class method: $method, does not exist", 500);
+		if (! method_exists($this->controller, $this->method))
+			throw new Exception("Controller method: {$this->method}, does not exist", 500);
 
 		$base = Controller::class;
-		if (! is_subclass_of($class, $base))
-			throw new Exception("Handler class has to be a child of: $base", 500);
+		if (! is_subclass_of($this->controller, $base))
+			throw new Exception("Controller does not implement: $base", 500);
 	}
 
 	public function call(Request $request): void
 	{
-		[$class, $method] = $this->handler;
-		(new $class($request))->{$method}();
+		$controller = $this->controller;
+		$method = $this->method;
+		(new $controller($request))->{$method}();
 	}
 }

@@ -21,11 +21,6 @@ class Handler
 		return new Handler($controller, $method);
 	}
 
-	public function hasMethod(): bool
-	{
-		return $this->method !== '';
-	}
-
 	public function setMethod(string $method): void
 	{
 		$this->method = $method;

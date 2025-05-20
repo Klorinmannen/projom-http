@@ -31,9 +31,20 @@ class Router
 		$this->middlewares[] = $middleware;
 	}
 
+	/**
+	 * Add a route to the router.
+	 * 
+	 * @param string $path The path of the route.
+	 * @param string $controller The controller class name.
+	 * @param Closure $routeDefinition A Closure that defines the route.
+	 * 
+	 * * Example: Router->addRoute('/users', User::class, function (RouteInterface $route) { $route->get(); });
+	 */
 	public function addRoute(string $path, string $controller, Closure $routeDefinition): void
 	{
-		$this->routes[$path] = $routeDefinition(Route::create($path, $controller));
+		$route = Route::create($path, $controller);
+		$routeDefinition($route);
+		$this->routes[$path] = $route;
 	}
 
 	public function dispatch(Request $request): void

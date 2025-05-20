@@ -22,17 +22,14 @@ class Data implements DataInterface
 		return new Data($method, $controllerMethod);
 	}
 
-	public function method(): Method
+	public function method(): string
 	{
-		return $this->method;
+		if ($this->hasControllerMethod())
+			return $this->controllerMethod;
+		return $this->method->value;
 	}
 
-	public function controllerMethod(): string
-	{
-		return $this->controllerMethod;
-	}
-
-	public function hasControllerMethod(): bool
+	private function hasControllerMethod(): bool
 	{
 		return $this->controllerMethod !== '';
 	}

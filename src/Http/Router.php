@@ -31,9 +31,9 @@ class Router
 		$this->middlewares[] = $middleware;
 	}
 
-	public function addRoute(string $path, Handler $handler, Closure $routeDefinition): void
+	public function addRoute(string $path, string $controller, Closure $routeDefinition): void
 	{
-		$this->routes[$path] = $routeDefinition(Route::create($path, $handler));
+		$this->routes[$path] = $routeDefinition(Route::create($path, $controller));
 	}
 
 	public function dispatch(Request $request): void

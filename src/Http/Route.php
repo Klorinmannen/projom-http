@@ -17,9 +17,9 @@ use Projom\Http\Route\Payload;
 
 class Route extends RouteBase implements RouteInterface
 {
-	public function __construct(string $path, Handler $handler)
+	public function __construct(string $path, string $controller)
 	{
-		$this->handler = $handler;
+		$this->handler = Handler::create($controller);
 		$this->path = $path;
 	}
 
@@ -68,10 +68,7 @@ class Route extends RouteBase implements RouteInterface
 
 	public function setup(): void
 	{
-		if ($this->matchedData->hasControllerMethod())
-			$this->handler->setMethod($this->matchedData->controllerMethod());
-		elseif (! $this->handler->hasMethod())
-			$this->handler->setMethod($this->matchedData->method());
+		$this->handler->setMethod($this->matchedData->method());
 	}
 
 	protected function verifyData(Request $request): void

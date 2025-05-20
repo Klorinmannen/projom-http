@@ -35,14 +35,13 @@ class Handler
 	{
 		if (!$this->controller)
 			throw new Exception('Handler missing controller', 500);
-
 		if (!$this->method)
 			throw new Exception('Handler missing controller method', 500);
 
 		if (! class_exists($this->controller))
 			throw new Exception("Controller: {$this->controller}, does not exist", 500);
 
-		// Note: This will match methods by its name, captialization does not matter.
+		// Note: This will match methods by its name, capitalization does not matter.
 		if (! method_exists($this->controller, $this->method))
 			throw new Exception("Controller method: {$this->method}, does not exist", 500);
 

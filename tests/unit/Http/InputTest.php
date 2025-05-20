@@ -27,12 +27,16 @@ class InputTest extends TestCase
 	{
 		$request = ['key' => 'value'];
 		$server = ['HTTP_HOST' => 'localhost'];
+		$files = [];
+		$cookies = [];
 		$payload = 'payload data';
 
-		$input = new Input($request, $server, $payload);
+		$input = new Input($request, $server, $files, $cookies, $payload);
 
 		$this->assertSame($request, $input->request);
 		$this->assertSame($server, $input->server);
+		$this->assertSame($files, $input->files);
+		$this->assertSame($cookies, $input->cookies);
 		$this->assertSame($payload, $input->payload);
 	}
 }

@@ -1,14 +1,14 @@
 
 
 Code Coverage Report:
-  2025-03-28 20:23:41
+  2025-05-20 18:21:43
 
  Summary:
   Classes:  5.26% (1/19)
-  Methods:  9.89% (9/91)
-  Lines:    7.81% (25/320)
+  Methods:  9.78% (9/92)
+  Lines:    8.84% (29/328)
 
 Projom\Http\Request
-  Methods:  53.85% ( 7/13)   Lines:  70.00% ( 21/ 30)
+  Methods:  46.67% ( 7/15)   Lines:  58.33% ( 21/ 36)
 Projom\Http\Request\Input
-  Methods: 100.00% ( 2/ 2)   Lines: 100.00% (  4/  4)
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% (  8/  8)

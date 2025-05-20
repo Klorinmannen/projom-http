@@ -32,7 +32,7 @@ class RequestTest extends TestCase
 	#[DataProvider('provider_empty')]
 	public function empty(string $uri, bool $expected): void
 	{
-		$input = new Input([], ['REQUEST_URI' => $uri], '');
+		$input = new Input([], ['REQUEST_URI' => $uri], [], [],'');
 		$request = Request::create($input);
 		$this->assertEquals($expected, $request->empty());
 	}
@@ -75,7 +75,7 @@ class RequestTest extends TestCase
 	#[DataProvider('provider_headers')]
 	public function headers(array $server, null|string $header, null|string|array $expected): void
 	{
-		$input = new Input([], $server, '');
+		$input = new Input([], $server, [], [], '');
 		$request = Request::create($input);
 		$this->assertEquals($expected, $request->headers($header));
 	}
@@ -98,7 +98,7 @@ class RequestTest extends TestCase
 	#[DataProvider('provider_payload')]
 	public function payload(string $payload, string $expected): void
 	{
-		$input = new Input([], [], $payload);
+		$input = new Input([], [], [], [], $payload);
 		$request = Request::create($input);
 		$this->assertEquals($expected, $request->payload());
 	}
@@ -123,7 +123,7 @@ class RequestTest extends TestCase
 	#[DataProvider('provider_path')]
 	public function path(array $server, string $expected): void
 	{
-		$input = new Input([], $server, '');
+		$input = new Input([], $server, [], [], '');
 		$request = Request::create($input);
 		$this->assertEquals($expected, $request->path());
 	}
@@ -149,7 +149,7 @@ class RequestTest extends TestCase
 	#[DataProvider('provider_method')]
 	public function method(array $server, null|Method $expected): void
 	{
-		$input = new Input([], $server, '');
+		$input = new Input([], $server, [], [], '');
 		$request = Request::create($input);
 		$this->assertEquals($expected, $request->method());
 	}

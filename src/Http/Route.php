@@ -53,13 +53,12 @@ class Route extends RouteBase implements RouteInterface
 		return $this->addPath(Method::DELETE, $controllerMethod);
 	}
 
-	public function group(array $methods): void
+	public function patch(string $controllerMethod = ''): DataInterface
 	{
-		foreach ($methods as $method)
-			$this->addPath($method);
+		return $this->addPath(Method::PATCH, $controllerMethod);
 	}
 
-	private function addPath(Method $method, string $controllerMethod = ''): DataInterface
+	private function addPath(Method $method, string $controllerMethod): DataInterface
 	{
 		$data = Data::create($method, $controllerMethod);
 		$this->methodData[$method->name] = $data;

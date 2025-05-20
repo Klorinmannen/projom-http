@@ -14,6 +14,6 @@ interface RouteInterface
 	public function post(string $controllerMethod = ''): DataInterface;
 	public function put(string $controllerMethod = ''): DataInterface;
 	public function delete(string $controllerMethod = ''): DataInterface;
-	public function group(array $methods): void;
+	public function patch(string $controllerMethod = ''): DataInterface;
 	public function addMiddleware(MiddlewareInterface|Closure $middleware): void;
 }

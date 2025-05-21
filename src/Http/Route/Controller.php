@@ -10,10 +10,10 @@ use Projom\Http\StatusCode;
 
 abstract class Controller
 {
-	abstract public function __construct(
+	public function __construct(
 		protected Request $request,
 		protected Response $response
-	);
+	) {}
 
 	public function get(): void
 	{

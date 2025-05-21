@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Projom\Http;
 
 use Projom\Http\Request\Input;
-use Projom\Http\Request\Response;
 
 class Request
 {

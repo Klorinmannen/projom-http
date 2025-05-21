@@ -54,7 +54,7 @@ class Response
 		exit;
 	}
 
-	public function terminate(string $errorMessage, StatusCode $code = StatusCode::BAD_REQUEST): void
+	public function reject(string $errorMessage, StatusCode $code = StatusCode::BAD_REQUEST): void
 	{
 		$data = [
 			'error_message' => $errorMessage

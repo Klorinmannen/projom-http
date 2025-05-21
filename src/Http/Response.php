@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Projom\Http\Request;
+namespace Projom\Http;
 
 use Projom\Http\StatusCode;
 

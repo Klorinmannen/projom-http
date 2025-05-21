@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Projom\Http;
 
 use Projom\Http\Request\Input;
+use Projom\Http\Request\Response;
 
 class Request
 {
@@ -66,28 +67,28 @@ class Request
         return $this->headers[$header] ?? null;
     }
 
-    public function vars(null|string $key = null, mixed $default = null): mixed
+    public function vars(null|string $name = null, mixed $default = null): mixed
     {
-        if ($key === null)
+        if ($name === null)
             return $this->input->request;
 
-        return $this->input->request[$key] ?? $default;
+        return $this->input->request[$name] ?? $default;
     }
 
-    public function files(null|string $key = null): null|array
+    public function files(null|string $name = null): null|array
     {
-        if ($key === null)
+        if ($name === null)
             return $this->input->files;
 
-        return $this->input->files[$key] ?? null;
+        return $this->input->files[$name] ?? null;
     }
 
-    public function cookies(null|string $key = null): null|array
+    public function cookies(null|string $name = null): null|array
     {
-        if ($key === null)
+        if ($name === null)
             return $this->input->cookies;
 
-        return $this->input->cookies[$key] ?? null;
+        return $this->input->cookies[$name] ?? null;
     }
 
     public function payload(): string
@@ -105,13 +106,17 @@ class Request
         return $this->path;
     }
 
-    public function queryParameters(): array
+    public function queryParameters(string $name = ''): array
     {
+        if ($name !== '')
+            return $this->queryParameters[$name] ?? [];
         return $this->queryParameters;
     }
 
-    public function pathParameters(): array
+    public function pathParameters(string $name = ''): array
     {
+        if ($name !== '')
+            return $this->pathParameters[$name] ?? [];
         return $this->pathParameters;
     }
 

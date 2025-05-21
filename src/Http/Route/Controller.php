@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace Projom\Http\Route;
 
-use Exception;
-
+use Projom\Http\Response;
 use Projom\Http\Request;
+use Projom\Http\StatusCode;
 
 abstract class Controller
 {
-	abstract public function __construct(Request $request);
+	abstract public function __construct(
+		protected Request $request,
+		protected Response $response
+	);
 
 	public function get(): void
 	{
@@ -34,6 +37,6 @@ abstract class Controller
 
 	private function methodNotImplemented(): void
 	{
-		throw new Exception('Method not implemented', 405);
+		$this->response->abort(StatusCode::NOT_IMPLEMENTED);
 	}
 }

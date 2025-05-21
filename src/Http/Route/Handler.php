@@ -7,6 +7,7 @@ namespace Projom\Http\Route;
 use Exception;
 
 use Projom\Http\Request;
+use Projom\Http\Response;
 use Projom\Http\Route\Controller;
 
 class Handler
@@ -49,6 +50,6 @@ class Handler
 	{
 		$controller = $this->controller;
 		$method = $this->method;
-		(new $controller($request))->{$method}();
+		(new $controller($request, Response::create()))->{$method}();
 	}
 }

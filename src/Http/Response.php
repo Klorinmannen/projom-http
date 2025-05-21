@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Projom\Http;
 
+use Projom\Http\ContentType;
 use Projom\Http\StatusCode;
 
 class Response
@@ -17,21 +18,21 @@ class Response
 
 	public function json(array|object $data, StatusCode $code = StatusCode::OK): void
 	{
-		header('Content-Type: application/json', response_code: $code->value);
+		header(ContentType::APPLICATION_JSON->value, response_code: $code->value);
 		echo json_encode($data);
 		exit;
 	}
 
 	public function text(string $text, StatusCode $code = StatusCode::OK): void
 	{
-		header('Content-Type: text/plain', response_code: $code->value);
+		header(ContentType::TEXT_PLAIN->value, response_code: $code->value);
 		echo $text;
 		exit;
 	}
 
 	public function html(string $html, StatusCode $code = StatusCode::OK): void
 	{
-		header('Content-Type: text/html', response_code: $code->value);
+		header(ContentType::TEXT_HTML->value, response_code: $code->value);
 		echo $html;
 		exit;
 	}

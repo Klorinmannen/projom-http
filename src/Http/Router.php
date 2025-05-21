@@ -10,7 +10,6 @@ use Exception;
 use Projom\Http\OAS;
 use Projom\Http\Request;
 use Projom\Http\Route;
-use Projom\Http\Route\Handler;
 
 class Router
 {

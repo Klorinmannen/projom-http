@@ -6,7 +6,7 @@ namespace Projom\Http\Route;
 
 class Pattern
 {
-	const FIND_NAMES = '/\{([^:{}]+|[^{}]+?):([^{}]+)\}/';
+	const FIND_NAMES = '/\{[^:{}]+(?:[^{}]*?):([^{}]+)\}/';
 	const REMOVE_NAMES = '/:([^{}]+)(?=\})/';
 	const PREPARE_ROUTE_PATH_NAMES = '/\{([^:{}]+(?:[^{}]*?))(?:\:([^{}]+))?\}/';
 

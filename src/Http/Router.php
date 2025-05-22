@@ -51,6 +51,9 @@ class Router
 		$this->processMiddlewares($request);
 
 		$route = $this->match($request);
+		if ($route === null)
+			throw new Exception('Not found', 404);
+
 		$route->processMiddlewares($request);
 		$route->setup();
 		$route->verify($request);
@@ -65,12 +68,12 @@ class Router
 				: $middleware->process($request);
 	}
 
-	private function match(Request $request): RouteBase
+	private function match(Request $request): null|RouteBase
 	{
 		foreach ($this->routes as $route)
 			if ($route->match($request))
 				return $route;
 
-		throw new Exception('Not found', 404);
+		return null;
 	}
 }

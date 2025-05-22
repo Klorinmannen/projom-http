@@ -13,6 +13,7 @@ use Projom\Http\Route\Data;
 use Projom\Http\Route\DataInterface;
 use Projom\Http\Route\Handler;
 use Projom\Http\Route\Parameter;
+use Projom\Http\Route\Path;
 use Projom\Http\Route\Payload;
 
 class Route extends RouteBase implements RouteInterface
@@ -20,7 +21,7 @@ class Route extends RouteBase implements RouteInterface
 	public function __construct(string $path, string $controller)
 	{
 		$this->handler = Handler::create($controller);
-		$this->routePath = $this->preparePath($path);
+		$this->path = Path::create($path);
 	}
 
 	public function addMiddleware(MiddlewareInterface|Closure $middleware): void

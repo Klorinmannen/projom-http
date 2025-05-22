@@ -15,7 +15,7 @@ class Route extends RouteBase
 {
 	public function __construct(string $path)
 	{
-		$this->routePath = $path;
+		$this->path = $path;
 	}
 
 	public function setData(Method $method, Data $data): void

@@ -6,10 +6,6 @@ namespace Projom\Http\Route;
 
 class Pattern
 {
-	const FIND_NAMES = '/\{[^:{}]+(?:[^{}]*?):([^{}]+)\}/';
-	const REMOVE_NAMES = '/:([^{}]+)(?=\})/';
-	const PREPARE_ROUTE_PATH_NAMES = '/\{([^:{}]+(?:[^{}]*?))(?:\:([^{}]+))?\}/';
-
 	const NUMERIC_ID = 'numeric_id';
 	const INTEGER = 'integer';
 	const STRING = 'string';
@@ -24,9 +20,9 @@ class Pattern
 		'bool' => '(true|false)',
 	];
 
-	public static function create(string $routePath): string
+	public static function create(string $path): string
 	{
-		$pattern = preg_replace(static::REMOVE_NAMES, '', $routePath);
+		$pattern = $path;
 		foreach (static::DEFAULT_PARAMETER_PATTERNS as $name => $namePattern)
 			$pattern = preg_replace(static::finalizeName($name), $namePattern, $pattern);
 

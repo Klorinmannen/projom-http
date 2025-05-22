@@ -17,7 +17,7 @@ class Pattern
 	const BOOL = 'bool';
 
 	private const DEFAULT_PARAMETER_PATTERNS = [
-		'numeric_id' => '([1-9][0-9]+|[1-9]+)',
+		'numeric_id' => '([1-9][0-9]*)',
 		'integer' => '([0-9]+)',
 		'string' => '(.+)',
 		'name' => '([a-zA-Z,_]+)',

@@ -6,6 +6,10 @@ namespace Projom\Http\Route;
 
 class Pattern
 {
+	const FIND_NAMES = '/\{([^:{}]+|[^{}]+?):([^{}]+)\}/';
+	const REMOVE_NAMES = '/:([^{}]+)(?=\})/';
+	const PREPARE_ROUTE_PATH_NAMES = '/\{([^:{}]+(?:[^{}]*?))(?:\:([^{}]+))?\}/';
+
 	const NUMERIC_ID = 'numeric_id';
 	const INTEGER = 'integer';
 	const STRING = 'string';
@@ -20,9 +24,9 @@ class Pattern
 		'bool' => '(true|false)',
 	];
 
-	public static function create(string $path): string
+	public static function create(string $routePath): string
 	{
-		$pattern = $path;
+		$pattern = preg_replace(static::REMOVE_NAMES, '', $routePath);
 		foreach (static::DEFAULT_PARAMETER_PATTERNS as $name => $namePattern)
 			$pattern = preg_replace(static::finalizeName($name), $namePattern, $pattern);
 
@@ -44,23 +48,23 @@ class Pattern
 	}
 
 	public static function test(string $pattern, string $subject): bool
-    {
-        if (! $pattern || ! $subject)
-            return false;
-        return preg_match($pattern, $subject) === 1;
-    }
+	{
+		if (! $pattern || ! $subject)
+			return false;
+		return preg_match($pattern, $subject) === 1;
+	}
 
 	public static function fromType(string $type): string
-    {
+	{
 		$type = strtolower($type);
-        $pattern = match ($type) {
-			static::NUMERIC_ID => static::DEFAULT_PARAMETER_PATTERNS['id'],
+		$pattern = match ($type) {
+			static::NUMERIC_ID => static::DEFAULT_PARAMETER_PATTERNS['numeric_id'],
 			static::INTEGER => static::DEFAULT_PARAMETER_PATTERNS['integer'],
 			static::NAME => static::DEFAULT_PARAMETER_PATTERNS['name'],
 			static::STRING => static::DEFAULT_PARAMETER_PATTERNS['string'],
 			static::BOOL => static::DEFAULT_PARAMETER_PATTERNS['bool'],
 			default => $type,
 		};
-        return static::finalize($pattern);
-    }
+		return static::finalize($pattern);
+	}
 }

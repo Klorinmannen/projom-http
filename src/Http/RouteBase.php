@@ -12,7 +12,7 @@ use Projom\Http\Route\Pattern;
 
 abstract class RouteBase
 {
-	protected string $path = '';
+	protected string $routePath = '';
 	protected null|Handler $handler = null;
 	protected array $methodData = [];
 	protected null|object $matchedData = null;
@@ -20,18 +20,60 @@ abstract class RouteBase
 
 	public function match(Request $request): bool
 	{
-		$pattern = Pattern::create($this->path);
-		if (preg_match($pattern, $request->path(), $matches) === 0)
+		[$result, $matches] = $this->matchRoutePath($request->path());
+		if ($result === false)
 			return false;
 
 		$method = $request->method();
 		if (! $this->hasMethod($method))
 			throw new Exception('Method not allowed', 405);
 
-		$request->setPathParameters(array_slice($matches, 1));
-		$this->matchedData = $this->methodData[$method->name];
+		// Remove the first element, the matching path string.
+		$pathParameters = array_slice($matches, 1, preserve_keys: true);
+		$pathParameters = $this->keyPathParameters($pathParameters);
+		$request->setPathParameters($pathParameters);
 
+		$this->matchedData = $this->methodData[$method->name];
 		return true;
+	}
+
+	private function matchRoutePath(string $requestPath): array
+	{
+		$pattern = Pattern::create($this->routePath);
+		if (preg_match($pattern, $requestPath, $matches) === 0)
+			return [false, []];
+		return [true, $matches];
+	}
+
+	private function keyPathParameters(array $pathParameters): array
+	{
+		preg_match_all(Pattern::FIND_NAMES, $this->routePath, $matches);
+
+		// Last element contains the parameter names.
+		$pathParameterNames = array_pop($matches);
+
+		return array_combine($pathParameterNames, $pathParameters);
+	}
+
+	/**
+	 * Prepares the route path by adding a numeric identifier
+	 * to the path parameters that are missing identifiers.
+	 */
+	protected function preparePath($path): string
+	{
+		$counter = 1;
+		$routePath = preg_replace_callback(
+			Pattern::PREPARE_ROUTE_PATH_NAMES,
+			function ($matches) use (&$counter) {
+				$type = $matches[1];
+				$name = $matches[2] ?? $counter;
+				$counter++;
+				return "{{$type}:{$name}}";
+			},
+			$path
+		);
+
+		return $routePath;
 	}
 
 	private function hasMethod(Method $method): bool

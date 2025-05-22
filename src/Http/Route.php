@@ -20,7 +20,7 @@ class Route extends RouteBase implements RouteInterface
 	public function __construct(string $path, string $controller)
 	{
 		$this->handler = Handler::create($controller);
-		$this->path = $path;
+		$this->routePath = $this->preparePath($path);
 	}
 
 	public function addMiddleware(MiddlewareInterface|Closure $middleware): void

@@ -9,13 +9,14 @@ use Exception;
 use Projom\Http\Method;
 use Projom\Http\Request;
 use Projom\Http\Route\Handler;
+use Projom\Http\Route\Path;
 use Projom\Http\Route\RouteBase;
 
 class Route extends RouteBase
 {
 	public function __construct(string $path)
 	{
-		$this->path = $path;
+		$this->path = Path::create($path);
 	}
 
 	public function setData(Method $method, Data $data): void

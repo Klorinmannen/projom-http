@@ -113,11 +113,10 @@ class Request
     }
 
     /**
-     * @param null|int $name, positional starts from 1
+     * @param null|int $name
      * 
      * * Example: $request->pathParameters() will return all path parameters.
-     * * Example: $request->pathParameters(1) will return the first path parameter.
-     * * Example: $request->pathParameters('id') will return the path parameter with the name 'id'.
+     * * Example: $request->pathParameters('id') will return the path parameter identified by 'id'.
      */
     public function pathParameters(null|int|string $name = null): null|array|string
     {

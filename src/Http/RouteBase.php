@@ -29,7 +29,7 @@ abstract class RouteBase
 			throw new Exception('Method not allowed', 405);
 
 		// Remove the first element, the matching path string.
-		$pathParameters = array_slice($matches, 1, preserve_keys: true);
+		$pathParameters = array_slice($matches, 1);
 		$pathParameters = $this->keyPathParameters($pathParameters);
 		$request->setPathParameters($pathParameters);
 

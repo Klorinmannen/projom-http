@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Projom\Http;
+namespace Projom\Http\Route;
 
 use Closure;
 
+use Projom\Http\MiddlewareInterface;
 use Projom\Http\Route\DataInterface;
 
 interface RouteInterface

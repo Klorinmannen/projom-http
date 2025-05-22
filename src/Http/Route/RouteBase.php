@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Projom\Http;
+namespace Projom\Http\Route;
 
 use Closure;
 use Exception;
 
+use Projom\Http\Method;
+use Projom\Http\Request;
 use Projom\Http\Route\Handler;
 use Projom\Http\Route\Path;
 

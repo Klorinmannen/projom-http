@@ -2,19 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Projom\Http;
+namespace Projom\Http\Route;
 
 use Closure;
 use Exception;
 
 use Projom\Http\Method;
-use Projom\Http\RouteInterface;
+use Projom\Http\MiddlewareInterface;
+use Projom\Http\Request;
+use Projom\Http\Route\RouteInterface;
 use Projom\Http\Route\Data;
 use Projom\Http\Route\DataInterface;
 use Projom\Http\Route\Handler;
 use Projom\Http\Route\Parameter;
 use Projom\Http\Route\Path;
 use Projom\Http\Route\Payload;
+use Projom\Http\Route\RouteBase;
 
 class Route extends RouteBase implements RouteInterface
 {

@@ -9,7 +9,7 @@ use Exception;
 use Projom\Http\Method;
 use Projom\Http\Request;
 use Projom\Http\Route\Handler;
-use Projom\Http\RouteBase;
+use Projom\Http\Route\RouteBase;
 
 class Route extends RouteBase
 {

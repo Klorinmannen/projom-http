@@ -122,7 +122,7 @@ class Request
     {
         if ($name !== null)
             return $this->pathParameters[(string)$name] ?? null;
-        return $this->pathParameters;
+        return array_values($this->pathParameters);
     }
 
     public function setPathParameters(array $pathParameters): void

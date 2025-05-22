@@ -9,6 +9,8 @@ use Exception;
 use Projom\Http\Request;
 use Projom\Http\Response;
 use Projom\Http\Controller;
+use ReflectionClass;
+use ReflectionMethod;
 
 class Handler
 {
@@ -50,6 +52,66 @@ class Handler
 	{
 		$controller = $this->controller;
 		$method = $this->method;
-		(new $controller($request, Response::create()))->{$method}();
+		$parameters = $this->resolveParameters($controller, $method, $request);
+		(new $controller($request, Response::create()))->{$method}(...$parameters);
+	}
+
+	private function resolveParameters(string $controller, string $method, Request $request): array
+	{
+		$reflection = new ReflectionMethod($controller, $method);
+		$reflectionParams = $reflection->getParameters();
+		if (! $reflectionParams)
+			return [];
+
+		$parameters = [];
+		foreach ($reflectionParams as $parameter) {
+
+			$parameterName = $parameter->getName();
+			$typeName = $parameter->getType()->getName();
+			$parameter = $this->matchParameter($parameterName, $typeName, $request);
+			if ($parameter !== null)
+				$parameters[] = $parameter;
+		}
+
+		return $parameters;
+	}
+
+	private function matchParameter(
+		string $parameterName,
+		string $typeName,
+		Request $request
+	): mixed {
+		return match ($parameterName) {
+			'pathParameters' => $request->pathParameters(),
+			'queryParameters' => $request->queryParameters(),
+			'vars' => $request->vars(),
+			'payload' => $request->payload(),
+			'headers' => $request->headers(),
+			'cookies' => $request->cookies(),
+			default => $this->resolveClassParameter($typeName)
+		};
+	}
+
+	private function resolveClassParameter(string $className): null|object
+	{
+		if (! class_exists($className))
+			return null;
+
+		$class = new ReflectionClass($className);
+		$constructor = $class->getConstructor();
+		$constructorParams = $constructor->getParameters();
+
+		$dependencies = [];
+		foreach ($constructorParams as $parameter) {
+
+			if ($parameter->getType() === null)
+				continue;
+
+			$typeName = $parameter->getType()->getName();
+			$resolvedClass = $this->resolveClassParameter($typeName);
+			$dependencies[] = $resolvedClass;
+		}
+
+		return $class->newInstanceArgs($dependencies);
 	}
 }

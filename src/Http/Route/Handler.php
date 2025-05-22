@@ -8,7 +8,7 @@ use Exception;
 
 use Projom\Http\Request;
 use Projom\Http\Response;
-use Projom\Http\Route\Controller;
+use Projom\Http\Controller;
 
 class Handler
 {

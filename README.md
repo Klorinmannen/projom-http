@@ -17,22 +17,66 @@ Visit the repository [wiki](https://github.com/Klorinmannen/projom-http/wiki) pa
 ### Example usage
 ````
 use Projom\Http\Request;
-use Projom\Http\RouteInterface;
-use Projom\Http\Route\Handler;
+use Projom\Http\Route\RouteInterface;
 
-use Recipe\Auth\Controller as AuthController;
-use Recipe\Auth\Preflight;
+use Recipe\Auth\PreflightMiddleware;
 use Recipe\Controller as RecipeController;
+use Recipe\Ingredient\Controller as RecipeIngredientController;
 
 $router = new Router();
-$router->addRoute('/', Handler::create(RecipeController::class), function (RouteInterface $route) {
-	$route->get();
-	return $route;
-});
-$router->addRoute('/auth/login', Handler::create(AuthController::class, 'login'), function (RouteInterface $route) {
-	$route->post();
-	return $route;
-});
-$router->addMiddleware(Preflight::create());
+
+$router->addRoute('/', 
+	RecipeController::class, 
+	function (RouteInterface $route) {
+		$route->get();
+	}
+);
+
+$router->addRoute(
+	'/recipes', 
+	RecipeController::class, 
+	function (RouteInterface $route) {
+		
+		$route->get()
+			->optionalQueryParameters(['sort' => 'string'])
+			->expectsQueryParameters(['page' => 'integer']);
+		
+		$route->post()->expectsPayload();
+	}
+);
+
+$router->addRoute(
+	'/recipes/{numeric_id:recipe_id}',
+	RecipeController::class, 
+	function (RouteInterface $route) {
+		$route->get('getRecipe');
+		$route->patch('updateRecipe')->expectsPayload();
+	}
+);
+
+$router->addRoute(
+	'/recipes/{numeric_id:recipe_id}/ingredients',
+	RecipeIngredientController::class, 
+	function (RouteInterface $route) {
+		
+		$route->get()
+			->optionalQueryParameters(['sort' => 'string'])
+			->expectsQueryParameters(['page' => 'integer']);
+		
+		$route->post()->expectsPayload();
+	}
+);
+
+$router->addRoute(
+	'/recipes/{numeric_id:recipe_id}/ingredients/{numeric_id:ingredient_id}',
+	RecipeIngredientController::class, 
+	function (RouteInterface $route) {
+		$route->get('getIngredient');
+		$route->patch('updateIngredient')->expectsPayload();
+	}
+);
+
+$router->addMiddleware(PreflightMiddleware::create());
+
 $router->dispatch(Request::create());
 ````

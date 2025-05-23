@@ -73,16 +73,4 @@ class Route extends RouteBase implements RouteInterface
 	{
 		$this->handler->setMethod($this->matchedData->method());
 	}
-
-	protected function verifyData(Request $request): void
-	{
-		$expectedInput = $this->matchedData->expectedInput();
-
-		if (! Payload::verify($request->payload(), $expectedInput['payload']))
-			throw new Exception('Provided payload does not match expected', 400);
-
-		$normalizedQueryParams = Parameter::normalize($expectedInput['query']);
-		if (! Parameter::verifyQuery($request->queryParameters(), $normalizedQueryParams))
-			throw new Exception('Provided query parameters does not match expected', 400);
-	}
 }

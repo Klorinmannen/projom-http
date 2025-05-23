@@ -33,15 +33,15 @@ class Route extends RouteBase
 
 	protected function verifyData(Request $request): void
 	{
+		if (! Payload::verify($request->payload(), $this->matchedData->expectedPayload ?? []))
+			throw new Exception('Provided payload does not match expected', 400);
+
 		$normalizedPathParams = Parameter::normalize($this->matchedData->expectedParameters['path'] ?? []);
 		if (! Parameter::verifyPath($request->pathParameters(), $normalizedPathParams))
 			throw new Exception('Provided path parameters does not match expected', 400);
 
 		$normalizedQueryParams = Parameter::normalize($this->matchedData->expectedParameters['query'] ?? []);
-		if (! Parameter::verifyQuery($request->queryParameters(), $normalizedQueryParams))
+		if (! Parameter::verifyExpectedParameters($request->queryParameters(), $normalizedQueryParams))
 			throw new Exception('Provided query parameters does not match expected', 400);
-
-		if (! Payload::verify($request->payload(), $this->matchedData->expectedPayload ?? []))
-			throw new Exception('Provided payload does not match expected', 400);
 	}
 }

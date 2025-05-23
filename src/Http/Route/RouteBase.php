@@ -50,7 +50,6 @@ abstract class RouteBase
 	}
 
 	abstract public function setup(): void;
-	abstract protected function verifyData(Request $request): void;
 
 	public function verify(Request $request): void
 	{
@@ -61,8 +60,7 @@ abstract class RouteBase
 			throw new Exception('Route handler missing', 500);
 
 		$this->handler->verify();
-
-		$this->verifyData($request);
+		$this->matchedData->verify($request);
 	}
 
 	public function execute(Request $request): void

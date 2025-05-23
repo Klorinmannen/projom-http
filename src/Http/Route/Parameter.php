@@ -42,39 +42,48 @@ class Parameter
 		return true;
 	}
 
-	public static function verifyQuery(array $inputQueryParameters, array $expectedQueryParameters): bool
+	public static function verifyOptionalParameters(array $inputParameters, array $normalizedParameterDefinitions): bool
 	{
 		// Nothing to check against.
-		if (! $expectedQueryParameters)
+		if (! $normalizedParameterDefinitions)
+			return true;
+		if (! $inputParameters)
 			return true;
 
-		/* 
-			Note: 
-			This check can be removed or conditioned to make the input query parameters optional.
-			Making the check less strict and allows for more flexibility.
-		*/
-		if (! $inputQueryParameters && $expectedQueryParameters)
+		$namedDefinitions = static::rekeyOnName($normalizedParameterDefinitions);
+		$namedDefinitionSubset = static::selectSubset($inputParameters, $namedDefinitions);
+
+		$result = static::test($inputParameters, $namedDefinitionSubset);
+		if (! $result)
+			return false;
+
+		return true;
+	}
+
+	public static function verifyExpectedParameters(array $inputParameters, array $normalizedParameterDefinitions): bool
+	{
+		// Nothing to check against.
+		if (! $normalizedParameterDefinitions)
+			return true;
+
+		// The input query parameter set cannot be empty if definitions are set.
+		if (! $inputParameters && $normalizedParameterDefinitions)
 			return false;
 
 		// The input query parameter set cannot be bigger than the expected set.
-		if (count($inputQueryParameters) > count($expectedQueryParameters))
+		if (count($inputParameters) > count($normalizedParameterDefinitions))
 			return false;
 
-		$namedExpectedQueryParameter = static::rekeyOnName($expectedQueryParameters);
 
-		/* 
-			Note: 
-			This check can be removed or conditioned, allowing for unknown parameters to be present in the set.
-			Making the check less strict and allows for more flexibility.
-			The selectSubset method will filter out the unknown parameters instead.
-		*/
-		$isSubset = static::isSubset($inputQueryParameters, $namedExpectedQueryParameter);
+		$namedDefinitions = static::rekeyOnName($normalizedParameterDefinitions);
+
+		$isSubset = static::isSubset($inputParameters, $namedDefinitions);
 		if (! $isSubset)
 			return false;
 
-		$namedExpectedQueryParameterSubset = static::selectSubset($inputQueryParameters, $namedExpectedQueryParameter);
+		$namedDefinitionSubset = static::selectSubset($inputParameters, $namedDefinitions);
 
-		$result = static::test($inputQueryParameters, $namedExpectedQueryParameterSubset);
+		$result = static::test($inputParameters, $namedDefinitionSubset);
 		if (! $result)
 			return false;
 

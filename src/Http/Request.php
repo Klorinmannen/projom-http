@@ -8,16 +8,14 @@ use Projom\Http\Request\Input;
 
 class Request
 {
-    protected null|Input $input = null;
     protected string $path = '';
     protected array $parsedUrl = [];
     protected array $headers = [];
     protected array $queryParameters = [];
     protected array $pathParameters = [];
 
-    public function __construct(Input $input)
+    public function __construct(protected readonly null|Input $input)
     {
-        $this->input = $input;
         $this->parseUrl();
         $this->parseHeaders();
     }
@@ -28,16 +26,17 @@ class Request
             return new Request($input);
 
         $input = Input::create();
+        $request = new Request($input);
 
-        return new Request($input);
+        return $request;
     }
 
     private function parseUrl(): void
     {
         $this->parsedUrl = parse_url($this->input->server['REQUEST_URI'] ?? '');
 
-        $queryList = $this->parsedUrl['query'] ?? '';
-        parse_str($queryList, $this->queryParameters);
+        $queryParams = $this->parsedUrl['query'] ?? '';
+        parse_str($queryParams, $this->queryParameters);
 
         $this->path = $this->parsedUrl['path'] ?? '';
     }
@@ -58,43 +57,6 @@ class Request
         return empty($this->path);
     }
 
-    public function headers(null|string $header = null): null|array|string
-    {
-        if ($header === null)
-            return $this->headers;
-
-        return $this->headers[$header] ?? null;
-    }
-
-    public function vars(null|string $name = null, mixed $default = null): mixed
-    {
-        if ($name === null)
-            return $this->input->request;
-
-        return $this->input->request[$name] ?? $default;
-    }
-
-    public function files(null|string $name = null): null|array
-    {
-        if ($name === null)
-            return $this->input->files;
-
-        return $this->input->files[$name] ?? null;
-    }
-
-    public function cookies(null|string $name = null): null|array
-    {
-        if ($name === null)
-            return $this->input->cookies;
-
-        return $this->input->cookies[$name] ?? null;
-    }
-
-    public function payload(): string
-    {
-        return $this->input->payload;
-    }
-
     public function method(): null|Method
     {
         return Method::tryFrom($this->input->server['REQUEST_METHOD'] ?? '');
@@ -105,6 +67,18 @@ class Request
         return $this->path;
     }
 
+    public function pathParameters(null|int|string $name = null): null|array|string
+    {
+        if ($name !== null)
+            return $this->pathParameters[(string)$name] ?? null;
+        return $this->pathParameters;
+    }
+
+    public function setPathParameters(array $pathParameters): void
+    {
+        $this->pathParameters = $pathParameters;
+    }
+
     public function queryParameters(string $name = ''): null|array|string
     {
         if ($name !== '')
@@ -112,21 +86,36 @@ class Request
         return $this->queryParameters;
     }
 
-    /**
-     * @param null|int $name
-     * 
-     * * Example: $request->pathParameters() will return all path parameters.
-     * * Example: $request->pathParameters('id') will return the path parameter identified by 'id'.
-     */
-    public function pathParameters(null|int|string $name = null): null|array|string
+    public function vars(null|string $name = null, mixed $default = null): mixed
     {
         if ($name !== null)
-            return $this->pathParameters[(string)$name] ?? null;
-        return array_values($this->pathParameters);
+            return $this->input->request[$name] ?? $default;
+        return $this->input->request;
     }
 
-    public function setPathParameters(array $pathParameters): void
+    public function headers(null|string $header = null): null|array|string
     {
-        $this->pathParameters = $pathParameters;
+        if ($header !== null)
+            return $this->headers[$header] ?? null;
+        return $this->headers;
+    }
+
+    public function files(null|string $name = null): null|array
+    {
+        if ($name !== null)
+            return $this->input->files[$name] ?? null;
+        return $this->input->files;
+    }
+
+    public function cookies(null|string $name = null): null|array
+    {
+        if ($name !== null)
+            return $this->input->cookies[$name] ?? null;
+        return $this->input->cookies;
+    }
+
+    public function payload(): string
+    {
+        return $this->input->payload;
     }
 }

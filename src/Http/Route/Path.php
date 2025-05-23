@@ -8,14 +8,15 @@ use Projom\Http\Route\Pattern;
 
 class Path
 {
-	private const PREPARE_ROUTE_PATH_IDENTIFIER = '/\{([^:{}]+(?:[^{}]*?))(?:\:([^{}]+))?\}/';
+	private const PARAMETER_IDENTIFIER_PATTERN = '/\{([^:{}]+(?:[^{}]*?))(?:\:([^{}]+))?\}/';
 
-	private string $pattern = '';
+	private readonly string $path;
+	private readonly string $pattern;
 	private array $parameterIdentifiers = [];
 
-	public function __construct(private string $path)
+	public function __construct(string $path)
 	{
-		$this->path = $this->prepareParameterIdentifiers($path);
+		$this->path = $this->setPathIdentifiers($path);
 		$this->pattern = Pattern::create($this->path);
 	}
 
@@ -36,7 +37,7 @@ class Path
 
 	public function formatParameters(array $parameters): array
 	{
-		// Remove the first element, the full string match.
+		// Remove the full string match.
 		$parameters = array_slice($parameters, 1);
 
 		if (!$parameters)
@@ -48,21 +49,21 @@ class Path
 		return $parameters;
 	}
 
-	public function prepareParameterIdentifiers(string $path): string
+	public function setPathIdentifiers(string $path): string
 	{
-		$counter = 1;
+		$pos = 1;
 		$routePath = preg_replace_callback(
-			static::PREPARE_ROUTE_PATH_IDENTIFIER,
-			function ($matches) use (&$counter) {
+			static::PARAMETER_IDENTIFIER_PATTERN,
+			function ($matches) use (&$pos) {
 
 				$type = $matches[1];
 				$pattern = '{' . $type . '}';
 
 				// If the identifier is not set, use a positional numeric.
-				$identifier = $matches[2] ?? $counter;
+				$identifier = $matches[2] ?? $pos;
 				$this->parameterIdentifiers[] = $identifier;
 
-				$counter++;
+				$pos++;
 				return $pattern;
 			},
 			$path

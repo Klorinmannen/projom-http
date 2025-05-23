@@ -7,21 +7,26 @@ namespace Projom\Http\Request;
 class Input
 {
 	public function __construct(
-		public array $request,
-		public array $server,
-		public array $files,
-		public array $cookies,
-		public string $payload
+		public readonly array $request,
+		public readonly array $server,
+		public readonly array $files,
+		public readonly array $cookies,
+		public readonly string $payload
 	) {}
 
-	public static function create(): Input
-	{
+	public static function create(
+		array $request = [],
+		array $server = [],
+		array $files = [],
+		array $cookies = [],
+		string $payload = ''
+	): Input {
 		return new Input(
-			$_REQUEST ?? [],
-			$_SERVER ?? [],
-			$_FILES ?? [],
-			$_COOKIE ?? [],
-			file_get_contents('php://input') ?: ''
+			$request ?: ($_REQUEST ?? []),
+			$server ?: ($_SERVER ?? []),
+			$files ?: ($_FILES ?? []),
+			$cookies ?: ($_COOKIE ?? []),
+			$payload ?: (file_get_contents('php://input') ?: '')
 		);
 	}
 }

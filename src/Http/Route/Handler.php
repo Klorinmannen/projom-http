@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Projom\Http\Route;
 
 use Exception;
+use ReflectionClass;
+use ReflectionMethod;
 
 use Projom\Http\Request;
 use Projom\Http\Response;
 use Projom\Http\Controller;
-use ReflectionClass;
-use ReflectionMethod;
 
 class Handler
 {

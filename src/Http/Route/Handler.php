@@ -69,8 +69,7 @@ class Handler
 			$parameterName = $parameter->getName();
 			$typeName = $parameter->getType()->getName();
 			$parameter = $this->matchParameter($parameterName, $typeName, $request);
-			if ($parameter !== null)
-				$parameters[] = $parameter;
+			$parameters[] = $parameter;
 		}
 
 		return $parameters;
@@ -81,6 +80,10 @@ class Handler
 		string $typeName,
 		Request $request
 	): mixed {
+
+		if (class_exists($typeName))
+			return $this->resolveClassParameter($typeName);
+
 		return match ($parameterName) {
 			'pathParameters' => $request->pathParameters(),
 			'queryParameters' => $request->queryParameters(),
@@ -88,17 +91,18 @@ class Handler
 			'payload' => $request->payload(),
 			'headers' => $request->headers(),
 			'cookies' => $request->cookies(),
-			default => $this->resolveClassParameter($typeName)
+			'files' => $request->files(),
+			default => $request->find($parameterName),
 		};
 	}
 
-	private function resolveClassParameter(string $className): null|object
+	private function resolveClassParameter(string $className): object
 	{
-		if (! class_exists($className))
-			return null;
-
 		$class = new ReflectionClass($className);
 		$constructor = $class->getConstructor();
+		if ($constructor === null)
+			return $class->newInstanceWithoutConstructor();
+
 		$constructorParams = $constructor->getParameters();
 
 		$dependencies = [];

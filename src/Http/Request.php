@@ -118,4 +118,27 @@ class Request
     {
         return $this->input->payload;
     }
+
+    public function find(string $name): mixed
+    {
+        if (array_key_exists($name, $this->pathParameters))
+            return $this->pathParameters[$name];
+
+        if (array_key_exists($name, $this->queryParameters))
+            return $this->queryParameters[$name];
+
+        if (array_key_exists($name, $this->input->request))
+            return $this->input->request[$name];
+
+        if (array_key_exists($name, $this->input->files))
+            return $this->input->files[$name];
+
+        if (array_key_exists($name, $this->input->cookies))
+            return $this->input->cookies[$name];
+
+        if (array_key_exists($name, $this->headers))
+            return $this->headers[$name];
+
+        return null;
+    }
 }

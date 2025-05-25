@@ -87,7 +87,7 @@ class Handler
 		return match ($parameterName) {
 			'pathParameters' => $request->pathParameters(),
 			'queryParameters' => $request->queryParameters(),
-			'vars' => $request->vars(),
+			'requestVars' => $request->vars(),
 			'payload' => $request->payload(),
 			'headers' => $request->headers(),
 			'cookies' => $request->cookies(),

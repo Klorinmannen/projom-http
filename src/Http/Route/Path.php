@@ -10,14 +10,20 @@ class Path
 {
 	private const PARAMETER_IDENTIFIER_PATTERN = '/\{([^:{}]+(?:[^{}]*?))(?:\:([^{}]+))?\}/';
 
-	private readonly string $path;
+	private readonly bool $isStatic;
 	private readonly string $pattern;
+	private string $path = '';
 	private array $parameterIdentifiers = [];
 
 	public function __construct(string $path)
 	{
-		$this->path = $this->setPathIdentifiers($path);
-		$this->pattern = Pattern::create($this->path);
+		$this->isStatic = $this->isStatic();
+		$this->path = $path;
+
+		if (! $this->isStatic) {
+			$this->path = $this->withPathIdentifiers($path);
+			$this->pattern = Pattern::create($this->path);
+		}
 	}
 
 	public static function create(string $path): Path
@@ -25,8 +31,18 @@ class Path
 		return new Path($path);
 	}
 
+	private function isStatic(): bool
+	{
+		return str_contains($this->path, '{') && str_contains($this->path, '}');
+	}
+
 	public function test(string $requestPath): array
 	{
+		if ($this->isStatic)
+			return $this->path === $requestPath
+				? [true, []]
+				: [false, []];
+
 		if (preg_match($this->pattern, $requestPath, $matches) === 0)
 			return [false, []];
 
@@ -35,7 +51,7 @@ class Path
 		return [true, $parameters];
 	}
 
-	public function formatParameters(array $parameters): array
+	private function formatParameters(array $parameters): array
 	{
 		// Remove the full string match.
 		$parameters = array_slice($parameters, 1);
@@ -49,7 +65,7 @@ class Path
 		return $parameters;
 	}
 
-	public function setPathIdentifiers(string $path): string
+	private function withPathIdentifiers(string $path): string
 	{
 		$pos = 1;
 		$routePath = preg_replace_callback(

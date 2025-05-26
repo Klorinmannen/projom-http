@@ -23,14 +23,14 @@ class Route extends RouteBase implements RouteInterface
 		$this->path = Path::create($path);
 	}
 
-	public function addMiddleware(MiddlewareInterface|Closure $middleware): void
-	{
-		$this->middlewares[] = $middleware;
-	}
-
 	public static function create(string $path, mixed $handler): Route
 	{
 		return new Route($path, $handler);
+	}
+
+	public function addMiddleware(MiddlewareInterface|Closure $middleware): void
+	{
+		$this->middlewares[] = $middleware;
 	}
 
 	public function get(string $controllerMethod = ''): DataInterface

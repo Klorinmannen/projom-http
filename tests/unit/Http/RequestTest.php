@@ -7,9 +7,10 @@ namespace Projom\Tests\Unit\Http;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+
 use Projom\Http\Method;
-use Projom\Http\Request\Input;
 use Projom\Http\Request;
+use Projom\Http\Request\Input;
 
 class RequestTest extends TestCase
 {
@@ -32,7 +33,7 @@ class RequestTest extends TestCase
 	#[DataProvider('provider_empty')]
 	public function empty(string $uri, bool $expected): void
 	{
-		$input = new Input([], ['REQUEST_URI' => $uri], [], [],'');
+		$input = new Input([], ['REQUEST_URI' => $uri], [], [], '');
 		$request = Request::create($input);
 		$this->assertEquals($expected, $request->empty());
 	}
@@ -40,11 +41,32 @@ class RequestTest extends TestCase
 	public static function provider_headers(): array
 	{
 		return [
-			'Valid' => [
+			'Valid 1' => [
 				'server' => [
 					'HTTP_CONTENT_TYPE' => 'application/json'
 				],
 				'header' => 'HTTP_CONTENT_TYPE',
+				'expected' => 'application/json'
+			],
+			'Valid 2' => [
+				'server' => [
+					'HTTP_CONTENT_TYPE' => 'application/json'
+				],
+				'header' => 'Content-Type',
+				'expected' => 'application/json'
+			],
+			'Valid 3' => [
+				'server' => [
+					'HTTP_CONTENT_TYPE' => 'application/json'
+				],
+				'header' => 'HTTP-CONTENT-TYPE',
+				'expected' => 'application/json'
+			],
+			'Valid 4' => [
+				'server' => [
+					'HTTP_CONTENT_TYPE' => 'application/json'
+				],
+				'header' => 'CONTENT_TYPE',
 				'expected' => 'application/json'
 			],
 			'Header not present' => [

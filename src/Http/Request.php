@@ -95,9 +95,23 @@ class Request
 
     public function headers(null|string $header = null): null|array|string
     {
-        if ($header !== null)
+        if ($header !== null) {
+            $header = $this->normalizeHeader($header);
             return $this->headers[$header] ?? null;
+        }
+
         return $this->headers;
+    }
+
+    private function normalizeHeader(string $header): string
+    {
+        $header = strtoupper($header);
+        $header = str_replace('-', '_', $header);
+
+        if (! str_starts_with($header, 'HTTP_'))
+            $header = 'HTTP_' . $header;
+
+        return $header;
     }
 
     public function files(null|string $name = null): null|array

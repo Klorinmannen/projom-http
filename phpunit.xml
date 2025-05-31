@@ -14,7 +14,7 @@
  displayDetailsOnTestsThatTriggerNotices="true"
  displayDetailsOnTestsThatTriggerWarnings="true">
   <testsuites>
-    <testsuite name="unit">
+    <testsuite name="Unit">
       <directory>tests</directory>
     </testsuite>
   </testsuites>

@@ -12,11 +12,11 @@ use Projom\Http\StatusCode;
 class Response extends Exception
 {
 	public function __construct(
-		public int $code,
-		public string|null $message = null,
+		int $code,
+		string $message = '',
 		public array $headers = []
 	) {
-		parent::__construct($this->code, $this->message);
+		parent::__construct($message, $code);
 	}
 
 	public static function json(array|object $data, StatusCode $code = StatusCode::OK): void
@@ -73,7 +73,7 @@ class Response extends Exception
 		foreach ($this->headers as $header)
 			header($header);
 
-		if ($this->message !== null)
+		if ($this->message)
 			echo $this->message;
 
 		exit;

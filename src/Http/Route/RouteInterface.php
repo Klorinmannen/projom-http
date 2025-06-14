@@ -9,6 +9,9 @@ use Closure;
 use Projom\Http\MiddlewareInterface;
 use Projom\Http\Route\DataInterface;
 
+/**
+ * Public interface for defining HTTP routes.
+ */
 interface RouteInterface
 {
 	public function get(string $controllerMethod = ''): DataInterface;

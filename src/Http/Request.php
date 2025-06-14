@@ -4,20 +4,21 @@ declare(strict_types=1);
 
 namespace Projom\Http;
 
+use Projom\Http\Request\Header;
 use Projom\Http\Request\Input;
 
 class Request
 {
     protected string $path = '';
     protected array $parsedUrl = [];
-    protected array $headers = [];
+    protected Header|null $header = null;
     protected array $queryParameters = [];
     protected array $pathParameters = [];
 
     public function __construct(protected readonly null|Input $input)
     {
         $this->parseUrl();
-        $this->parseHeaders();
+        $this->header = Header::create($this->input->server);
     }
 
     public static function create(null|Input $input = null): Request
@@ -39,17 +40,6 @@ class Request
         parse_str($queryParams, $this->queryParameters);
 
         $this->path = $this->parsedUrl['path'] ?? '';
-    }
-
-    private function parseHeaders(): void
-    {
-        if ($this->input === null)
-            return;
-
-        $pattern = '/^HTTP_.+$/';
-        $serverKeys = array_keys($this->input->server);
-        $foundHttpKeys = preg_grep($pattern, $serverKeys);
-        $this->headers = array_intersect_key($this->input->server, array_flip($foundHttpKeys));
     }
 
     public function empty(): bool
@@ -95,23 +85,7 @@ class Request
 
     public function headers(null|string $header = null): null|array|string
     {
-        if ($header !== null) {
-            $header = $this->normalizeHeader($header);
-            return $this->headers[$header] ?? null;
-        }
-
-        return $this->headers;
-    }
-
-    private function normalizeHeader(string $header): string
-    {
-        $header = strtoupper($header);
-        $header = str_replace('-', '_', $header);
-
-        if (! str_starts_with($header, 'HTTP_'))
-            $header = 'HTTP_' . $header;
-
-        return $header;
+        return $this->header->get($header);
     }
 
     public function files(null|string $name = null): null|array
@@ -150,8 +124,8 @@ class Request
         if (array_key_exists($name, $this->input->cookies))
             return $this->input->cookies[$name];
 
-        if (array_key_exists($name, $this->headers))
-            return $this->headers[$name];
+        if ($this->header->exists($name))
+            return $this->header->get($name);
 
         return null;
     }

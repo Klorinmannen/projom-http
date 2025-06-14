@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Projom\Http;
 
 use Closure;
-use Exception;
 
 use Projom\Http\OAS;
 use Projom\Http\Request;
@@ -17,7 +16,10 @@ use Projom\Http\Route\RouteBase;
 class Router
 {
 	private array $routes = [];
-	private array $middlewares = [];
+	private array $middlewares = [
+		'before' => [],
+		'after' => []
+	];
 
 	public function __construct() {}
 
@@ -28,9 +30,14 @@ class Router
 		ksort($this->routes);
 	}
 
-	public function addMiddleware(MiddlewareInterface|Closure $middleware): void
+	public function addBeforeRoutingMiddleware(MiddlewareInterface|Closure $middleware): void
 	{
-		$this->middlewares[] = $middleware;
+		$this->middlewares['before'][] = $middleware;
+	}
+
+	public function addAfterRoutingMiddleware(MiddlewareInterface|Closure $middleware): void
+	{
+		$this->middlewares['after'][] = $middleware;
 	}
 
 	/**
@@ -51,29 +58,28 @@ class Router
 
 	public function dispatch(Request $request): void
 	{
-		$this->processMiddlewares($request);
-
-		$route = $this->match($request);
-		if ($route === null)
-			throw new Exception('Not found', 404);
-
-		$route->processMiddlewares($request);
-		$route->setup();
-		$route->verify($request);
-
 		try {
-			$route->execute($request);
+			$this->processMiddlewares($this->middlewares['before'], $request);
+
+			$route = $this->match($request);
+			if ($route === null)
+				Response::reject('Not found', StatusCode::NOT_FOUND);
+
+			$this->processRoute($route, $request);
 		} catch (Response $response) {
 			$this->processResponse($response);
 		}
 	}
 
-	private function processMiddlewares(Request $request): void
+	private function processMiddlewares(array $middlewares, Request|Response $message): void
 	{
-		foreach ($this->middlewares as $middleware)
+		if (! $middlewares)
+			return;
+
+		foreach ($middlewares as $middleware)
 			$middleware instanceof Closure
-				? $middleware($request)
-				: $middleware->process($request);
+				? $middleware($message)
+				: $middleware->process($message);
 	}
 
 	private function match(Request $request): null|RouteBase
@@ -81,12 +87,20 @@ class Router
 		foreach ($this->routes as $route)
 			if ($route->match($request))
 				return $route;
-
 		return null;
+	}
+
+	private function processRoute(RouteBase $route, Request $request): void
+	{
+		$route->processMiddlewares($request);
+		$route->setup();
+		$route->verify($request);
+		$route->execute($request);
 	}
 
 	private function processResponse(Response $response): void
 	{
+		$this->processMiddlewares($this->middlewares['after'], $response);
 		$response->send();
 	}
 }

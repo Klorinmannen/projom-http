@@ -52,6 +52,6 @@ class Handler
 		$controller = $this->controller;
 		$method = $this->method;
 		$parameters = Util::resolveParameters($controller, $method, $request);
-		(new $controller($request, Response::create()))->{$method}(...$parameters);
+		(new $controller($request))->{$method}(...$parameters);
 	}
 }

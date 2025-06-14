@@ -10,10 +10,7 @@ use Projom\Http\StatusCode;
 
 abstract class Controller
 {
-	public function __construct(
-		protected Request $request,
-		protected Response $response
-	) {}
+	public function __construct(protected Request $request) {}
 
 	public function get(): void
 	{
@@ -37,6 +34,6 @@ abstract class Controller
 
 	private function methodNotImplemented(): void
 	{
-		$this->response->abort(StatusCode::NOT_IMPLEMENTED);
+		Response::abort(StatusCode::NOT_IMPLEMENTED);
 	}
 }

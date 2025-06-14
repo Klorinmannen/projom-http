@@ -9,6 +9,8 @@ use Exception;
 
 use Projom\Http\OAS;
 use Projom\Http\Request;
+use Projom\Http\Response;
+use Projom\Http\MiddlewareInterface;
 use Projom\Http\Route\Route;
 use Projom\Http\Route\RouteBase;
 
@@ -58,7 +60,12 @@ class Router
 		$route->processMiddlewares($request);
 		$route->setup();
 		$route->verify($request);
-		$route->execute($request);
+
+		try {
+			$route->execute($request);
+		} catch (Response $response) {
+			$this->processResponse($response);
+		}
 	}
 
 	private function processMiddlewares(Request $request): void
@@ -76,5 +83,10 @@ class Router
 				return $route;
 
 		return null;
+	}
+
+	private function processResponse(Response $response): void
+	{
+		$response->send();
 	}
 }

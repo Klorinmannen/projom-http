@@ -4,62 +4,78 @@ declare(strict_types=1);
 
 namespace Projom\Http;
 
+use Exception;
+
 use Projom\Http\ContentType;
 use Projom\Http\StatusCode;
 
-class Response
+class Response extends Exception
 {
-	public function __construct() {}
-
-	public static function create(): Response
-	{
-		return new Response();
+	public function __construct(
+		public int $code,
+		public string|null $message = null,
+		public array $headers = []
+	) {
+		parent::__construct($this->code, $this->message);
 	}
 
-	public function json(array|object $data, StatusCode $code = StatusCode::OK): void
+	public static function json(array|object $data, StatusCode $code = StatusCode::OK): void
 	{
-		header(ContentType::APPLICATION_JSON->value, response_code: $code->value);
-		echo json_encode($data);
+		throw new Response(
+			$code->value,
+			json_encode($data),
+			[ContentType::APPLICATION_JSON->value]
+		);
+	}
+
+	public static function text(string $text, StatusCode $code = StatusCode::OK): void
+	{
+		throw new Response(
+			$code->value,
+			$text,
+			[ContentType::TEXT_PLAIN->value]
+		);
+	}
+
+	public static function html(string $html, StatusCode $code = StatusCode::OK): void
+	{
+		throw new Response(
+			$code->value,
+			$html,
+			[ContentType::TEXT_HTML->value]
+		);
+	}
+
+	public static function redirect(string $url, StatusCode $code = StatusCode::FOUND): void
+	{
+		throw new Response($code->value, headers: ['Location: ' . $url]);
+	}
+
+	public static function ok(StatusCode $code = StatusCode::OK): void
+	{
+		throw new Response($code->value);
+	}
+
+	public static function abort(StatusCode $code = StatusCode::INTERNAL_SERVER_ERROR): void
+	{
+		throw new Response($code->value);
+	}
+
+	public static function reject(string $message, StatusCode $code = StatusCode::BAD_REQUEST): void
+	{
+		static::json(['message' => $message], $code);
+	}
+
+	public function send(): void
+	{
+		http_response_code($this->code);
+
+		foreach ($this->headers as $header)
+			header($header);
+
+		if ($this->message !== null)
+			echo $this->message;
+
 		exit;
-	}
-
-	public function text(string $text, StatusCode $code = StatusCode::OK): void
-	{
-		header(ContentType::TEXT_PLAIN->value, response_code: $code->value);
-		echo $text;
-		exit;
-	}
-
-	public function html(string $html, StatusCode $code = StatusCode::OK): void
-	{
-		header(ContentType::TEXT_HTML->value, response_code: $code->value);
-		echo $html;
-		exit;
-	}
-
-	public function redirect(string $url, StatusCode $code = StatusCode::FOUND): void
-	{
-		header('Location: ' . $url, response_code: $code->value);
-		exit;
-	}
-
-	public function ok(): void
-	{
-		http_response_code(StatusCode::OK->value);
-		exit;
-	}
-
-	public function abort(StatusCode $code = StatusCode::INTERNAL_SERVER_ERROR): void
-	{
-		http_response_code($code->value);
-		exit;
-	}
-
-	public function reject(string $errorMessage, StatusCode $code = StatusCode::BAD_REQUEST): void
-	{
-		$data = [
-			'error_message' => $errorMessage
-		];
-		$this->json($data, $code);
 	}
 }

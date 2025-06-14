@@ -9,11 +9,10 @@ use Projom\Http\Request\Input;
 
 class Request
 {
-    protected string $path = '';
-    protected array $parsedUrl = [];
-    protected Header|null $header = null;
-    protected array $queryParameters = [];
-    protected array $pathParameters = [];
+    protected readonly string $path;
+    protected readonly Header $header;
+    protected readonly array $queryParameters;
+    protected readonly array $pathParameters;
 
     public function __construct(protected readonly null|Input $input)
     {
@@ -34,12 +33,12 @@ class Request
 
     private function parseUrl(): void
     {
-        $this->parsedUrl = parse_url($this->input->server['REQUEST_URI'] ?? '');
+        $parsedUrl = parse_url($this->input->server['REQUEST_URI'] ?? '');
+        $this->path = $parsedUrl['path'] ?? '';
 
-        $queryParams = $this->parsedUrl['query'] ?? '';
-        parse_str($queryParams, $this->queryParameters);
-
-        $this->path = $this->parsedUrl['path'] ?? '';
+        $queryParameters = [];
+        parse_str($parsedUrl['query'] ?? '', $queryParameters);
+        $this->queryParameters = $queryParameters;
     }
 
     public function empty(): bool

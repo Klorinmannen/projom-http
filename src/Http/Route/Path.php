@@ -12,13 +12,11 @@ class Path
 
 	private readonly bool $isStatic;
 	private readonly string $pattern;
-	private string $path = '';
 	private array $parameterIdentifiers = [];
 
-	public function __construct(string $path)
+	public function __construct(private string $path)
 	{
 		$this->isStatic = $this->isStatic();
-		$this->path = $path;
 
 		if (! $this->isStatic) {
 			$this->path = $this->withPathIdentifiers($path);

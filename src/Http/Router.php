@@ -56,8 +56,11 @@ class Router
 		$this->routes[$path] = $route;
 	}
 
-	public function dispatch(Request $request): void
+	public function dispatch(Request|null $request = null): void
 	{
+		if ($request === null)
+			$request = Request::create();
+
 		try {
 			$this->processMiddlewares($this->middlewares['before'], $request);
 

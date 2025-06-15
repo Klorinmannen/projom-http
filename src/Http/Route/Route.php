@@ -65,7 +65,7 @@ class Route extends RouteBase implements RouteInterface
 		return $data;
 	}
 
-	public function setup(): void
+	protected function setup(): void
 	{
 		$this->handler->setMethod($this->matchedData->method());
 	}

@@ -41,7 +41,15 @@ abstract class RouteBase
 		return array_key_exists($method->name, $this->methodData);
 	}
 
-	public function processMiddlewares(Request $request): void
+	public function dispatch(Request $request): void
+	{
+		$this->processMiddlewares($request);
+		$this->setup();
+		$this->verify($request);
+		$this->execute($request);
+	}
+
+	private function processMiddlewares(Request $request): void
 	{
 		foreach ($this->middlewares as $middleware)
 			$middleware instanceof Closure
@@ -49,9 +57,9 @@ abstract class RouteBase
 				: $middleware->process($request);
 	}
 
-	abstract public function setup(): void;
+	abstract protected function setup(): void;
 
-	public function verify(Request $request): void
+	private function verify(Request $request): void
 	{
 		if ($this->matchedData === null)
 			throw new Exception('Not found', 404);
@@ -63,7 +71,7 @@ abstract class RouteBase
 		$this->matchedData->verify($request);
 	}
 
-	public function execute(Request $request): void
+	private function execute(Request $request): void
 	{
 		$this->handler->call($request);
 	}

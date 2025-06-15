@@ -14,7 +14,7 @@ class Response extends Exception
 	public function __construct(
 		int $code,
 		string $message = '',
-		public array $headers = []
+		private array $headers = []
 	) {
 		parent::__construct($message, $code);
 	}

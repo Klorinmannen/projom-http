@@ -66,11 +66,11 @@ class Parameter
 		if (! $normalizedParameterDefinitions)
 			return true;
 
-		// The input query parameter set cannot be empty if definitions are set.
+		// The input parameter set cannot be empty if definitions are set.
 		if (! $inputParameters && $normalizedParameterDefinitions)
 			return false;
 
-		// The input query parameter set cannot be bigger than the expected set.
+		// The input parameter set cannot be bigger than the expected set.
 		if (count($inputParameters) > count($normalizedParameterDefinitions))
 			return false;
 
@@ -108,18 +108,18 @@ class Parameter
 		return $normalized;
 	}
 
-	private static function isSubset(array $inputQueryParameters, array $namedExpectedQueryParameters): bool
+	private static function isSubset(array $inputParameters, array $namedExpectedParameters): bool
 	{
-		// The input query parameters must be a subset of the expected query parameters.
-		// Any extra query parameters are not allowed.
-		$diff = array_diff_key($inputQueryParameters, $namedExpectedQueryParameters);
+		// The input parameters must be a subset of the expected parameters.
+		// Any extra parameters are not allowed.
+		$diff = array_diff_key($inputParameters, $namedExpectedParameters);
 		$isSubset = count($diff) === 0;
 		return $isSubset;
 	}
 
-	private static function selectSubset(array $inputQueryParameters, array $namedExpectedQueryParameters): array
+	private static function selectSubset(array $inputParameters, array $namedExpectedParameters): array
 	{
-		$subset = array_intersect_key($namedExpectedQueryParameters, $inputQueryParameters);
+		$subset = array_intersect_key($namedExpectedParameters, $inputParameters);
 		return $subset;
 	}
 

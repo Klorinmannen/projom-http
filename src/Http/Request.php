@@ -4,18 +4,22 @@ declare(strict_types=1);
 
 namespace Projom\Http;
 
+use Projom\Http\Method;
 use Projom\Http\Request\Header;
 use Projom\Http\Request\Input;
+use Projom\Http\Request\Timer;
 
 class Request
 {
-    protected readonly string $path;
+    protected readonly Timer $timer;
     protected readonly Header $header;
+    protected readonly string $path;
     protected readonly array $queryParameters;
     protected readonly array $pathParameters;
 
     public function __construct(protected readonly null|Input $input)
     {
+        $this->timer = Timer::create();
         $this->parseUrl();
         $this->header = Header::create($this->input->server);
     }
@@ -127,5 +131,10 @@ class Request
             return $this->header->get($name);
 
         return null;
+    }
+
+    public function timer(): Timer
+    {
+        return $this->timer;
     }
 }

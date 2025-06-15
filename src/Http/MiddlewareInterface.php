@@ -9,5 +9,6 @@ use Projom\Http\Response;
 
 interface MiddlewareInterface
 {
-	public function process(Request|Response $message): void;
+	public function processBeforeRouting(Request $request): void;
+	public function processAfterRouting(Request $request, Response $response): void;
 }

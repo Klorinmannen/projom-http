@@ -4,22 +4,24 @@ declare(strict_types=1);
 
 namespace Projom\Http\Request;
 
+use SensitiveParameter;
+
 class Input
 {
 	public function __construct(
-		public readonly array $request,
-		public readonly array $server,
-		public readonly array $files,
-		public readonly array $cookies,
-		public readonly string $payload
+		#[SensitiveParameter] public readonly array $request,
+		#[SensitiveParameter] public readonly array $server,
+		#[SensitiveParameter] public readonly array $files,
+		#[SensitiveParameter] public readonly array $cookies,
+		#[SensitiveParameter] public readonly string $payload
 	) {}
 
 	public static function create(
-		array $request = [],
-		array $server = [],
-		array $files = [],
-		array $cookies = [],
-		string $payload = ''
+		#[SensitiveParameter] array $request = [],
+		#[SensitiveParameter] array $server = [],
+		#[SensitiveParameter] array $files = [],
+		#[SensitiveParameter] array $cookies = [],
+		#[SensitiveParameter] string $payload = ''
 	): Input {
 		return new Input(
 			$request ?: ($_REQUEST ?? []),

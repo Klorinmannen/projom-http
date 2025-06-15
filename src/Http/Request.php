@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Projom\Http;
 
+use SensitiveParameter;
+
 use Projom\Http\Method;
 use Projom\Http\Request\Header;
 use Projom\Http\Request\Input;
@@ -11,20 +13,22 @@ use Projom\Http\Request\Timer;
 
 class Request
 {
+    protected readonly Input $input;
     protected readonly Timer $timer;
     protected readonly Header $header;
     protected readonly string $path;
     protected readonly array $queryParameters;
     protected readonly array $pathParameters;
 
-    public function __construct(protected readonly null|Input $input)
+    public function __construct(#[SensitiveParameter] Input $input)
     {
+        $this->input = $input;
         $this->timer = Timer::create();
         $this->parseUrl();
         $this->header = Header::create($this->input->server);
     }
 
-    public static function create(null|Input $input = null): Request
+    public static function create(#[SensitiveParameter] null|Input $input = null): Request
     {
         if ($input !== null)
             return new Request($input);

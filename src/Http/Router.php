@@ -78,7 +78,6 @@ class Router
 	private function dispatchRequest(Request $request): void
 	{
 		$this->processMiddlewares(MiddlewareContext::BEFORE_MATCHING_ROUTE, $request);
-
 		$route = $this->match($request);
 		if ($route === null)
 			Response::reject('Not found', StatusCode::NOT_FOUND);

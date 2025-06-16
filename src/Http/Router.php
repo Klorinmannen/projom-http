@@ -10,14 +10,15 @@ use Projom\Http\OAS;
 use Projom\Http\Request;
 use Projom\Http\Response;
 use Projom\Http\MiddlewareInterface;
+use Projom\Http\Router\Middleware;
+use Projom\Http\Router\MiddlewareContext;
 use Projom\Http\Route\Route;
 use Projom\Http\Route\RouteBase;
 
 class Router
 {
 	private array $routes = [];
-	private array $beforeRoutingMiddlewares = [];
-	private array $afterRoutingMiddlewares = [];
+	private array $middlewares = [];
 
 	public function __construct() {}
 
@@ -28,14 +29,11 @@ class Router
 		ksort($this->routes);
 	}
 
-	public function addMiddlewareBeforeRouting(MiddlewareInterface|Closure $middleware): void
-	{
-		$this->beforeRoutingMiddlewares[] = $middleware;
-	}
-
-	public function addMiddlewareAfterRouting(MiddlewareInterface|Closure $middleware): void
-	{
-		$this->afterRoutingMiddlewares[] = $middleware;
+	public function addMiddleware(
+		MiddlewareInterface|Closure $middleware,
+		MiddlewareContext $context = MiddlewareContext::BEFORE_ROUTING
+	): void {
+		$this->middlewares[] = Middleware::create($middleware, $context);
 	}
 
 	/**
@@ -60,23 +58,23 @@ class Router
 			$request = Request::create();
 
 		try {
-			$this->processMiddlewares($this->beforeRoutingMiddlewares, $request);
+			$this->processMiddlewares(MiddlewareContext::BEFORE_ROUTING, $request);
 			$this->dispatchRequest($request);
 		} catch (Response $response) {
-			$this->processMiddlewares($this->afterRoutingMiddlewares, $request, $response);
+			$this->processMiddlewares(MiddlewareContext::AFTER_ROUTING, $request, $response);
 			$response->send();
 		}
 	}
 
-	private function processMiddlewares(array $middlewares, ...$args): void
+	private function processMiddlewares(MiddlewareContext $context, object ...$args): void
 	{
-		if (! $middlewares)
-			return;
+		$middlewares = array_filter(
+			$this->middlewares,
+			fn(Middleware $middleware) => $middleware->isContext($context)
+		);
 
 		foreach ($middlewares as $middleware)
-			$middleware instanceof Closure
-				? $middleware(...$args)
-				: $middleware->process(...$args);
+			$middleware->process(...$args);
 	}
 
 	private function dispatchRequest(Request $request): void

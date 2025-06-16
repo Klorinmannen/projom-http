@@ -6,6 +6,7 @@ namespace Projom\Http\Router;
 
 enum MiddlewareContext
 {
-	case BEFORE_ROUTING;
-	case AFTER_ROUTING;
+	case BEFORE_MATCHING_ROUTE;
+	case BEFORE_DISPATCHING_ROUTE;
+	case BEFORE_SENDING_RESPONSE;
 }

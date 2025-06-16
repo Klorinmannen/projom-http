@@ -31,7 +31,7 @@ class Router
 
 	public function addMiddleware(
 		MiddlewareInterface|Closure $middleware,
-		MiddlewareContext $context = MiddlewareContext::BEFORE_ROUTING
+		MiddlewareContext $context = MiddlewareContext::BEFORE_MATCHING_ROUTE
 	): void {
 		$this->middlewares[] = Middleware::create($middleware, $context);
 	}
@@ -58,11 +58,9 @@ class Router
 			$request = Request::create();
 
 		try {
-			$this->processMiddlewares(MiddlewareContext::BEFORE_ROUTING, $request);
 			$this->dispatchRequest($request);
 		} catch (Response $response) {
-			$this->processMiddlewares(MiddlewareContext::AFTER_ROUTING, $request, $response);
-			$response->send();
+			$this->dispatchResponse($request, $response);
 		}
 	}
 
@@ -79,10 +77,13 @@ class Router
 
 	private function dispatchRequest(Request $request): void
 	{
+		$this->processMiddlewares(MiddlewareContext::BEFORE_MATCHING_ROUTE, $request);
+
 		$route = $this->match($request);
 		if ($route === null)
 			Response::reject('Not found', StatusCode::NOT_FOUND);
 
+		$this->processMiddlewares(MiddlewareContext::BEFORE_DISPATCHING_ROUTE, $request, $route);
 		$route->dispatch($request);
 	}
 
@@ -92,5 +93,11 @@ class Router
 			if ($route->match($request))
 				return $route;
 		return null;
+	}
+
+	public function dispatchResponse(Request $request, Response $response): void
+	{
+		$this->processMiddlewares(MiddlewareContext::BEFORE_SENDING_RESPONSE, $request, $response);
+		$response->send();
 	}
 }

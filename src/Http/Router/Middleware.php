@@ -18,7 +18,7 @@ class Middleware
 
 	public static function create(
 		MiddlewareInterface|Closure $middleware,
-		MiddlewareContext $context = MiddlewareContext::BEFORE_ROUTING
+		MiddlewareContext $context = MiddlewareContext::BEFORE_MATCHING_ROUTE
 	): Middleware {
 		return new Middleware($middleware, $context);
 	}

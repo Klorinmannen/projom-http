@@ -83,7 +83,7 @@ class Router
 		if ($route === null)
 			Response::reject('Not found', StatusCode::NOT_FOUND);
 
-		$this->processMiddlewares(MiddlewareContext::BEFORE_DISPATCHING_ROUTE, $request, $route);
+		$this->processMiddlewares(MiddlewareContext::BEFORE_DISPATCHING_ROUTE, $request);
 		$route->dispatch($request);
 	}
 

@@ -6,5 +6,5 @@ namespace Projom\Http;
 
 interface MiddlewareInterface
 {
-	public function process(...$args): void;
+	public function process(object ...$args): void;
 }

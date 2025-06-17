@@ -13,12 +13,12 @@ class Middleware
 {
 	public function __construct(
 		private MiddlewareInterface|Closure $middleware,
-		private MiddlewareContext $context
+		private MiddlewareContext|null $context
 	) {}
 
 	public static function create(
 		MiddlewareInterface|Closure $middleware,
-		MiddlewareContext $context = MiddlewareContext::BEFORE_MATCHING_ROUTE
+		MiddlewareContext|null $context = null
 	): Middleware {
 		return new Middleware($middleware, $context);
 	}

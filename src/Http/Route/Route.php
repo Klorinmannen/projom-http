@@ -14,6 +14,7 @@ use Projom\Http\Route\DataInterface;
 use Projom\Http\Route\Handler;
 use Projom\Http\Route\Path;
 use Projom\Http\Route\RouteBase;
+use Projom\Http\Router\Middleware;
 
 class Route extends RouteBase implements RouteInterface
 {
@@ -30,7 +31,7 @@ class Route extends RouteBase implements RouteInterface
 
 	public function addMiddleware(MiddlewareInterface|Closure $middleware): void
 	{
-		$this->middlewares[] = $middleware;
+		$this->middlewares[] = Middleware::create($middleware);
 	}
 
 	public function get(string $controllerMethod = ''): DataInterface

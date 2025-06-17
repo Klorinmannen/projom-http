@@ -52,9 +52,7 @@ abstract class RouteBase
 	private function processMiddlewares(Request $request): void
 	{
 		foreach ($this->middlewares as $middleware)
-			$middleware instanceof Closure
-				? $middleware($request)
-				: $middleware->process($request);
+			$middleware->process($request);
 	}
 
 	abstract protected function setup(): void;

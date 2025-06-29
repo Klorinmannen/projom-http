@@ -64,6 +64,11 @@ class Request
         return $this->path;
     }
 
+    public function ip(): string
+    {
+        return $this->input->server['REMOTE_ADDR'] ?? '';
+    }
+
     public function pathParameters(null|int|string $name = null): null|array|string
     {
         if ($name !== null)

@@ -54,8 +54,10 @@ class Request
         return empty($this->path);
     }
 
-    public function method(): null|Method
+    public function method(bool $asString = false): null|string|Method
     {
+        if ($asString)
+            return $this->input->server['REQUEST_METHOD'] ?? null;
         return Method::tryFrom($this->input->server['REQUEST_METHOD'] ?? '');
     }
 

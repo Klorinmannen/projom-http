@@ -49,7 +49,7 @@ class Router
 	{
 		$route = Route::create($path, $controller);
 		$routeDefinition($route);
-		$this->routes[$path] = $route;
+		$this->routes[] = $route;
 	}
 
 	public function dispatch(Request|null $request = null): void
@@ -94,7 +94,7 @@ class Router
 		return null;
 	}
 
-	public function dispatchResponse(Request $request, Response $response): void
+	public function dispatchResponse(Request $request, ResponseBase $response): void
 	{
 		$this->processMiddlewares(MiddlewareContext::BEFORE_SENDING_RESPONSE, $request, $response);
 		$response->send();

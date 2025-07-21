@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Projom\Http\Route;
 
-use Exception;
-
 use Projom\Http\Request;
 use Projom\Http\Response;
 use Projom\Http\Controller;
@@ -31,20 +29,20 @@ class Handler
 	public function verify(): void
 	{
 		if (!$this->controller)
-			throw new Exception('Handler missing controller', 500);
+			Response::abort('Handler missing controller');
 		if (!$this->method)
-			throw new Exception('Handler missing controller method', 500);
+			Response::abort('Handler missing controller method');
 
-		if (! class_exists($this->controller))
-			throw new Exception("Controller: {$this->controller}, does not exist", 500);
+		if (!class_exists($this->controller))
+			Response::abort("Controller: {$this->controller}, does not exist");
 
 		// Note: This will match methods by its name, capitalization does not matter.
-		if (! method_exists($this->controller, $this->method))
-			throw new Exception("Controller method: {$this->method}, does not exist", 500);
+		if (!method_exists($this->controller, $this->method))
+			Response::abort("Controller method: {$this->method}, does not exist");
 
 		$base = Controller::class;
-		if (! is_subclass_of($this->controller, $base))
-			throw new Exception("Controller does not implement: $base", 500);
+		if (!is_subclass_of($this->controller, $base))
+			Response::abort("Controller does not extend: $base");
 	}
 
 	public function call(Request $request): void

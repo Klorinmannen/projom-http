@@ -6,6 +6,7 @@ namespace Projom\Http;
 
 use Exception;
 
+use Projom\Http\Method;
 use Projom\Http\OAS\Route as OASRoute;
 use Projom\Http\OAS\Data;
 
@@ -26,7 +27,7 @@ class OAS
 					static::addRouteData($route, $key, $pathDetails);
 			}
 
-			$routes[$path] = $route;
+			$routes[] = $route;
 		}
 
 		return $routes;

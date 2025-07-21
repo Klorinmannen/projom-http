@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Projom\Http\Route;
 
-use Closure;
-use Exception;
-
 use Projom\Http\Method;
 use Projom\Http\Request;
+use Projom\Http\Response;
 use Projom\Http\Route\Handler;
 use Projom\Http\Route\Path;
+use Projom\Http\StatusCode;
 
 abstract class RouteBase
 {
@@ -28,7 +27,7 @@ abstract class RouteBase
 
 		$method = $request->method();
 		if (! $this->hasMethod($method))
-			throw new Exception('Method not allowed', 405);
+			Response::reject('Method not allowed', StatusCode::METHOD_NOT_ALLOWED);
 
 		$request->setPathParameters($pathParameters);
 		$this->matchedData = $this->methodData[$method->name];
@@ -60,10 +59,10 @@ abstract class RouteBase
 	private function verify(Request $request): void
 	{
 		if ($this->matchedData === null)
-			throw new Exception('Not found', 404);
+			Response::reject('Not found', StatusCode::NOT_FOUND);
 
 		if ($this->handler === null)
-			throw new Exception('Route handler missing', 500);
+			Response::abort('Route handler missing');
 
 		$this->handler->verify();
 		$this->matchedData->verify($request);

@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Projom\Http\Route;
 
-use Exception;
-
 use Projom\Http\Method;
 use Projom\Http\Request;
+use Projom\Http\Response;
 use Projom\Http\Route\DataInterface;
 
 class Data implements DataInterface
@@ -74,25 +73,25 @@ class Data implements DataInterface
 	{
 		// Check expected data first.
 
-		if (! Payload::verify($request->payload(), $this->expectsPayload))
-			throw new Exception('Provided payload does not match expected', 400);
+		if (!Payload::verify($request->payload(), $this->expectsPayload))
+			Response::reject('Provided payload does not match expected');
 
 		$normalizedQueryParams = Parameter::normalize($this->expectsQueryParamDefinitions);
-		if (! Parameter::verifyExpectedParameters($request->queryParameters(), $normalizedQueryParams))
-			throw new Exception('Provided query parameters does not match expected', 400);
+		if (!Parameter::verifyExpectedParameters($request->queryParameters(), $normalizedQueryParams))
+			Response::reject('Provided query parameters do not match expected');
 
 		$normalizedRequestVars = Parameter::normalize($this->expectsRequestVarDefinitions);
-		if (! Parameter::verifyExpectedParameters($request->vars(), $normalizedRequestVars))
-			throw new Exception('Provided request variables does not match expected', 400);
+		if (!Parameter::verifyExpectedParameters($request->vars(), $normalizedRequestVars))
+			Response::reject('Provided request variables do not match expected');
 
 		// Check optional data next.
 
 		$normalizedOptionalQueryDefinitions = Parameter::normalize($this->optionalQueryParamDefinitions);
-		if (! Parameter::verifyOptionalParameters($request->queryParameters(), $normalizedOptionalQueryDefinitions))
-			throw new Exception('Provided query parameters does not match optional', 400);
+		if (!Parameter::verifyOptionalParameters($request->queryParameters(), $normalizedOptionalQueryDefinitions))
+			Response::reject('Provided query parameters does not match optional');
 
 		$normalizedOptionalRequestVarDefinitions = Parameter::normalize($this->optionalRequestVarDefinitions);
 		if (! Parameter::verifyOptionalParameters($request->vars(), $normalizedOptionalRequestVarDefinitions))
-			throw new Exception('Provided request variables does not match optional', 400);
+			Response::reject('Provided request variables does not match optional');
 	}
 }

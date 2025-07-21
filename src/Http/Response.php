@@ -4,21 +4,11 @@ declare(strict_types=1);
 
 namespace Projom\Http;
 
-use Exception;
-
 use Projom\Http\ContentType;
 use Projom\Http\StatusCode;
 
-class Response extends Exception
+class Response extends ResponseBase
 {
-	public function __construct(
-		int $code,
-		string $message = '',
-		private array $headers = []
-	) {
-		parent::__construct($message, $code);
-	}
-
 	public static function json(array|object $data, StatusCode $code = StatusCode::OK): void
 	{
 		throw new Response(
@@ -46,36 +36,32 @@ class Response extends Exception
 		);
 	}
 
-	public static function redirect(string $url, StatusCode $code = StatusCode::FOUND): void
+	public static function redirect(string $url, array $headers = [], StatusCode $code = StatusCode::MOVED_PERMANENTLY): void
 	{
-		throw new Response($code->value, headers: ['Location: ' . $url]);
+		$headers[] = "Location: $url";
+		throw new Response($code->value, headers: $headers);
 	}
 
-	public static function ok(StatusCode $code = StatusCode::OK): void
+	public static function ok(null|string $message = null, StatusCode $code = StatusCode::OK): void
 	{
+		if ($message !== null)
+			static::json(['message' => $message], $code);
+
 		throw new Response($code->value);
 	}
 
-	public static function abort(StatusCode $code = StatusCode::INTERNAL_SERVER_ERROR): void
+	public static function abort(null|string $message = null, StatusCode $code = StatusCode::INTERNAL_SERVER_ERROR): void
 	{
+		if ($message !== null)
+			static::json(['message' => $message], $code);
+
 		throw new Response($code->value);
 	}
 
-	public static function reject(string $message, StatusCode $code = StatusCode::BAD_REQUEST): void
+	public static function reject(null|string $message = null, StatusCode $code = StatusCode::BAD_REQUEST): void
 	{
-		static::json(['message' => $message], $code);
-	}
-
-	public function send(): void
-	{
-		http_response_code($this->code);
-
-		foreach ($this->headers as $header)
-			header($header);
-
-		if ($this->message)
-			echo $this->message;
-
-		exit;
+		if ($message !== null)
+			static::json(['message' => $message], $code);
+		throw new Response($code->value);
 	}
 }

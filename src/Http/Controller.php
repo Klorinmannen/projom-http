@@ -6,7 +6,6 @@ namespace Projom\Http;
 
 use Projom\Http\Response;
 use Projom\Http\Request;
-use Projom\Http\StatusCode;
 
 abstract class Controller
 {
@@ -34,6 +33,6 @@ abstract class Controller
 
 	private function methodNotImplemented(): void
 	{
-		Response::abort(StatusCode::NOT_IMPLEMENTED);
+		Response::abort(code: StatusCode::NOT_IMPLEMENTED);
 	}
 }

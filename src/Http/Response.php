@@ -46,7 +46,6 @@ class Response extends ResponseBase
 	{
 		if ($message !== null)
 			static::json(['message' => $message], $code);
-
 		throw new Response($code->value);
 	}
 
@@ -54,7 +53,6 @@ class Response extends ResponseBase
 	{
 		if ($message !== null)
 			static::json(['message' => $message], $code);
-
 		throw new Response($code->value);
 	}
 

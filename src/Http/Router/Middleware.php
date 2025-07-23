@@ -7,6 +7,7 @@ namespace Projom\Http\Router;
 use Closure;
 
 use Projom\Http\MiddlewareInterface;
+use Projom\Http\Request;
 use Projom\Http\Router\MiddlewareContext;
 
 class Middleware
@@ -28,10 +29,10 @@ class Middleware
 		return $this->context === $context;
 	}
 
-	public function process(...$args): void
+	public function process(Request $request): void
 	{
 		$this->middleware instanceof Closure
-			? ($this->middleware)(...$args)
-			: $this->middleware->process(...$args);
+			? ($this->middleware)($request)
+			: $this->middleware->process($request);
 	}
 }

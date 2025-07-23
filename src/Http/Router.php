@@ -5,15 +5,17 @@ declare(strict_types=1);
 namespace Projom\Http;
 
 use Closure;
+use ValueError;
 
 use Projom\Http\OAS;
 use Projom\Http\Request;
 use Projom\Http\Response;
 use Projom\Http\MiddlewareInterface;
-use Projom\Http\Router\Middleware;
-use Projom\Http\Router\MiddlewareContext;
+use Projom\Http\StatusCode;
 use Projom\Http\Route\Route;
 use Projom\Http\Route\RouteBase;
+use Projom\Http\Router\Middleware;
+use Projom\Http\Router\MiddlewareContext;
 
 class Router
 {
@@ -22,18 +24,17 @@ class Router
 
 	public function __construct() {}
 
-	public function loadOAS(string $filePath): void
-	{
-		$routes = OAS::load($filePath);
-		$this->routes = array_merge($this->routes, $routes);
-		ksort($this->routes);
-	}
-
 	public function addMiddleware(
 		MiddlewareInterface|Closure $middleware,
 		MiddlewareContext $context = MiddlewareContext::BEFORE_MATCHING_ROUTE
 	): void {
 		$this->middlewares[] = Middleware::create($middleware, $context);
+	}
+
+	public function addRoutesFromOAS(string $filepath): void
+	{
+		$routes = OAS::load($filepath);
+		$this->routes = array_merge($this->routes, $routes);
 	}
 
 	/**
@@ -47,6 +48,11 @@ class Router
 	 */
 	public function addRoute(string $path, string $controller, Closure $routeDefinition): void
 	{
+		if (!$path)
+			throw new ValueError('Path cannot be empty');
+		if (!$controller)
+			throw new ValueError('Controller cannot be empty');
+
 		$route = Route::create($path, $controller);
 		$routeDefinition($route);
 		$this->routes[] = $route;
@@ -60,11 +66,12 @@ class Router
 		try {
 			$this->dispatchRequest($request);
 		} catch (Response $response) {
-			$this->dispatchResponse($request, $response);
+			$request->setResponse($response);
+			$this->dispatchResponse($request);
 		}
 	}
 
-	private function processMiddlewares(MiddlewareContext $context, object ...$args): void
+	private function processMiddlewares(MiddlewareContext $context, Request $request): void
 	{
 		$middlewares = array_filter(
 			$this->middlewares,
@@ -72,7 +79,7 @@ class Router
 		);
 
 		foreach ($middlewares as $middleware)
-			$middleware->process(...$args);
+			$middleware->process($request);
 	}
 
 	private function dispatchRequest(Request $request): void
@@ -94,9 +101,9 @@ class Router
 		return null;
 	}
 
-	public function dispatchResponse(Request $request, ResponseBase $response): void
+	public function dispatchResponse(Request $request): void
 	{
-		$this->processMiddlewares(MiddlewareContext::BEFORE_SENDING_RESPONSE, $request, $response);
-		$response->send();
+		$this->processMiddlewares(MiddlewareContext::BEFORE_SENDING_RESPONSE, $request);
+		$request->response()->send();
 	}
 }

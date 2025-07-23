@@ -44,7 +44,7 @@ class Util
 			'queryParameters' => $request->queryParameters(),
 			'requestVars' => $request->vars(),
 			'payload' => $request->payload(),
-			'headers' => $request->headers(),			
+			'headers' => $request->headers(),
 			'cookies' => $request->cookies(),
 			'files' => $request->files(),
 			default => $request->find($parameterName),
@@ -72,5 +72,34 @@ class Util
 		}
 
 		return $class->newInstanceArgs($dependencies);
+	}
+
+	public static function isPathStatic(string $path): bool
+	{
+		return str_contains($path, '{') && str_contains($path, '}');
+	}
+
+	public static function pathWithIdentifiers(string $path, string $paramterIdentifierPattern): array
+	{
+		$parameterIdentifiers = [];
+		$pos = 1;
+		$routePath = preg_replace_callback(
+			$paramterIdentifierPattern,
+			function ($matches) use (&$pos, &$parameterIdentifiers) {
+
+				$type = $matches[1];
+				$pattern = '{' . $type . '}';
+
+				// If the identifier is not set, use a positional numeric.
+				$identifier = $matches[2] ?? $pos;
+				$parameterIdentifiers[] = $identifier;
+
+				$pos++;
+				return $pattern;
+			},
+			$path
+		);
+
+		return [$routePath, $parameterIdentifiers];
 	}
 }

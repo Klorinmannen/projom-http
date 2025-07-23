@@ -7,6 +7,7 @@ namespace Projom\Http;
 use SensitiveParameter;
 
 use Projom\Http\Method;
+use Projom\Http\ResponseBase;
 use Projom\Http\Request\Header;
 use Projom\Http\Request\Input;
 use Projom\Http\Request\Timer;
@@ -16,6 +17,7 @@ class Request
     protected readonly Input $input;
     protected readonly Timer $timer;
     protected readonly Header $header;
+    protected null|ResponseBase $response = null;
     protected readonly string $path;
     protected readonly array $queryParameters;
     protected readonly array $pathParameters;
@@ -71,16 +73,16 @@ class Request
         return $this->input->server['REMOTE_ADDR'] ?? '';
     }
 
+    public function setPathParameters(array $pathParameters): void
+    {
+        $this->pathParameters = $pathParameters;
+    }
+
     public function pathParameters(null|int|string $name = null): null|array|string
     {
         if ($name !== null)
             return $this->pathParameters[(string)$name] ?? null;
         return $this->pathParameters;
-    }
-
-    public function setPathParameters(array $pathParameters): void
-    {
-        $this->pathParameters = $pathParameters;
     }
 
     public function queryParameters(string $name = ''): null|array|string
@@ -147,5 +149,15 @@ class Request
     public function timer(): Timer
     {
         return $this->timer;
+    }
+
+    public function setResponse(#[SensitiveParameter] ResponseBase $response): void
+    {
+        $this->response = $response;
+    }
+
+    public function response(): null|ResponseBase
+    {
+        return $this->response;
     }
 }

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Projom\Http;
 
-use Exception;
+use RuntimeException;
 
 use Projom\Http\Method;
-use Projom\Http\OAS\Route as OASRoute;
 use Projom\Http\OAS\Data;
+use Projom\Http\OAS\Route;
 
 class OAS
 {
@@ -16,10 +16,14 @@ class OAS
 	{
 		$routes = [];
 		$file = static::parseFile($filePath);
+
 		$paths = $file['paths'] ?? [];
+		if (!$paths)
+			throw new RuntimeException("No paths found in OAS file: $filePath");
+
 		foreach ($paths as $path => $pathData) {
 
-			$route = new OASRoute($path);
+			$route = Route::create($path);
 			foreach ($pathData as $key => $pathDetails) {
 				if ($key === '$ref')
 					static::addFromRef($route, $pathDetails, dirname($filePath));
@@ -27,26 +31,29 @@ class OAS
 					static::addRouteData($route, $key, $pathDetails);
 			}
 
-			$routes[] = $route;
+			$routes[$path] = $route;
 		}
 
 		return $routes;
 	}
 
-	private static function addRouteData(OASRoute $route, string $httpMethod, array $pathDetails): void
+	private static function addRouteData(Route $route, string $httpMethod, array $pathDetails): void
 	{
 		$method = Method::from(strtoupper($httpMethod));
 		$data = Data::create($method, $pathDetails);
 		$route->setData($method, $data);
 	}
 
-	private static function addFromRef(OASRoute $route, string $ref, string $contractDirectory): void
+	private static function addFromRef(Route $route, string $ref, string $contractDirectory): void
 	{
 		[$relativeFilename, $refname] = explode('#/', $ref);
 		$refFilepath = $contractDirectory . '/' . $relativeFilename;
-		$file = static::parseFile($refFilepath);
+		$fileData = static::parseFile($refFilepath);
 
-		$paths = $file[$refname] ?? [];
+		$paths = $fileData[$refname] ?? [];
+		if (!$paths)
+			throw new RuntimeException("Reference not found: $refname in $refFilepath");
+
 		foreach ($paths as $httpMethod => $pathDetails)
 			static::addRouteData($route, $httpMethod, $pathDetails);
 	}
@@ -54,22 +61,22 @@ class OAS
 	private static function parseFile(string $filePath): array
 	{
 		$filePath = realpath($filePath);
-		if (! $filePath)
-			throw new Exception("File not found: $filePath", 500);
+		if (!$filePath)
+			throw new RuntimeException("File not found: $filePath");
 
 		$file = file_get_contents($filePath);
 		$fileData = static::decodeFile($file, $filePath);
-
 		return $fileData;
 	}
 
 	private static function decodeFile(string $file, string $filePath): array
 	{
 		$extension = pathinfo($filePath, PATHINFO_EXTENSION);
-		return match ($extension) {
+		$fileData = match ($extension) {
 			'json' => json_decode($file, associative: true) ?: [],
 			'yaml', 'yml' => yaml_parse($file) ?: [],
-			default => throw new Exception("Unsupported file type: $filePath", 500),
+			default => throw new RuntimeException("Unsupported file format: $extension for file $filePath"),
 		};
+		return $fileData;
 	}
 }

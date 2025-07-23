@@ -8,25 +8,22 @@ use Closure;
 
 use Projom\Http\Method;
 use Projom\Http\MiddlewareInterface;
-use Projom\Http\Route\RouteInterface;
 use Projom\Http\Route\Data;
 use Projom\Http\Route\DataInterface;
 use Projom\Http\Route\Handler;
 use Projom\Http\Route\Path;
 use Projom\Http\Route\RouteBase;
+use Projom\Http\Route\RouteInterface;
 use Projom\Http\Router\Middleware;
 
 class Route extends RouteBase implements RouteInterface
 {
-	public function __construct(string $path, string $controller)
+	public static function create(string $path, string $controller): Route
 	{
-		$this->handler = Handler::create($controller);
-		$this->path = Path::create($path);
-	}
-
-	public static function create(string $path, mixed $handler): Route
-	{
-		return new Route($path, $handler);
+		$path = Path::create($path);
+		$handler = Handler::create($controller);
+		$route = new Route($path, $handler);
+		return $route;
 	}
 
 	public function addMiddleware(MiddlewareInterface|Closure $middleware): void

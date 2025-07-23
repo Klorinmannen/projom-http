@@ -19,6 +19,12 @@ abstract class RouteBase
 	protected null|object $matchedData = null;
 	protected array $middlewares = [];
 
+	public function __construct(Path $path, null|Handler $handler = null)
+	{
+		$this->path = $path;
+		$this->handler = $handler;
+	}
+
 	public function match(Request $request): bool
 	{
 		[$result, $pathParameters] = $this->path->test($request->path());
@@ -26,7 +32,7 @@ abstract class RouteBase
 			return false;
 
 		$method = $request->method();
-		if (! $this->hasMethod($method))
+		if (!$this->hasMethod($method))
 			Response::reject('Method not allowed', StatusCode::METHOD_NOT_ALLOWED);
 
 		$request->setPathParameters($pathParameters);

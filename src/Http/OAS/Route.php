@@ -13,9 +13,11 @@ use Projom\Http\Route\RouteBase;
 
 class Route extends RouteBase
 {
-	public function __construct(string $path)
+	public static function create(string $path): Route
 	{
-		$this->path = Path::create($path);
+		$path = Path::create($path);
+		$route = new Route($path);
+		return $route;
 	}
 
 	public function setData(Method $method, Data $data): void

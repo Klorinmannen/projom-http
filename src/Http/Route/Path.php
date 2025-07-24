@@ -4,57 +4,27 @@ declare(strict_types=1);
 
 namespace Projom\Http\Route;
 
-use Projom\Http\Route\Pattern;
+use Projom\Http\Route\Path\DynamicPath;
+use Projom\Http\Route\Path\StaticPath;
 
-class Path
+/*
+	Base class for defining route paths.
+*/
+abstract class Path
 {
-	private const PARAMETER_IDENTIFIER_PATTERN = '/\{([^:{}]+(?:[^{}]*?))(?:\:([^{}]+))?\}/';
+	public function __construct(protected readonly string $path) {}
 
-	private readonly string $path;
-	private readonly bool $isStatic;
-	private readonly string $pattern;
-	private readonly array $parameterIdentifiers;
-
-	public function __construct(string $path)
-	{
-		$this->path = $path;
-		$this->isStatic = Util::isPathStatic($path);
-		if (!$this->isStatic) {
-			$this->pattern = Pattern::create($path);
-			[$this->path, $this->parameterIdentifiers] = Util::pathWithIdentifiers($path, static::PARAMETER_IDENTIFIER_PATTERN);
-		}
-	}
+	abstract public function test(string $requestPath): array;
 
 	public static function create(string $path): Path
 	{
-		return new Path($path);
+		if (static::isDynamic($path))
+			return DynamicPath::create($path);
+		return StaticPath::create($path);
 	}
 
-	public function test(string $requestPath): array
+	public static function isDynamic(string $path): bool
 	{
-		if ($this->isStatic)
-			return $this->path === $requestPath
-				? [true, []]
-				: [false, []];
-
-		if (preg_match($this->pattern, $requestPath, $matches) === 0)
-			return [false, []];
-
-		$parameters = $this->formatParameters($matches);
-		return [true, $parameters];
-	}
-
-	private function formatParameters(array $parameters): array
-	{
-		// Remove the full string match.
-		$parameters = array_slice($parameters, 1);
-
-		if (!$parameters)
-			return [];
-
-		// Rekey the parameters with the identifiers.
-		$parameters = array_combine($this->parameterIdentifiers, $parameters);
-
-		return $parameters;
+		return str_contains($path, '{') && str_contains($path, '}');
 	}
 }

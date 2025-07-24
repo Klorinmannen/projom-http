@@ -10,22 +10,12 @@ use Projom\Http\Method;
 use Projom\Http\MiddlewareInterface;
 use Projom\Http\Route\Data;
 use Projom\Http\Route\DataInterface;
-use Projom\Http\Route\Handler;
-use Projom\Http\Route\Path;
 use Projom\Http\Route\RouteBase;
 use Projom\Http\Route\RouteInterface;
 use Projom\Http\Router\Middleware;
 
 class Route extends RouteBase implements RouteInterface
 {
-	public static function create(string $path, string $controller): Route
-	{
-		$path = Path::create($path);
-		$handler = Handler::create($controller);
-		$route = new Route($path, $handler);
-		return $route;
-	}
-
 	public function addMiddleware(MiddlewareInterface|Closure $middleware): void
 	{
 		$this->middlewares[] = Middleware::create($middleware);

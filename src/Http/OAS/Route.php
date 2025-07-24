@@ -8,18 +8,10 @@ use Projom\Http\Method;
 use Projom\Http\Request;
 use Projom\Http\Response;
 use Projom\Http\Route\Handler;
-use Projom\Http\Route\Path;
 use Projom\Http\Route\RouteBase;
 
 class Route extends RouteBase
 {
-	public static function create(string $path): Route
-	{
-		$path = Path::create($path);
-		$route = new Route($path);
-		return $route;
-	}
-
 	public function setData(Method $method, Data $data): void
 	{
 		$this->methodData[$method->name] = $data;

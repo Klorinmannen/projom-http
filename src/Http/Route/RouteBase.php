@@ -25,6 +25,14 @@ abstract class RouteBase
 		$this->handler = $handler;
 	}
 
+	public static function create(string $path, null|string $controller = null): static
+	{
+		$path = Path::create($path);
+		$handler = $controller !== null ? Handler::create($controller) : null;
+		$route = new static($path, $handler);
+		return $route;
+	}
+
 	public function match(Request $request): bool
 	{
 		[$result, $pathParameters] = $this->path->test($request->path());

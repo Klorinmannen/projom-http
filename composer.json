@@ -1,21 +1,25 @@
 {
     "name": "klorinmannen/projom-http",
     "description": "Projom http module",
-    "license": "MIT",
+    "homepage": "https://projom.se",
     "type": "library",
+    "license": "MIT",
     "keywords": [
-        "routing"
+        "routing",
+        "projom",
+        "http",
+        "projom-http"
+    ],
+    "authors": [
+        {
+            "name": "Jonatan Rao-Fransson"
+        }
     ],
     "autoload": {
         "psr-4": {
             "Projom\\": "src/"
         }
     },
-    "authors": [
-        {
-            "name": "Jonatan Rao-Fransson"
-        }
-    ],
     "require": {
         "php": ">=8.2.0",
         "psr/log": "^3.0"

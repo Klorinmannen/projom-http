@@ -16,7 +16,7 @@ class DynamicPath extends Path
 
 	public function __construct(string $path, string $pattern, array $parameterIdentifiers)
 	{
-		$this->path = $path;
+		parent::__construct($path);
 		$this->pattern = $pattern;
 		$this->parameterIdentifiers = $parameterIdentifiers;
 	}

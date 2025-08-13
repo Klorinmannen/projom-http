@@ -20,7 +20,7 @@ class Request
     protected null|ResponseBase $response = null;
     protected readonly string $path;
     protected readonly array $queryParameters;
-    protected readonly array $pathParameters;
+    protected array $pathParameters = [];
 
     public function __construct(#[SensitiveParameter] Input $input)
     {

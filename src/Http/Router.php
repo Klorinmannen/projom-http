@@ -10,23 +10,30 @@ use ValueError;
 use Projom\Http\OAS;
 use Projom\Http\Request;
 use Projom\Http\Response;
-use Projom\Http\MiddlewareInterface;
+use Projom\Http\Router\MiddlewareInterface;
+use Projom\Http\Route\Action;
 use Projom\Http\StatusCode;
 use Projom\Http\Route\Route;
 use Projom\Http\Route\RouteBase;
+use Projom\Http\Router\Dispatcher;
+use Projom\Http\Router\DispatcherInterface;
 use Projom\Http\Router\Middleware;
 use Projom\Http\Router\MiddlewareContext;
 
 class Router
 {
+	private DispatcherInterface $dispatcher;
 	private array $routes = [];
 	private array $middlewares = [];
 
-	public function __construct() {}
+	public function __construct(DispatcherInterface $dispatcher = new Dispatcher())
+	{
+		$this->dispatcher = $dispatcher;
+	}
 
 	public function addMiddleware(
 		MiddlewareInterface|Closure $middleware,
-		MiddlewareContext $context = MiddlewareContext::BEFORE_MATCHING_ROUTE
+		MiddlewareContext $context = MiddlewareContext::BEFORE_ROUTING
 	): void {
 		$this->middlewares[] = Middleware::create($middleware, $context);
 	}
@@ -42,7 +49,7 @@ class Router
 	 * 
 	 * @param string $path The path of the route.
 	 * @param string $controller The controller class name.
-	 * @param Closure $routeDefinition A Closure that defines the route.
+	 * @param Closure $routeDefinition A Closure which defines the route.
 	 * 
 	 * * Example: Router->addRoute('/users', User::class, function (RouteInterface $route) { $route->get(); });
 	 */
@@ -58,16 +65,66 @@ class Router
 		$this->routes[] = $route;
 	}
 
+	/**
+	 * Route a request and return the action to be executed.
+	 *
+	 * @param Request|null $request The request to route.
+	 * @return array The controller and method to be executed.
+	 */
+	public function route(Request|null $request = null): array
+	{
+		if ($request === null)
+			$request = Request::create();
+
+		$action = $this->processRequest($request);
+		return $action->get();
+	}
+
+	private function processRequest(Request $request): Action
+	{
+		try {
+			$this->processMiddlewares(MiddlewareContext::BEFORE_ROUTING, $request);
+
+			$route = $this->match($request);
+			if ($route === null)
+				Response::reject('Not found', StatusCode::NOT_FOUND);
+
+			$route->process($request);
+		} catch (Response $response) {
+			$response->send();
+		}
+
+		$action = $route->action();
+
+		return $action;
+	}
+
+	private function match(Request $request): null|RouteBase
+	{
+		foreach ($this->routes as $route)
+			if ($route->match($request))
+				return $route;
+		return null;
+	}
+
+	/**
+	 * Route and dispatch the request to the matched route's action.
+	 * Uses built-in Controller and method evocation.
+	 * 
+	 * @param Request|null $request The request to route and dispatch.
+	 */
 	public function dispatch(Request|null $request = null): void
 	{
 		if ($request === null)
 			$request = Request::create();
 
+		$action = $this->processRequest($request);
+
 		try {
-			$this->dispatchRequest($request);
-		} catch (Response $response) {
-			$request->setResponse($response);
-			$this->dispatchResponse($request);
+			$this->processMiddlewares(MiddlewareContext::BEFORE_DISPATCHING, $request);
+			$this->dispatcher->processAction($action, $request);
+		} catch (ResponseBase $response) {
+			$response->send();
 		}
 	}
 
@@ -80,30 +137,5 @@ class Router
 
 		foreach ($middlewares as $middleware)
 			$middleware->process($request);
-	}
-
-	private function dispatchRequest(Request $request): void
-	{
-		$this->processMiddlewares(MiddlewareContext::BEFORE_MATCHING_ROUTE, $request);
-		$route = $this->match($request);
-		if ($route === null)
-			Response::reject('Not found', StatusCode::NOT_FOUND);
-
-		$this->processMiddlewares(MiddlewareContext::BEFORE_DISPATCHING_ROUTE, $request);
-		$route->dispatch($request);
-	}
-
-	private function match(Request $request): null|RouteBase
-	{
-		foreach ($this->routes as $route)
-			if ($route->match($request))
-				return $route;
-		return null;
-	}
-
-	public function dispatchResponse(Request $request): void
-	{
-		$this->processMiddlewares(MiddlewareContext::BEFORE_SENDING_RESPONSE, $request);
-		$request->response()->send();
 	}
 }

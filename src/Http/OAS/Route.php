@@ -7,7 +7,7 @@ namespace Projom\Http\OAS;
 use Projom\Http\Method;
 use Projom\Http\Request;
 use Projom\Http\Response;
-use Projom\Http\Route\Handler;
+use Projom\Http\Route\Action;
 use Projom\Http\Route\RouteBase;
 
 class Route extends RouteBase
@@ -21,7 +21,7 @@ class Route extends RouteBase
 	{
 		$controller = $this->matchedData->controllerDetails['controller'];
 		$controllerMethod = $this->matchedData->controllerDetails['method'];
-		$this->handler = Handler::create($controller, $controllerMethod);
+		$this->action = Action::create($controller, $controllerMethod);
 	}
 
 	protected function verifyData(Request $request): void

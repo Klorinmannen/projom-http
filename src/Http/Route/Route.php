@@ -7,7 +7,7 @@ namespace Projom\Http\Route;
 use Closure;
 
 use Projom\Http\Method;
-use Projom\Http\MiddlewareInterface;
+use Projom\Http\Router\MiddlewareInterface;
 use Projom\Http\Route\Data;
 use Projom\Http\Route\DataInterface;
 use Projom\Http\Route\RouteBase;
@@ -55,6 +55,6 @@ class Route extends RouteBase implements RouteInterface
 
 	protected function setup(): void
 	{
-		$this->handler->setMethod($this->matchedData->method());
+		$this->action->setMethod($this->matchedData->method());
 	}
 }

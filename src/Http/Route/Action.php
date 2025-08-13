@@ -4,21 +4,19 @@ declare(strict_types=1);
 
 namespace Projom\Http\Route;
 
-use Projom\Http\Request;
 use Projom\Http\Response;
 use Projom\Http\Controller;
-use Projom\Http\Route\Util;
 
-class Handler
+class Action
 {
 	public function __construct(
 		private string $controller,
 		private string $method
 	) {}
 
-	public static function create(string $controller, string $method = ''): Handler
+	public static function create(string $controller, string $method = ''): Action
 	{
-		return new Handler($controller, $method);
+		return new Action($controller, $method);
 	}
 
 	public function setMethod(string $method): void
@@ -26,6 +24,9 @@ class Handler
 		$this->method = $method;
 	}
 
+	/**
+	 * Verification of the built-in action.
+	 */
 	public function verify(): void
 	{
 		if (!$this->controller)
@@ -45,11 +46,13 @@ class Handler
 			Response::abort("Controller does not extend: $base");
 	}
 
-	public function call(Request $request): void
+	/**
+	 * Returns the controller and method as an array.
+	 *
+	 * @return array [$controller: string, $method: string]
+	 */
+	public function get(): array
 	{
-		$controller = $this->controller;
-		$method = $this->method;
-		$parameters = Util::resolveParameters($controller, $method, $request);
-		(new $controller($request))->{$method}(...$parameters);
+		return [$this->controller, $this->method];
 	}
 }

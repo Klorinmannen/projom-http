@@ -74,7 +74,6 @@ class Parameter
 		if (count($inputParameters) > count($normalizedParameterDefinitions))
 			return false;
 
-
 		$namedDefinitions = static::rekeyOnName($normalizedParameterDefinitions);
 
 		$isSubset = static::isSubset($inputParameters, $namedDefinitions);

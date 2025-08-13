@@ -6,8 +6,8 @@ namespace Projom\Http\Route;
 
 use Closure;
 
-use Projom\Http\MiddlewareInterface;
 use Projom\Http\Route\DataInterface;
+use Projom\Http\Router\MiddlewareInterface;
 
 /**
  * Public interface for defining HTTP routes.

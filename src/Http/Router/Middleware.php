@@ -6,9 +6,9 @@ namespace Projom\Http\Router;
 
 use Closure;
 
-use Projom\Http\MiddlewareInterface;
 use Projom\Http\Request;
 use Projom\Http\Router\MiddlewareContext;
+use Projom\Http\Router\MiddlewareInterface;
 
 class Middleware
 {

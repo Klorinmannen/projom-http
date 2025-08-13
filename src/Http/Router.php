@@ -10,9 +10,9 @@ use ValueError;
 use Projom\Http\OAS;
 use Projom\Http\Request;
 use Projom\Http\Response;
+use Projom\Http\Response\Code;
 use Projom\Http\Router\MiddlewareInterface;
 use Projom\Http\Route\Action;
-use Projom\Http\StatusCode;
 use Projom\Http\Route\Route;
 use Projom\Http\Route\RouteBase;
 use Projom\Http\Router\Dispatcher;
@@ -87,7 +87,7 @@ class Router
 
 			$route = $this->match($request);
 			if ($route === null)
-				Response::reject('Not found', StatusCode::NOT_FOUND);
+				Response::reject('Not found', Code::NOT_FOUND);
 
 			$route->process($request);
 		} catch (Response $response) {

@@ -7,9 +7,9 @@ namespace Projom\Http\Route;
 use Projom\Http\Method;
 use Projom\Http\Request;
 use Projom\Http\Response;
+use Projom\Http\Response\Code;
 use Projom\Http\Route\Action;
 use Projom\Http\Route\Path;
-use Projom\Http\StatusCode;
 
 abstract class RouteBase
 {
@@ -41,7 +41,7 @@ abstract class RouteBase
 
 		$method = $request->method();
 		if (!$this->hasMethod($method))
-			Response::reject('Method not allowed', StatusCode::METHOD_NOT_ALLOWED);
+			Response::reject('Method not allowed', Code::METHOD_NOT_ALLOWED);
 
 		$request->setPathParameters($pathParameters);
 		$this->matchedData = $this->methodData[$method->name];
@@ -72,7 +72,7 @@ abstract class RouteBase
 	private function verify(Request $request): void
 	{
 		if ($this->matchedData === null)
-			Response::reject('Not found', StatusCode::NOT_FOUND);
+			Response::reject('Not found', Code::NOT_FOUND);
 
 		if ($this->action === null)
 			Response::abort('Route action missing');

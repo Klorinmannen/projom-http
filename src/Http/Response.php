@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Projom\Http;
 
 use Projom\Http\ContentType;
-use Projom\Http\StatusCode;
+use Projom\Http\Response\Code;
 
 class Response extends ResponseBase
 {
-	public static function json(array|object $data, StatusCode $code = StatusCode::OK): void
+	public static function json(array|object $data, Code $code = Code::OK): void
 	{
 		throw new Response(
 			$code->value,
@@ -18,7 +18,7 @@ class Response extends ResponseBase
 		);
 	}
 
-	public static function text(string $text, StatusCode $code = StatusCode::OK): void
+	public static function text(string $text, Code $code = Code::OK): void
 	{
 		throw new Response(
 			$code->value,
@@ -27,7 +27,7 @@ class Response extends ResponseBase
 		);
 	}
 
-	public static function html(string $html, StatusCode $code = StatusCode::OK): void
+	public static function html(string $html, Code $code = Code::OK): void
 	{
 		throw new Response(
 			$code->value,
@@ -36,27 +36,27 @@ class Response extends ResponseBase
 		);
 	}
 
-	public static function redirect(string $url, array $headers = [], StatusCode $code = StatusCode::MOVED_PERMANENTLY): void
+	public static function redirect(string $url, array $headers = [], Code $code = Code::MOVED_PERMANENTLY): void
 	{
 		$headers[] = "Location: $url";
 		throw new Response($code->value, headers: $headers);
 	}
 
-	public static function ok(null|string $message = null, StatusCode $code = StatusCode::OK): void
+	public static function ok(null|string $message = null, Code $code = Code::OK): void
 	{
 		if ($message !== null)
 			static::json(['message' => $message], $code);
 		throw new Response($code->value);
 	}
 
-	public static function abort(null|string $message = null, StatusCode $code = StatusCode::INTERNAL_SERVER_ERROR): void
+	public static function abort(null|string $message = null, Code $code = Code::INTERNAL_SERVER_ERROR): void
 	{
 		if ($message !== null)
 			static::json(['message' => $message], $code);
 		throw new Response($code->value);
 	}
 
-	public static function reject(null|string $message = null, StatusCode $code = StatusCode::BAD_REQUEST): void
+	public static function reject(null|string $message = null, Code $code = Code::BAD_REQUEST): void
 	{
 		if ($message !== null)
 			static::json(['message' => $message], $code);

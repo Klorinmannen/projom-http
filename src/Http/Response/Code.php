@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Projom\Http;
+namespace Projom\Http\Response;
 
-enum StatusCode: int
+enum Code: int
 {
 	case OK = 200;
 	case CREATED = 201;

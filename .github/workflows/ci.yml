@@ -2,16 +2,17 @@ name: CI
 
 on:
   push:
-    branches: ["main", "dev"]
+    branches: ["**"]
   schedule:
-  - cron: "0 4 * * 3"
+    - cron: "0 4 * * 3"
+
+permissions:
+  contents: read
 
 jobs:
   unit-tests:
     name: PHPUnit tests on ubuntu-latest
     runs-on: [ubuntu-latest]
-    permissions:
-      contents: read
 
     steps:
       - uses: actions/checkout@v4
@@ -20,7 +21,6 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.2"
-          extensions: mbstring, pdo_mysql
           coverage: xdebug
           tools: composer
 
@@ -28,17 +28,26 @@ jobs:
         run: composer install --no-interaction --no-progress
 
       - name: Run coverage report
-        run: ./vendor/bin/phpunit --coverage-text="phpunit_coverage.txt"
+        run: ./vendor/bin/phpunit --testsuite="Unit" --coverage-text="phpunit_coverage.txt" --coverage-html="coverage_html"
 
       - name: Coverage summary
         run: cat phpunit_coverage.txt >> $GITHUB_STEP_SUMMARY
+
+      - name: Create archive for coverage html
+        run: tar -czvf coverage_html.tar.gz coverage_html
+
+      - name: Upload coverage html archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html
+          overwrite: true
+          path: ./coverage_html.tar.gz
 
   psalm-security-scan:
     name: Psalm static security analysis on ubuntu-latest
     runs-on: ubuntu-latest
     permissions:
-      contents: read # For actions/checkout to fetch code
-      security-events: write # For github/codeql-action/upload-sarif to upload results
+      security-events: write
 
     steps:
       - name: Checkout code

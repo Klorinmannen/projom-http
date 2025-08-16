@@ -14,7 +14,7 @@ use Projom\Http\Request\Input;
 
 class RequestTest extends TestCase
 {
-	public static function provider_empty(): array
+	public static function emptyDataProvider(): array
 	{
 		return [
 			'Valid' => [
@@ -30,7 +30,7 @@ class RequestTest extends TestCase
 	}
 
 	#[Test]
-	#[DataProvider('provider_empty')]
+	#[DataProvider('emptyDataProvider')]
 	public function empty(string $uri, bool $expected): void
 	{
 		$input = new Input([], ['REQUEST_URI' => $uri], [], [], '');
@@ -38,7 +38,7 @@ class RequestTest extends TestCase
 		$this->assertEquals($expected, $request->empty());
 	}
 
-	public static function provider_headers(): array
+	public static function headerDataProvider(): array
 	{
 		return [
 			'Valid 1' => [
@@ -94,15 +94,15 @@ class RequestTest extends TestCase
 	}
 
 	#[Test]
-	#[DataProvider('provider_headers')]
-	public function headers(array $server, null|string $header, null|string|array $expected): void
+	#[DataProvider('headerDataProvider')]
+	public function header(array $server, null|string $header, null|string|array $expected): void
 	{
 		$input = new Input([], $server, [], [], '');
 		$request = Request::create($input);
 		$this->assertEquals($expected, $request->headers($header));
 	}
 
-	public static function provider_payload(): array
+	public static function payloadDataProvider(): array
 	{
 		return [
 			'Valid payload' => [
@@ -117,7 +117,7 @@ class RequestTest extends TestCase
 	}
 
 	#[Test]
-	#[DataProvider('provider_payload')]
+	#[DataProvider('payloadDataProvider')]
 	public function payload(string $payload, string $expected): void
 	{
 		$input = new Input([], [], [], [], $payload);
@@ -125,7 +125,7 @@ class RequestTest extends TestCase
 		$this->assertEquals($expected, $request->payload());
 	}
 
-	public static function provider_path(): array
+	public static function pathDataProvider(): array
 	{
 		return [
 			'Valid path' => [
@@ -142,7 +142,7 @@ class RequestTest extends TestCase
 	}
 
 	#[Test]
-	#[DataProvider('provider_path')]
+	#[DataProvider('pathDataProvider')]
 	public function path(array $server, string $expected): void
 	{
 		$input = new Input([], $server, [], [], '');
@@ -150,7 +150,7 @@ class RequestTest extends TestCase
 		$this->assertEquals($expected, $request->path());
 	}
 
-	public static function provider_method(): array
+	public static function methodDataProvider(): array
 	{
 		return [
 			'Valid method' => [
@@ -168,7 +168,7 @@ class RequestTest extends TestCase
 	}
 
 	#[Test]
-	#[DataProvider('provider_method')]
+	#[DataProvider('methodDataProvider')]
 	public function method(array $server, null|Method $expected): void
 	{
 		$input = new Input([], $server, [], [], '');

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Projom\Http;
 
 use Projom\Http\ContentType;
+use Projom\Http\ResponseBase;
 use Projom\Http\Response\Code;
 
 class Response extends ResponseBase

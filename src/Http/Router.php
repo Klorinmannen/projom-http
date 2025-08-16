@@ -11,7 +11,6 @@ use Projom\Http\OAS;
 use Projom\Http\Request;
 use Projom\Http\Response;
 use Projom\Http\Response\Code;
-use Projom\Http\Router\MiddlewareInterface;
 use Projom\Http\Route\Action;
 use Projom\Http\Route\Route;
 use Projom\Http\Route\RouteBase;
@@ -19,6 +18,7 @@ use Projom\Http\Router\Dispatcher;
 use Projom\Http\Router\DispatcherInterface;
 use Projom\Http\Router\Middleware;
 use Projom\Http\Router\MiddlewareContext;
+use Projom\Http\Router\MiddlewareInterface;
 
 class Router
 {
@@ -69,23 +69,29 @@ class Router
 	 * Route a request and return the action to be executed.
 	 *
 	 * @param Request|null $request The request to route.
-	 * @return array The controller and method to be executed.
+	 * @return array [$controller: string, $method: string].
 	 */
-	public function route(Request|null $request = null): array
+	public function route(null|Request $request = null): array
 	{
-		if ($request === null)
-			$request = Request::create();
-
 		$action = $this->processRequest($request);
 		return $action->get();
 	}
 
-	private function processRequest(Request $request): Action
+	private function processRequest(null|Request $request): Action
+	{
+		if ($request === null)
+			$request = Request::create();
+
+		$action = $this->processRoutes($request);
+		return $action;
+	}
+
+	private function processRoutes(Request $request): Action
 	{
 		try {
 			$this->processMiddlewares(MiddlewareContext::BEFORE_ROUTING, $request);
 
-			$route = $this->match($request);
+			$route = $this->matchRoute($request);
 			if ($route === null)
 				Response::reject('Not found', Code::NOT_FOUND);
 
@@ -99,7 +105,7 @@ class Router
 		return $action;
 	}
 
-	private function match(Request $request): null|RouteBase
+	private function matchRoute(Request $request): null|RouteBase
 	{
 		foreach ($this->routes as $route)
 			if ($route->match($request))
@@ -111,19 +117,16 @@ class Router
 	 * Route and dispatch the request to the matched route's action.
 	 * Uses built-in Controller and method evocation.
 	 * 
-	 * @param Request|null $request The request to route and dispatch.
+	 * @param null|Request $request The request to route and dispatch.
 	 */
-	public function dispatch(Request|null $request = null): void
+	public function dispatch(null|Request $request = null): void
 	{
-		if ($request === null)
-			$request = Request::create();
-
 		$action = $this->processRequest($request);
-
 		try {
 			$this->processMiddlewares(MiddlewareContext::BEFORE_DISPATCHING, $request);
 			$this->dispatcher->processAction($action, $request);
 		} catch (ResponseBase $response) {
+			$request->setResponse($response);
 			$response->send();
 		}
 	}

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Projom\Http\Route;
 
-use Projom\Http\Response;
 use Projom\Http\Controller;
+use Projom\Http\Response;
 
 class Action
 {

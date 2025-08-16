@@ -23,12 +23,13 @@ class Input
 		#[SensitiveParameter] array $cookies = [],
 		#[SensitiveParameter] string $payload = ''
 	): Input {
-		return new Input(
+		$input = new Input(
 			$request ?: ($_REQUEST ?? []),
 			$server ?: ($_SERVER ?? []),
 			$files ?: ($_FILES ?? []),
 			$cookies ?: ($_COOKIE ?? []),
 			$payload ?: (file_get_contents('php://input') ?: '')
 		);
+		return $input;
 	}
 }

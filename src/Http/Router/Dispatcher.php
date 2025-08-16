@@ -15,7 +15,7 @@ class Dispatcher implements DispatcherInterface
 	{
 		$action->verify();
 		[$controller, $method] = $action->get();
-		$parameters = Util::resolveParameters($controller, $method, $request);
+		$parameters = Util::resolveMethodParameters($controller, $method, $request);
 		$this->call($controller, $method, $parameters, $request);
 	}
 

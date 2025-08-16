@@ -10,7 +10,7 @@ use Projom\Http\Request;
 
 class Util
 {
-	public static function resolveParameters(string $controller, string $method, Request $request): array
+	public static function resolveMethodParameters(string $controller, string $method, Request $request): array
 	{
 		$reflection = new ReflectionMethod($controller, $method);
 		$reflectionParameters = $reflection->getParameters();

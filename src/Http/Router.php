@@ -38,7 +38,7 @@ class Router
 		$this->middlewares[] = Middleware::create($middleware, $context);
 	}
 
-	public function addRoutesFromOAS(string $filepath): void
+	public function addOASRoutes(string $filepath): void
 	{
 		$routes = OAS::load($filepath);
 		$this->routes = array_merge($this->routes, $routes);

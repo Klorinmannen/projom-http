@@ -7,8 +7,8 @@ namespace Projom\Http;
 use RuntimeException;
 
 use Projom\Http\Method;
-use Projom\Http\OAS\Data;
 use Projom\Http\OAS\Route;
+use Projom\Http\OAS\Route\Data;
 
 class OAS
 {

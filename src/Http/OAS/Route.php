@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Projom\Http\OAS;
 
 use Projom\Http\Method;
+use Projom\Http\OAS\Route\Data;
 use Projom\Http\Route\Action;
 use Projom\Http\Route\RouteBase;
 

@@ -2,19 +2,23 @@
 
 declare(strict_types=1);
 
-namespace Projom\Http\OAS;
+namespace Projom\Http\OAS\Route;
 
 use Projom\Http\Method;
 use Projom\Http\Request;
 use Projom\Http\Response as httpResponse;
+use Projom\Http\OAS\Controller;
 use Projom\Http\OAS\Response;
+use Projom\Http\OAS\Route\Parameter;
+use Projom\Http\OAS\Route\Payload;
+use Projom\Http\OAS\Route\Security;
 
 class Data
 {
 	public array $requiredParameters = [];
 	public array $requiredPayload = [];
-	public array $requiredResponse = [];
 	public bool $security = false;
+	public array $requiredResponse = [];
 	public array $controllerDetails = [];
 	public Method $method;
 
@@ -26,8 +30,8 @@ class Data
 		$data->method = $method;
 		$data->requiredParameters = Parameter::normalize($routeData['parameters'] ?? []);
 		$data->requiredPayload = Payload::normalize($routeData['requestBody'] ?? []);
-		$data->requiredResponse = Response::normalize($routeData['responses'] ?? []);
 		$data->security = Security::normalize($routeData['security'] ?? []);
+		$data->requiredResponse = Response::normalize($routeData['responses'] ?? []);
 		$data->controllerDetails = Controller::normalize($routeData['operationId'] ?? '');
 		return $data;
 	}

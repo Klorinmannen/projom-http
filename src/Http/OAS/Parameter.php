@@ -8,10 +8,10 @@ use Projom\Http\Route\Parameter as RouteParameter;
 
 class Parameter extends RouteParameter
 {
-    public static function normalize(array $expectedParameters): array
+    public static function normalize(array $parameterDefinitions): array
     {
         $normalized = [];
-        foreach ($expectedParameters as $parameterData) {
+        foreach ($parameterDefinitions as $parameterData) {
 
             $in = $parameterData['in']; // 'path' or 'query'.
             $name = $parameterData['name'] ?? '';
@@ -22,7 +22,7 @@ class Parameter extends RouteParameter
 
             $normalized[$in][] = [
                 'name' => $name,
-                'type' => $type,
+                'type' => static::normalizeParameterType($type),
                 'required' => $required
             ];
         }

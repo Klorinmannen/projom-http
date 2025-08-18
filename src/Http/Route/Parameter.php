@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Projom\Http\Route;
 
-use Projom\Http\Route\Path\Pattern;
 use Projom\Http\Route\ParameterType;
 
 class Parameter

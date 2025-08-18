@@ -11,6 +11,7 @@ use Projom\Http\OAS;
 use Projom\Http\Request;
 use Projom\Http\Response;
 use Projom\Http\Response\Code;
+use Projom\Http\Response\ResponseBase;
 use Projom\Http\Route\Action;
 use Projom\Http\Route\Route;
 use Projom\Http\Route\RouteBase;

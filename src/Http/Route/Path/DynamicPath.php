@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Projom\Http\Route\Path;
 
 use Projom\Http\Route\Path;
-use Projom\Http\Route\Pattern;
+use Projom\Http\Route\Path\Pattern;
 
 class DynamicPath extends Path
 {
@@ -23,7 +23,7 @@ class DynamicPath extends Path
 
 	public static function create(string $path): DynamicPath
 	{
-		$pattern = Pattern::create($path);
+		$pattern = Pattern::build($path);
 		[$path, $parameterIdentifiers] = static::pathWithIdentifiers($path, static::PARAMETER_IDENTIFIER_PATTERN);
 		return new DynamicPath($path, $pattern, $parameterIdentifiers);
 	}

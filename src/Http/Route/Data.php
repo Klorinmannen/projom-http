@@ -146,7 +146,6 @@ class Data implements DataInterface
 			Response::reject('Exclusive request variables do not match provided definitions');
 
 		// 2. Check required definitions.
-
 		$normalizedRequiredQueryParams = Parameter::normalize($this->requiredQueryParamDefinitions);
 		if (!Parameter::verifyRequired($request->queryParameters(), $normalizedRequiredQueryParams))
 			Response::reject('Required request query parameters do not match provided definitions');

@@ -4,42 +4,50 @@ declare(strict_types=1);
 
 namespace Projom\Http\Route;
 
-use Projom\Http\Route\Pattern;
+use Projom\Http\Route\Path\Pattern;
+use Projom\Http\Route\ParameterType;
 
 class Parameter
 {
-	public static function verifyPath(array $inputParameters, array $expectedQueryParameters): bool
+	public static function verifyPath(array $inputParameters, array $normalizedParameterDefinitions): bool
 	{
 		// Nothing to check against.
-		if (!$expectedQueryParameters)
+		if (!$normalizedParameterDefinitions)
 			return true;
 
 		// The input path parameter set cannot be bigger than the expected set.
-		if (count($inputParameters) != count($expectedQueryParameters))
+		if (count($inputParameters) != count($normalizedParameterDefinitions))
 			return false;
 
-		$result = static::test($inputParameters, $expectedQueryParameters);
+		$result = static::verify($inputParameters, $normalizedParameterDefinitions);
 		if (!$result)
 			return false;
 
 		return true;
 	}
 
-	private static function test(array $inputParameters, array $expectedParameters): bool
+	private static function verify(array $inputParameters, array $normalizedParameterData): bool
 	{
-		foreach ($expectedParameters as $id => $parameterData) {
+		foreach ($normalizedParameterData as $id => $parameterData) {
 
 			// Parameter is required but not present.
 			if ($parameterData['required'])
 				if (!array_key_exists($id, $inputParameters))
 					return false;
 
-			$result = static::verify((string) $inputParameters[$id], $parameterData['type']);
+			$subject = (string)($inputParameters[$id] ?? '');
+			$result = static::test($parameterData['type'], $subject);
 			if (!$result)
 				return false;
 		}
 
 		return true;
+	}
+
+	private static function test(ParameterType $pathParameter, string $subject): bool
+	{
+		$result = preg_match($pathParameter->toPattern(), $subject) === 1;
+		return $result;
 	}
 
 	public static function verifyOptional(array $inputParameters, array $normalizedParameterDefinitions): bool
@@ -53,7 +61,7 @@ class Parameter
 		$namedDefinitions = static::rekeyOnName($normalizedParameterDefinitions);
 		$namedDefinitionSubset = static::selectSubset($inputParameters, $namedDefinitions);
 
-		$result = static::test($inputParameters, $namedDefinitionSubset);
+		$result = static::verify($inputParameters, $namedDefinitionSubset);
 		if (!$result)
 			return false;
 
@@ -73,7 +81,7 @@ class Parameter
 		$namedDefinitions = static::rekeyOnName($normalizedParameterDefinitions);
 		$namedDefinitionSubset = static::selectSubset($inputParameters, $namedDefinitions);
 
-		$result = static::test($inputParameters, $namedDefinitionSubset);
+		$result = static::verify($inputParameters, $namedDefinitionSubset);
 		if (!$result)
 			return false;
 
@@ -102,49 +110,58 @@ class Parameter
 
 		$namedDefinitionSubset = static::selectSubset($inputParameters, $namedDefinitions);
 
-		$result = static::test($inputParameters, $namedDefinitionSubset);
+		$result = static::verify($inputParameters, $namedDefinitionSubset);
 		if (!$result)
 			return false;
 
 		return true;
 	}
 
-	private static function rekeyOnName(array $expectedQueryParameters): array
+	private static function rekeyOnName(array $parameterDefinitions): array
 	{
-		$namedExpectedQueryParameter = array_column($expectedQueryParameters, null, 'name');
-		return $namedExpectedQueryParameter;
+		$namedParameterDefinitions = array_column($parameterDefinitions, null, 'name');
+		return $namedParameterDefinitions;
 	}
 
-	public static function normalize(array $expectedParameters): array
+	public static function normalize(array $parameterDefinitions): array
 	{
 		$normalized = [];
-		foreach ($expectedParameters as $name => $type)
+		foreach ($parameterDefinitions as $name => $type)
+
 			$normalized[] = [
 				'name' => $name,
-				'type' => $type,
+				'type' => static::normalizeParameterType($type),
 				'required' => true
 			];
 		return $normalized;
 	}
 
-	private static function isSubset(array $inputParameters, array $namedExpectedParameters): bool
+	/**
+	 * This method tries to be lenient; accepting both ParameterType and strings to normalize the parameter type.
+	 */
+	protected static function normalizeParameterType(ParameterType|string $type): ParameterType
+	{
+		if ($type instanceof ParameterType)
+			return $type;
+
+		// Throws ValueError if the type is not a valid ParameterType.
+		$type = ParameterType::from($type);
+
+		return $type;
+	}
+
+	private static function isSubset(array $inputParameters, array $namedParameterDefinitions): bool
 	{
 		// The input parameters must be a subset of the expected parameters.
 		// Any extra parameters are not allowed.
-		$diff = array_diff_key($inputParameters, $namedExpectedParameters);
+		$diff = array_diff_key($inputParameters, $namedParameterDefinitions);
 		$isSubset = count($diff) === 0;
 		return $isSubset;
 	}
 
-	private static function selectSubset(array $inputParameters, array $namedExpectedParameters): array
+	private static function selectSubset(array $inputParameters, array $namedParameterDefinitions): array
 	{
-		$subset = array_intersect_key($namedExpectedParameters, $inputParameters);
+		$subset = array_intersect_key($namedParameterDefinitions, $inputParameters);
 		return $subset;
-	}
-
-	private static function verify(string $inputParameter, string $type): bool
-	{
-		$parameterPattern = Pattern::fromType($type);
-		return Pattern::test($parameterPattern, $inputParameter);
 	}
 }

@@ -14,9 +14,9 @@ class DynamicPath extends Path
 	private readonly string $pattern;
 	private readonly array $parameterIdentifiers;
 
-	public function __construct(string $path, string $pattern, array $parameterIdentifiers)
+	public function __construct(string $dynamicPath, string $pattern, array $parameterIdentifiers)
 	{
-		parent::__construct($path);
+		parent::__construct($dynamicPath);
 		$this->pattern = $pattern;
 		$this->parameterIdentifiers = $parameterIdentifiers;
 	}
@@ -24,16 +24,16 @@ class DynamicPath extends Path
 	public static function create(string $path): DynamicPath
 	{
 		$pattern = Pattern::build($path);
-		[$path, $parameterIdentifiers] = static::pathWithIdentifiers($path, static::PARAMETER_IDENTIFIER_PATTERN);
-		return new DynamicPath($path, $pattern, $parameterIdentifiers);
+		[$dynamicPath, $parameterIdentifiers] = static::pathWithIdentifiers($path);
+		return new DynamicPath($dynamicPath, $pattern, $parameterIdentifiers);
 	}
 
-	private static function pathWithIdentifiers(string $path, string $paramterIdentifierPattern): array
+	private static function pathWithIdentifiers(string $path): array
 	{
 		$parameterIdentifiers = [];
 		$pos = 1;
-		$routePath = preg_replace_callback(
-			$paramterIdentifierPattern,
+		$dynamicPath = preg_replace_callback(
+			static::PARAMETER_IDENTIFIER_PATTERN,
 			function ($matches) use (&$pos, &$parameterIdentifiers) {
 
 				$type = $matches[1];
@@ -49,7 +49,7 @@ class DynamicPath extends Path
 			$path
 		);
 
-		return [$routePath, $parameterIdentifiers];
+		return [$dynamicPath, $parameterIdentifiers];
 	}
 
 	public function test(string $requestPath): array

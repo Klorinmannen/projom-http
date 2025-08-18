@@ -7,10 +7,10 @@ namespace Projom\Http;
 use SensitiveParameter;
 
 use Projom\Http\Method;
-use Projom\Http\ResponseBase;
 use Projom\Http\Request\Header;
 use Projom\Http\Request\Input;
 use Projom\Http\Request\Timer;
+use Projom\Http\Response\ResponseBase;
 
 class Request
 {

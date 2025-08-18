@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Projom\Http\Router;
 
+use ReflectionMethod;
+
 use Projom\Http\Request;
 use Projom\Http\Route\Action;
 use Projom\Http\Router\DispatcherInterface;
-use Projom\Http\Router\Util;
 
 class Dispatcher implements DispatcherInterface
 {
@@ -15,12 +16,64 @@ class Dispatcher implements DispatcherInterface
 	{
 		$action->verify();
 		[$controller, $method] = $action->get();
-		$parameters = Util::resolveMethodParameters($controller, $method, $request);
+		$parameters = $this->resolveMethodParameters($controller, $method, $request);
 		$this->call($controller, $method, $parameters, $request);
 	}
 
 	public function call(string $controller, string $method, array $methodParameters, Request $request): void
 	{
 		(new $controller($request))->{$method}(...$methodParameters);
+	}
+
+	public function resolveMethodParameters(string $controller, string $method, Request $request): array
+	{
+		$reflection = new ReflectionMethod($controller, $method);
+		$reflectionParameters = $reflection->getParameters();
+		if (!$reflectionParameters)
+			return [];
+
+		$resolvedParameters = [];
+		foreach ($reflectionParameters as $parameter) {
+			$parameterName = $parameter->getName();
+			$typeName = $parameter->getType()->getName();
+			$parameter = static::matchParameter($parameterName, $typeName, $request);
+			$resolvedParameters[] = $parameter;
+		}
+
+		return $resolvedParameters;
+	}
+
+	private static function matchParameter(
+		string $parameterName,
+		string $typeName,
+		Request $request
+	): mixed {
+
+		$parameter = match ($parameterName) {
+			'pathParameters' => $request->pathParameters(),
+			'queryParameters' => $request->queryParameters(),
+			'requestVars' => $request->vars(),
+			'payload' => $request->payload(),
+			'headers' => $request->headers(),
+			'cookies' => $request->cookies(),
+			'files' => $request->files(),
+			default => $request->find($parameterName),
+		};
+
+		$parameter = static::castParameter($parameter, $typeName);
+
+		return $parameter;
+	}
+
+	private static function castParameter(mixed $parameter, string $typeName): mixed
+	{
+		$parameter = match ($typeName) {
+			'int' => (int)$parameter,
+			'float' => (float)$parameter,
+			'string' => (string)$parameter,
+			'bool' => (bool)$parameter,
+			default => $parameter
+		};
+		return $parameter;
 	}
 }

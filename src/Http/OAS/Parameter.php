@@ -13,7 +13,7 @@ class Parameter extends RouteParameter
         $normalized = [];
         foreach ($expectedParameters as $parameterData) {
 
-            $in = $parameterData['in'];
+            $in = $parameterData['in']; // 'path' or 'query'.
             $name = $parameterData['name'] ?? '';
             $type = $parameterData['schema']['type'] ?? '';
 

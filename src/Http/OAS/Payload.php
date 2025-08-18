@@ -41,9 +41,11 @@ class Payload
 				return true;
 		}
 
-		return match ($type) {
-			'application/json' => ! empty($inputPayload),
+		$result = match ($type) {
+			'application/json' => !empty($inputPayload),
 			default => false
 		};
+
+		return $result;
 	}
 }

@@ -11,7 +11,7 @@ class Parameter
 	public static function verifyPath(array $inputParameters, array $expectedQueryParameters): bool
 	{
 		// Nothing to check against.
-		if (! $expectedQueryParameters)
+		if (!$expectedQueryParameters)
 			return true;
 
 		// The input path parameter set cannot be bigger than the expected set.
@@ -19,7 +19,7 @@ class Parameter
 			return false;
 
 		$result = static::test($inputParameters, $expectedQueryParameters);
-		if (! $result)
+		if (!$result)
 			return false;
 
 		return true;
@@ -31,43 +31,63 @@ class Parameter
 
 			// Parameter is required but not present.
 			if ($parameterData['required'])
-				if (! array_key_exists($id, $inputParameters))
+				if (!array_key_exists($id, $inputParameters))
 					return false;
 
 			$result = static::verify((string) $inputParameters[$id], $parameterData['type']);
-			if (! $result)
+			if (!$result)
 				return false;
 		}
 
 		return true;
 	}
 
-	public static function verifyOptionalParameters(array $inputParameters, array $normalizedParameterDefinitions): bool
+	public static function verifyOptional(array $inputParameters, array $normalizedParameterDefinitions): bool
 	{
 		// Nothing to check against.
-		if (! $normalizedParameterDefinitions)
+		if (!$normalizedParameterDefinitions)
 			return true;
-		if (! $inputParameters)
+		if (!$inputParameters)
 			return true;
 
 		$namedDefinitions = static::rekeyOnName($normalizedParameterDefinitions);
 		$namedDefinitionSubset = static::selectSubset($inputParameters, $namedDefinitions);
 
 		$result = static::test($inputParameters, $namedDefinitionSubset);
-		if (! $result)
+		if (!$result)
 			return false;
 
 		return true;
 	}
 
-	public static function verifyExpectedParameters(array $inputParameters, array $normalizedParameterDefinitions): bool
+	public static function verifyRequired(array $inputParameters, array $normalizedParameterDefinitions): bool
 	{
 		// Nothing to check against.
-		if (! $normalizedParameterDefinitions)
+		if (!$normalizedParameterDefinitions)
 			return true;
 
 		// The input parameter set cannot be empty if definitions are set.
-		if (! $inputParameters && $normalizedParameterDefinitions)
+		if (!$inputParameters && $normalizedParameterDefinitions)
+			return false;
+
+		$namedDefinitions = static::rekeyOnName($normalizedParameterDefinitions);
+		$namedDefinitionSubset = static::selectSubset($inputParameters, $namedDefinitions);
+
+		$result = static::test($inputParameters, $namedDefinitionSubset);
+		if (!$result)
+			return false;
+
+		return true;
+	}
+
+	public static function verifyMandatory(array $inputParameters, array $normalizedParameterDefinitions): bool
+	{
+		// Nothing to check against.
+		if (!$normalizedParameterDefinitions)
+			return true;
+
+		// The input parameter set cannot be empty if definitions are set.
+		if (!$inputParameters && $normalizedParameterDefinitions)
 			return false;
 
 		// The input parameter set cannot be bigger than the expected set.
@@ -77,13 +97,13 @@ class Parameter
 		$namedDefinitions = static::rekeyOnName($normalizedParameterDefinitions);
 
 		$isSubset = static::isSubset($inputParameters, $namedDefinitions);
-		if (! $isSubset)
+		if (!$isSubset)
 			return false;
 
 		$namedDefinitionSubset = static::selectSubset($inputParameters, $namedDefinitions);
 
 		$result = static::test($inputParameters, $namedDefinitionSubset);
-		if (! $result)
+		if (!$result)
 			return false;
 
 		return true;

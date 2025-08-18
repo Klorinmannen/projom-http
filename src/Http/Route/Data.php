@@ -11,10 +11,14 @@ use Projom\Http\Route\DataInterface;
 
 class Data implements DataInterface
 {
-	private bool $expectsPayload = false;
-	private array $expectsQueryParamDefinitions = [];
+	private bool $requiredPayload = false;
+
+	private array $mandatoryQueryParamDefinitions = [];
+	private array $requiredQueryParamDefinitions = [];
 	private array $optionalQueryParamDefinitions = [];
-	private array $expectsRequestVarDefinitions = [];
+
+	private array $mandatoryRequestVarDefinitions = [];
+	private array $requiredRequestVarDefinitions = [];
 	private array $optionalRequestVarDefinitions = [];
 
 	public function __construct(
@@ -39,59 +43,129 @@ class Data implements DataInterface
 		return $this->controllerMethod !== '';
 	}
 
-	public function expectsPayload(bool $expectsPayload = true): Data
+	/**
+	 * Set required payload.
+	 * The payload is required to be present in the request.
+	 */
+	public function requiredPayload(): Data
 	{
-		$this->expectsPayload = $expectsPayload;
+		$this->requiredPayload = true;
 		return $this;
 	}
 
-	public function expectsQueryParameters(array $queryParameterDefinitions): Data
+	/**
+	 * Set mandatory query parameters.
+	 * Mandatory query parameters are exclusive, meaning that if they are set, no other query parameters are allowed.
+	 * All mandatory query parameters must be present in the request.
+	 * @param array [ 'id' => 'integer', 'name' => 'string', ... ]
+	 */
+	public function mandatoryQueryParameters(array $queryParameterDefinitions): void
 	{
-		$this->expectsQueryParamDefinitions = $queryParameterDefinitions;
+		$this->mandatoryQueryParamDefinitions = $queryParameterDefinitions;
+		$this->requiredQueryParamDefinitions = [];
+		$this->optionalQueryParamDefinitions = [];
+	}
+
+	/**
+	 * Set required query parameters.
+	 * Required query parameters are not exclusive, meaning that other query parameters can be present in the request.
+	 * All required query parameters must be present in the request.
+	 * @param array [ 'id' => 'integer', 'name' => 'string', ... ]
+	 */
+	public function requiredQueryParameters(array $queryParameterDefinitions): Data
+	{
+		$this->requiredQueryParamDefinitions = $queryParameterDefinitions;
 		return $this;
 	}
 
+	/**
+	 * Set optional query parameters.
+	 * Optional query parameters are not exclusive, meaning that other query parameters can be present in the request.
+	 * Optional query parameters are not required to be present in the request.
+	 * @param array [ 'id' => 'integer', 'name' => 'string', ... ]
+	 */
 	public function optionalQueryParameters(array $queryParameterDefinitions): Data
 	{
 		$this->optionalQueryParamDefinitions = $queryParameterDefinitions;
 		return $this;
 	}
 
-	public function expectsRequestVars(array $requestVarDefinitions): Data
+	/**
+	 * Set mandatory request variables.
+	 * Mandatory request variables are exclusive, meaning that if they are set, no other request variables are allowed.
+	 * All mandatory request variables must be present in the request.
+	 * @param array [ 'id' => 'integer', 'name' => 'string', ... ]
+	 */
+	public function mandatoryRequestVars(array $requestVarDefinitions): void
 	{
-		$this->expectsRequestVarDefinitions = $requestVarDefinitions;
+		$this->mandatoryRequestVarDefinitions = $requestVarDefinitions;
+		$this->requiredRequestVarDefinitions = [];
+		$this->optionalRequestVarDefinitions = [];
+	}
+
+	/**
+	 * Set required request variables.
+	 * Required request variables are not exclusive, meaning that other request variables can be present in the request.
+	 * All required request variables must be present in the request.
+	 * @param array [ 'id' => 'integer', 'name' => 'string', ... ] 
+	 */
+	public function requiredRequestVars(array $requestVarDefinitions): Data
+	{
+		$this->requiredRequestVarDefinitions = $requestVarDefinitions;
 		return $this;
 	}
 
+	/**
+	 * Set optional request variables.
+	 * Optional request variables are not exclusive, meaning that other request variables can be present in the request.
+	 * Optional request variables are not required to be present in the request.
+	 * @param array [ 'id' => 'integer', 'name' => 'string', ... ] 
+	 */
 	public function optionalRequestVars(array $requestVarDefinitions): Data
 	{
 		$this->optionalRequestVarDefinitions = $requestVarDefinitions;
 		return $this;
 	}
 
+	/**
+	 * Verify the request against set definitions.
+	 * 1. Check mandatory definitions.
+	 * 2. Check required definitions.
+	 * 3. Check optional definitions.
+	 * 4. Check if payload is required.
+	 */
 	public function verify(Request $request): void
 	{
-		// Check expected data first.
+		// 1. Check mandatory definitions.
+		$normalizedMandatoryQueryParams = Parameter::normalize($this->mandatoryQueryParamDefinitions);
+		if (!Parameter::verifyMandatory($request->queryParameters(), $normalizedMandatoryQueryParams))
+			Response::reject('Exclusive query parameters do not match provided definitions');
 
-		if (!Payload::verify($request->payload(), $this->expectsPayload))
-			Response::reject('Provided payload does not match expected');
+		$normalizedMandatoryRequestVars = Parameter::normalize($this->mandatoryRequestVarDefinitions);
+		if (!Parameter::verifyMandatory($request->vars(), $normalizedMandatoryRequestVars))
+			Response::reject('Exclusive request variables do not match provided definitions');
 
-		$normalizedQueryParams = Parameter::normalize($this->expectsQueryParamDefinitions);
-		if (!Parameter::verifyExpectedParameters($request->queryParameters(), $normalizedQueryParams))
-			Response::reject('Provided query parameters do not match expected');
+		// 2. Check required definitions.
 
-		$normalizedRequestVars = Parameter::normalize($this->expectsRequestVarDefinitions);
-		if (!Parameter::verifyExpectedParameters($request->vars(), $normalizedRequestVars))
-			Response::reject('Provided request variables do not match expected');
+		$normalizedRequiredQueryParams = Parameter::normalize($this->requiredQueryParamDefinitions);
+		if (!Parameter::verifyRequired($request->queryParameters(), $normalizedRequiredQueryParams))
+			Response::reject('Required request query parameters do not match provided definitions');
 
-		// Check optional data next.
+		$normalizedRequiredRequestVars = Parameter::normalize($this->requiredRequestVarDefinitions);
+		if (!Parameter::verifyRequired($request->vars(), $normalizedRequiredRequestVars))
+			Response::reject('Required request variables do not match provided definitions');
 
+		// 3. Check optional definitions.
 		$normalizedOptionalQueryDefinitions = Parameter::normalize($this->optionalQueryParamDefinitions);
-		if (!Parameter::verifyOptionalParameters($request->queryParameters(), $normalizedOptionalQueryDefinitions))
-			Response::reject('Provided query parameters does not match optional');
+		if (!Parameter::verifyOptional($request->queryParameters(), $normalizedOptionalQueryDefinitions))
+			Response::reject('Optional query parameters do not match provided definitions');
 
 		$normalizedOptionalRequestVarDefinitions = Parameter::normalize($this->optionalRequestVarDefinitions);
-		if (! Parameter::verifyOptionalParameters($request->vars(), $normalizedOptionalRequestVarDefinitions))
-			Response::reject('Provided request variables does not match optional');
+		if (! Parameter::verifyOptional($request->vars(), $normalizedOptionalRequestVarDefinitions))
+			Response::reject('Optional request variables do not match provided definitions');
+
+		// 4. Check payload if required.
+		if (!Payload::verify($request->payload(), $this->requiredPayload))
+			Response::reject('Required request payload missing');
 	}
 }

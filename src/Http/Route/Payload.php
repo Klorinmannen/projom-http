@@ -6,12 +6,11 @@ namespace Projom\Http\Route;
 
 class Payload
 {
-	public static function verify(string $payload, bool $expectedPayload): bool
+	public static function verify(string $payload, bool $isRequired): bool
 	{
-		if ($expectedPayload)
+		if ($isRequired)
 			if (empty($payload))
 				return false;
-
 		return true;
 	}
 }

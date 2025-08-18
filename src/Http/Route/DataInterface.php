@@ -6,9 +6,11 @@ namespace Projom\Http\Route;
 
 interface DataInterface
 {
-	public function expectsPayload(bool $expectsPayload = true): DataInterface;
-	public function expectsQueryParameters(array $queryParameterDefinitions): DataInterface;
+	public function requiredPayload(): DataInterface;
+	public function mandatoryQueryParameters(array $queryParameterDefinitions): void;
+	public function requiredQueryParameters(array $queryParameterDefinitions): DataInterface;
 	public function optionalQueryParameters(array $queryParameterDefinitions): DataInterface;
-	public function expectsRequestVars(array $requestVarDefinitions): DataInterface;
+	public function mandatoryRequestVars(array $requestVarDefinitions): void;
+	public function requiredRequestVars(array $requestVarDefinitions): DataInterface;
 	public function optionalRequestVars(array $requestVarDefinitions): DataInterface;
 }

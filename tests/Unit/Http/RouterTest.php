@@ -64,7 +64,7 @@ class RouterTest extends TestCase
 
 		$router->addRoute('/users', UserController::class, function (RouteInterface $route) {
 			$route->get()->optionalQueryParameters(['page' => 'integer', 'limit' => 'integer']);
-			$route->post()->expectsPayload();
+			$route->post()->requiredPayload();
 		});
 
 		[$controller, $controllerMethod] = $router->route($request);

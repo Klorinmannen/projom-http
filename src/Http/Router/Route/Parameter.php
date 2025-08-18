@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Projom\Http\Route;
+namespace Projom\Http\Router\Route;
 
-use Projom\Http\Route\ParameterType;
+use Projom\Http\Router\ParameterType;
 
 class Parameter
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Projom\Http\Route;
+namespace Projom\Http\Router\Route;
 
 use Projom\Http\Controller;
 use Projom\Http\Response;

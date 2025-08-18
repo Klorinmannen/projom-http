@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Projom\Http\Route;
+namespace Projom\Http\Router;
 
 use Closure;
 
-use Projom\Http\Route\DataInterface;
 use Projom\Http\Router\MiddlewareInterface;
+use Projom\Http\Router\Route\DataInterface;
 
 /**
  * Public interface for defining HTTP routes.

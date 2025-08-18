@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Projom\Http\Route\Path;
+namespace Projom\Http\Router\Route\Path;
 
-use Projom\Http\Route\Path;
+use Projom\Http\Router\Route\Path;
 
 class StaticPath extends Path
 {

@@ -6,8 +6,8 @@ namespace Projom\Http\OAS;
 
 use Projom\Http\Method;
 use Projom\Http\OAS\Route\Data;
-use Projom\Http\Route\Action;
-use Projom\Http\Route\RouteBase;
+use Projom\Http\Router\Route\Action;
+use Projom\Http\Router\Route\RouteBase;
 
 class Route extends RouteBase
 {

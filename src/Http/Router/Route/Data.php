@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Projom\Http\Route;
+namespace Projom\Http\Router\Route;
 
 use Projom\Http\Method;
 use Projom\Http\Request;
 use Projom\Http\Response;
-use Projom\Http\Route\DataInterface;
+use Projom\Http\Router\Route\DataInterface;
+use Projom\Http\Router\Route\Parameter;
 
 class Data implements DataInterface
 {

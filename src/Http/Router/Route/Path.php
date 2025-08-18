@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Projom\Http\Route;
+namespace Projom\Http\Router\Route;
 
-use Projom\Http\Route\Path\DynamicPath;
-use Projom\Http\Route\Path\StaticPath;
+use Projom\Http\Router\Route\Path\DynamicPath;
+use Projom\Http\Router\Route\Path\StaticPath;
 
 /*
 	Base class for defining route paths.

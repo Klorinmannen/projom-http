@@ -7,8 +7,8 @@ namespace Projom\Http\Router;
 use ReflectionMethod;
 
 use Projom\Http\Request;
-use Projom\Http\Route\Action;
 use Projom\Http\Router\DispatcherInterface;
+use Projom\Http\Router\Route\Action;
 
 class Dispatcher implements DispatcherInterface
 {

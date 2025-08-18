@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Projom\Http\Route;
+namespace Projom\Http\Router\Route;
 
 use Closure;
 
 use Projom\Http\Method;
-use Projom\Http\Route\Data;
-use Projom\Http\Route\DataInterface;
-use Projom\Http\Route\RouteBase;
-use Projom\Http\Route\RouteInterface;
 use Projom\Http\Router\Middleware;
 use Projom\Http\Router\MiddlewareInterface;
+use Projom\Http\Router\Route\Data;
+use Projom\Http\Router\Route\DataInterface;
+use Projom\Http\Router\Route\RouteBase;
+use Projom\Http\Router\RouteInterface;
 
 class Route extends RouteBase implements RouteInterface
 {

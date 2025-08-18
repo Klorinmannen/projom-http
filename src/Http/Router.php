@@ -12,14 +12,14 @@ use Projom\Http\Request;
 use Projom\Http\Response;
 use Projom\Http\Response\Code;
 use Projom\Http\Response\ResponseBase;
-use Projom\Http\Route\Action;
-use Projom\Http\Route\Route;
-use Projom\Http\Route\RouteBase;
 use Projom\Http\Router\Dispatcher;
 use Projom\Http\Router\DispatcherInterface;
 use Projom\Http\Router\Middleware;
 use Projom\Http\Router\MiddlewareContext;
 use Projom\Http\Router\MiddlewareInterface;
+use Projom\Http\Router\Route\Action;
+use Projom\Http\Router\Route\Route;
+use Projom\Http\Router\Route\RouteBase;
 
 class Router
 {
@@ -48,9 +48,9 @@ class Router
 	/**
 	 * Add a route to the router.
 	 * 
-	 * @param string $path The path of the route.
+	 * @param string $path The route path.
 	 * @param string $controller The controller class name.
-	 * @param Closure $routeDefinition A Closure which defines the route.
+	 * @param Closure $routeDefinition A closure which defines the route.
 	 * 
 	 * * Example: Router->addRoute('/users', User::class, function (RouteInterface $route) { $route->get(); });
 	 */

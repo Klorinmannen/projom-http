@@ -11,10 +11,10 @@ use PHPUnit\Framework\TestCase;
 use Projom\Http\Controller;
 use Projom\Http\Request;
 use Projom\Http\Request\Input;
-use Projom\Http\Route\Action;
-use Projom\Http\Route\RouteInterface;
 use Projom\Http\Router;
 use Projom\Http\Router\DispatcherInterface;
+use Projom\Http\Router\Route\Action;
+use Projom\Http\Router\RouteInterface;
 
 class UserController extends Controller
 {

@@ -17,6 +17,7 @@ Visit the repository [wiki](https://github.com/Klorinmannen/projom-http/wiki) pa
 
 ### Example usage
 ````
+use Projom\Http\Router;
 use Projom\Http\Router\RouteInterface;
 use Projom\Http\Router\ParameterType;
 

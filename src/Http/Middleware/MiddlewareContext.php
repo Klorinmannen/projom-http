@@ -8,5 +8,5 @@ enum MiddlewareContext
 {
 	case BEFORE_ROUTING;
 	case BEFORE_DISPATCHING;
-	case AFTER_DISPATCHING;
+	case BEFORE_DISPATCHING_RESPONSE;
 }

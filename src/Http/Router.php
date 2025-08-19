@@ -128,7 +128,7 @@ class Router
 			$this->dispatcher->processAction($action, $request);
 		} catch (ResponseBase $response) {
 			$request->setResponse($response);
-			$this->processMiddlewares(MiddlewareContext::AFTER_DISPATCHING, $request);
+			$this->processMiddlewares(MiddlewareContext::BEFORE_DISPATCHING_RESPONSE, $request);
 			$response->send();
 		}
 	}

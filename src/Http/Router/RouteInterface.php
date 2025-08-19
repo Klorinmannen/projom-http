@@ -6,7 +6,7 @@ namespace Projom\Http\Router;
 
 use Closure;
 
-use Projom\Http\Router\MiddlewareInterface;
+use Projom\Http\Middleware\MiddlewareInterface;
 use Projom\Http\Router\Route\DataInterface;
 
 /**

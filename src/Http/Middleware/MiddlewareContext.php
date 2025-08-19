@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Projom\Http\Router;
+namespace Projom\Http\Middleware;
 
 enum MiddlewareContext
 {

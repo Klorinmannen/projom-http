@@ -24,25 +24,9 @@ class DynamicPath extends Path
 
 	public static function create(string $path): DynamicPath
 	{
-		[$path, $parameterIdentifiers] = static::pathWithIdentifiers($path);
-		$pattern = static::buildPattern($path);
+		[$pattern, $parameterIdentifiers] = static::patternhWithIdentifiers($path);
 		$dynamicPath = new DynamicPath($path, $pattern, $parameterIdentifiers);
 		return $dynamicPath;
-	}
-
-	private static function buildPattern(string $path): string
-	{
-		$pattern = $path;
-		foreach (ParameterType::cases() as $case)
-			$pattern = preg_replace(
-				static::createSubstitutePattern($case->value),
-				$case->toPattern(),
-				$pattern
-			);
-
-		$pattern = preg_replace('/\//', '\/', $pattern);
-		$pattern = "/^$pattern$/";
-		return $pattern;
 	}
 
 	private static function createSubstitutePattern(string $value): string
@@ -52,11 +36,18 @@ class DynamicPath extends Path
 		return $substitutePattern;
 	}
 
-	private static function pathWithIdentifiers(string $path): array
+	private static function patternhWithIdentifiers(string $path): array
+	{
+		[$path, $parameterIdentifiers] = static::substitutePathWithIdentifiers($path);
+		$pattern = static::buildPattern($path);
+		return [$pattern, $parameterIdentifiers];
+	}
+
+	private static function substitutePathWithIdentifiers(string $path): array
 	{
 		$parameterIdentifiers = [];
 		$pos = 1;
-		$dynamicPath = preg_replace_callback(
+		$path = preg_replace_callback(
 			static::PARAMETER_IDENTIFIER_PATTERN,
 			function ($matches) use (&$pos, &$parameterIdentifiers) {
 
@@ -73,8 +64,22 @@ class DynamicPath extends Path
 			},
 			$path
 		);
+		return [$path, $parameterIdentifiers];
+	}
 
-		return [$dynamicPath, $parameterIdentifiers];
+	private static function buildPattern(string $path): string
+	{
+		$pattern = $path;
+		foreach (ParameterType::cases() as $case)
+			$pattern = preg_replace(
+				static::createSubstitutePattern($case->value),
+				$case->toPattern(),
+				$pattern
+			);
+
+		$pattern = preg_replace('/\//', '\/', $pattern);
+		$pattern = "/^$pattern$/";
+		return $pattern;
 	}
 
 	private static function createSubstitute(string $value): string

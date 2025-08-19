@@ -73,12 +73,18 @@ class Parameter
 		if (!$normalizedParameterDefinitions)
 			return true;
 
-		// The input parameter set cannot be empty if definitions are set.
-		if (!$inputParameters && $normalizedParameterDefinitions)
+		// The input parameter set cannot be less (or missing completely) than the definition set.
+		if (count($inputParameters) < count($normalizedParameterDefinitions))
 			return false;
 
 		$namedDefinitions = static::rekeyOnName($normalizedParameterDefinitions);
 		$namedDefinitionSubset = static::selectSubset($inputParameters, $namedDefinitions);
+
+		// The named definitions must be the same set as the found subset.
+		// There might be more parameters in the input than the definitions.
+		$isSameSet = static::isSameSet($namedDefinitions, $namedDefinitionSubset);
+		if (!$isSameSet)
+			return false;
 
 		$result = static::verify($inputParameters, $namedDefinitionSubset);
 		if (!$result)
@@ -93,23 +99,17 @@ class Parameter
 		if (!$normalizedParameterDefinitions)
 			return true;
 
-		// The input parameter set cannot be empty if definitions are set.
-		if (!$inputParameters && $normalizedParameterDefinitions)
-			return false;
-
-		// The input parameter set cannot be bigger than the expected set.
-		if (count($inputParameters) > count($normalizedParameterDefinitions))
+		// The input parameter set count cannot be different than the expected set count.
+		if (count($inputParameters) !== count($normalizedParameterDefinitions))
 			return false;
 
 		$namedDefinitions = static::rekeyOnName($normalizedParameterDefinitions);
 
-		$isSubset = static::isSubset($inputParameters, $namedDefinitions);
-		if (!$isSubset)
+		$isSameSet = static::isSameSet($inputParameters, $namedDefinitions);
+		if (!$isSameSet)
 			return false;
 
-		$namedDefinitionSubset = static::selectSubset($inputParameters, $namedDefinitions);
-
-		$result = static::verify($inputParameters, $namedDefinitionSubset);
+		$result = static::verify($inputParameters, $namedDefinitions);
 		if (!$result)
 			return false;
 
@@ -149,10 +149,10 @@ class Parameter
 		return $type;
 	}
 
-	private static function isSubset(array $inputParameters, array $namedParameterDefinitions): bool
+	private static function isSameSet(array $inputParameters, array $namedParameterDefinitions): bool
 	{
-		// The input parameters must be a subset of the expected parameters.
-		// Any extra parameters are not allowed.
+		// The input parameters must be equal of the named parameter definitions.
+		// Any missing or extra parameters are not allowed.
 		$diff = array_diff_key($inputParameters, $namedParameterDefinitions);
 		$isSubset = count($diff) === 0;
 		return $isSubset;

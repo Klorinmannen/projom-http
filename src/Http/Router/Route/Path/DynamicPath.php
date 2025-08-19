@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Projom\Http\Router\Route\Path;
 
+use Projom\Http\Router\ParameterType;
 use Projom\Http\Router\Route\Path;
 use Projom\Http\Router\Route\Path\Pattern;
 
@@ -14,18 +15,41 @@ class DynamicPath extends Path
 	private readonly string $pattern;
 	private readonly array $parameterIdentifiers;
 
-	public function __construct(string $dynamicPath, string $pattern, array $parameterIdentifiers)
+	public function __construct(string $path, string $pattern, array $parameterIdentifiers)
 	{
-		parent::__construct($dynamicPath);
+		parent::__construct($path);
 		$this->pattern = $pattern;
 		$this->parameterIdentifiers = $parameterIdentifiers;
 	}
 
 	public static function create(string $path): DynamicPath
 	{
-		$pattern = Pattern::build($path);
-		[$dynamicPath, $parameterIdentifiers] = static::pathWithIdentifiers($path);
-		return new DynamicPath($dynamicPath, $pattern, $parameterIdentifiers);
+		$pattern = static::buildPattern($path);
+		[$path, $parameterIdentifiers] = static::pathWithIdentifiers($path);
+		$dynamicPath = new DynamicPath($path, $pattern, $parameterIdentifiers);
+		return $dynamicPath;
+	}
+
+	private static function buildPattern(string $path): string
+	{
+		$pattern = $path;
+		foreach (ParameterType::cases() as $case)
+			$pattern = preg_replace(
+				static::createSubstitutePattern($case->value),
+				$case->toPattern(),
+				$pattern
+			);
+
+		$pattern = preg_replace('/\//', '\/', $pattern);
+		$pattern = "/^$pattern$/";
+		return $pattern;
+	}
+
+	private static function createSubstitutePattern(string $value): string
+	{
+		$substitute = static::createSubstitute($value);
+		$substitutePattern = "/$substitute/";
+		return $substitutePattern;
 	}
 
 	private static function pathWithIdentifiers(string $path): array
@@ -36,20 +60,26 @@ class DynamicPath extends Path
 			static::PARAMETER_IDENTIFIER_PATTERN,
 			function ($matches) use (&$pos, &$parameterIdentifiers) {
 
-				$type = $matches[1];
-				$pattern = '{' . $type . '}';
+				// Create substitute for the type.
+				$type = (string)$matches[1];
+				$substitute = static::createSubstitute($type);
 
 				// If the identifier is not set, use a positional numeric.
 				$identifier = $matches[2] ?? $pos;
 				$parameterIdentifiers[] = $identifier;
 
 				$pos++;
-				return $pattern;
+				return $substitute;
 			},
 			$path
 		);
 
 		return [$dynamicPath, $parameterIdentifiers];
+	}
+
+	private static function createSubstitute(string $value): string
+	{
+		return '{' . $value . '}';
 	}
 
 	public function test(string $requestPath): array

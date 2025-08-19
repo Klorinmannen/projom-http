@@ -15,12 +15,6 @@ enum ParameterType: string
 	case BOOL = 'bool';
 	case NAME = 'name';
 
-	public function toSubstitute(): string
-	{
-		$substitute = '/' . '{' . $this->value . '}' . '/';
-		return $substitute;
-	}
-
 	public function toPattern(): string
 	{
 		$pattern = match ($this) {

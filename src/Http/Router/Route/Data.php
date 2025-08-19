@@ -58,11 +58,11 @@ class Data implements DataInterface
 	 * Set mandatory query parameters.
 	 * Mandatory query parameters are exclusive, meaning that if they are set, no other query parameters are allowed.
 	 * All mandatory query parameters must be present in the request.
-	 * @param array [ 'id' => 'integer', 'name' => 'string', ... ]
+	 * @param array [ 'id,page_id' => 'integer', 'name' => 'string', ... ]
 	 */
-	public function mandatoryQueryParameters(array $queryParameterDefinitions): void
+	public function mandatoryQueryParameters(array $definitions): void
 	{
-		$this->mandatoryQueryParamDefinitions = $queryParameterDefinitions;
+		$this->mandatoryQueryParamDefinitions = $this->parseDefinitions($definitions);
 		$this->requiredQueryParamDefinitions = [];
 		$this->optionalQueryParamDefinitions = [];
 	}
@@ -73,9 +73,9 @@ class Data implements DataInterface
 	 * All required query parameters must be present in the request.
 	 * @param array [ 'id' => 'integer', 'name' => 'string', ... ]
 	 */
-	public function requiredQueryParameters(array $queryParameterDefinitions): Data
+	public function requiredQueryParameters(array $definitions): Data
 	{
-		$this->requiredQueryParamDefinitions = $queryParameterDefinitions;
+		$this->requiredQueryParamDefinitions = $this->parseDefinitions($definitions);
 		return $this;
 	}
 
@@ -85,9 +85,9 @@ class Data implements DataInterface
 	 * Optional query parameters are not required to be present in the request.
 	 * @param array [ 'id' => 'integer', 'name' => 'string', ... ]
 	 */
-	public function optionalQueryParameters(array $queryParameterDefinitions): Data
+	public function optionalQueryParameters(array $definitions): Data
 	{
-		$this->optionalQueryParamDefinitions = $queryParameterDefinitions;
+		$this->optionalQueryParamDefinitions = $this->parseDefinitions($definitions);
 		return $this;
 	}
 
@@ -97,9 +97,9 @@ class Data implements DataInterface
 	 * All mandatory request variables must be present in the request.
 	 * @param array [ 'id' => 'integer', 'name' => 'string', ... ]
 	 */
-	public function mandatoryRequestVars(array $requestVarDefinitions): void
+	public function mandatoryRequestVars(array $definitions): void
 	{
-		$this->mandatoryRequestVarDefinitions = $requestVarDefinitions;
+		$this->mandatoryRequestVarDefinitions = $this->parseDefinitions($definitions);
 		$this->requiredRequestVarDefinitions = [];
 		$this->optionalRequestVarDefinitions = [];
 	}
@@ -110,9 +110,9 @@ class Data implements DataInterface
 	 * All required request variables must be present in the request.
 	 * @param array [ 'id' => 'integer', 'name' => 'string', ... ] 
 	 */
-	public function requiredRequestVars(array $requestVarDefinitions): Data
+	public function requiredRequestVars(array $definitions): Data
 	{
-		$this->requiredRequestVarDefinitions = $requestVarDefinitions;
+		$this->requiredRequestVarDefinitions = $this->parseDefinitions($definitions);
 		return $this;
 	}
 
@@ -122,10 +122,29 @@ class Data implements DataInterface
 	 * Optional request variables are not required to be present in the request.
 	 * @param array [ 'id' => 'integer', 'name' => 'string', ... ] 
 	 */
-	public function optionalRequestVars(array $requestVarDefinitions): Data
+	public function optionalRequestVars(array $definitions): Data
 	{
-		$this->optionalRequestVarDefinitions = $requestVarDefinitions;
+		$this->optionalRequestVarDefinitions = $this->parseDefinitions($definitions);
 		return $this;
+	}
+
+	private function parseDefinitions(array $definitions): array
+	{
+		$parsedDefinitions = [];
+		foreach ($definitions as $nameString => $parameterType) {
+			$names = $this->splitNameString($nameString);
+			foreach ($names as $name)
+				$parsedDefinitions[$name] = $parameterType;
+		}
+		return $parsedDefinitions;
+	}
+
+	private function splitNameString(string $nameString): array
+	{
+		$nameString = trim($nameString);
+		$nameString = str_replace(' ', '', $nameString);
+		$names = explode(',', $nameString);
+		return $names;
 	}
 
 	/**
@@ -140,11 +159,11 @@ class Data implements DataInterface
 		// 1. Check mandatory definitions.
 		$normalizedMandatoryQueryParams = Parameter::normalize($this->mandatoryQueryParamDefinitions);
 		if (!Parameter::verifyMandatory($request->queryParameters(), $normalizedMandatoryQueryParams))
-			Response::reject('Exclusive query parameters do not match provided definitions');
+			Response::reject('Mandatory query parameters do not match provided definitions');
 
 		$normalizedMandatoryRequestVars = Parameter::normalize($this->mandatoryRequestVarDefinitions);
 		if (!Parameter::verifyMandatory($request->vars(), $normalizedMandatoryRequestVars))
-			Response::reject('Exclusive request variables do not match provided definitions');
+			Response::reject('Mandatory request variables do not match provided definitions');
 
 		// 2. Check required definitions.
 		$normalizedRequiredQueryParams = Parameter::normalize($this->requiredQueryParamDefinitions);

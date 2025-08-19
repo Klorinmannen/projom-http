@@ -2,13 +2,14 @@
 [![PHP version support][php-version-badge]][php]
 [![PHPUnit][phpunit-ci-badge]][phpunit-action]
 
-[php-version-badge]: https://img.shields.io/badge/php-%5E8.1-7A86B8
+[php-version-badge]: https://img.shields.io/badge/php-%5E8.2-7A86B8
 [php]: https://www.php.net/supported-versions.php
 [phpunit-action]: https://github.com/Klorinmannen/projom-http/actions
 [phpunit-ci-badge]: https://github.com/Klorinmannen/projom-http/workflows/PHPUnit/badge.svg
 
 ### Project goals
 * Routing requests
+* Dispatching requests
 * Support a selective scope of OAS 3.0.
 
 ### Docs
@@ -16,7 +17,6 @@ Visit the repository [wiki](https://github.com/Klorinmannen/projom-http/wiki) pa
 
 ### Example usage
 ````
-use Projom\Http\Request;
 use Projom\Http\Router\RouteInterface;
 use Projom\Http\Router\ParameterType;
 
@@ -26,9 +26,9 @@ use Recipe\Ingredient\Controller as RecipeIngredientController;
 $router = new Router();
 
 $router->addRoute('/', 
-	RecipeController::class, 
+	RootController::class, 
 	function (RouteInterface $route) {
-		$route->get('view');
+		$route->get();
 	}
 );
 
@@ -39,7 +39,8 @@ $router->addRoute(
 		
 		$route->get()
 			->optionalQueryParameters(['sort' => ParameterType::STR])
-			->requiredQueryParameters(['page' => ParameterType::INT]);
+			->requiredQueryParameters(['page' => ParameterType::INT, 
+									   'limit' => ParameterType::INT]);
 		
 		$route->post()->requiredPayload();
 	}
@@ -49,8 +50,9 @@ $router->addRoute(
 	'/recipes/{numeric_id:recipe_id}',
 	RecipeController::class, 
 	function (RouteInterface $route) {
-		$route->get('getByRecipeId');
-		$route->patch('patchByRecipeId')->requiredPayload();
+
+		$route->get('getRecipe');
+		$route->patch('patchRecipe')->requiredPayload();
 	}
 );
 
@@ -61,7 +63,8 @@ $router->addRoute(
 		
 		$route->get()
 			->optionalQueryParameters(['sort' => ParameterType::STR])
-			->requiredQueryParameters(['page' => ParameterType::INT]);
+			->requiredQueryParameters(['page' => ParameterType::INT, 
+									   'limit' => ParameterType::INT]);
 		
 		$route->post()->requiredPayload();
 	}
@@ -71,8 +74,8 @@ $router->addRoute(
 	'/recipes/{numeric_id:recipe_id}/ingredients/{numeric_id:ingredient_id}',
 	RecipeIngredientController::class, 
 	function (RouteInterface $route) {
-		$route->get('getByIngredientId');
-		$route->patch('patchByIngredientId')->requiredPayload();
+		$route->get('getIngredient');
+		$route->patch('patchIngredient')->requiredPayload();
 	}
 );
 

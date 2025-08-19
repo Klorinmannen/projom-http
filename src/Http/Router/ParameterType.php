@@ -9,9 +9,9 @@ enum ParameterType: string
 	case NUMERIC_ID = 'numeric_id';
 	case ID = 'id';
 	case INTEGER = 'integer';
-	case INT = 'int';
+	case INT = 'int'; // Alias for INTEGER
 	case STRING = 'string';
-	case STR = 'str';
+	case STR = 'str'; // Alias for STRING
 	case BOOL = 'bool';
 	case NAME = 'name';
 

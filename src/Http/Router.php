@@ -74,17 +74,11 @@ class Router
 	 */
 	public function route(null|Request $request = null): array
 	{
-		$action = $this->processRequest($request);
-		return $action->get();
-	}
-
-	private function processRequest(null|Request $request): Action
-	{
 		if ($request === null)
 			$request = Request::create();
 
 		$action = $this->processRoutes($request);
-		return $action;
+		return $action->get();
 	}
 
 	private function processRoutes(Request $request): Action
@@ -122,7 +116,11 @@ class Router
 	 */
 	public function dispatch(null|Request $request = null): void
 	{
-		$action = $this->processRequest($request);
+		if ($request === null)
+			$request = Request::create();
+
+		$action = $this->processRoutes($request);
+
 		try {
 			$this->processMiddlewares(MiddlewareContext::BEFORE_DISPATCHING, $request);
 			$this->dispatcher->processAction($action, $request);

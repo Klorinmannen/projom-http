@@ -25,7 +25,6 @@ enum ParameterType: string
 			ParameterType::NAME => '([0-9a-zA-Z_@,.\-\s]+)'
 		};
 
-		$pattern = "/^$pattern$/";
 		return $pattern;
 	}
 }

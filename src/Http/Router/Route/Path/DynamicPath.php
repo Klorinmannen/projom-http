@@ -24,8 +24,8 @@ class DynamicPath extends Path
 
 	public static function create(string $path): DynamicPath
 	{
-		$pattern = static::buildPattern($path);
 		[$path, $parameterIdentifiers] = static::pathWithIdentifiers($path);
+		$pattern = static::buildPattern($path);
 		$dynamicPath = new DynamicPath($path, $pattern, $parameterIdentifiers);
 		return $dynamicPath;
 	}

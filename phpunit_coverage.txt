@@ -1,13 +1,29 @@
 
 
 Code Coverage Report:
-  2025-08-20 11:31:59
+  2025-08-20 19:34:05
 
  Summary:
-  Classes: 17.86% (5/28)
-  Methods: 52.90% (73/138)
-  Lines:   56.81% (321/565)
+  Classes: 28.57% (8/28)
+  Methods: 64.49% (89/138)
+  Lines:   73.45% (415/565)
 
+Projom\Http\OAS
+  Methods:  80.00% ( 4/ 5)   Lines:  97.30% ( 36/ 37)
+Projom\Http\OAS\Controller
+  Methods: 100.00% ( 1/ 1)   Lines: 100.00% (  8/  8)
+Projom\Http\OAS\Response
+  Methods:   0.00% ( 0/ 2)   Lines:  33.33% (  3/  9)
+Projom\Http\OAS\Route
+  Methods:  50.00% ( 1/ 2)   Lines:  25.00% (  1/  4)
+Projom\Http\OAS\Route\Data
+  Methods:  66.67% ( 2/ 3)   Lines:  52.94% (  9/ 17)
+Projom\Http\OAS\Route\Parameter
+  Methods:   0.00% ( 0/ 1)   Lines:  25.00% (  3/ 12)
+Projom\Http\OAS\Route\Payload
+  Methods:   0.00% ( 0/ 2)   Lines:   8.00% (  2/ 25)
+Projom\Http\OAS\Route\Security
+  Methods: 100.00% ( 1/ 1)   Lines: 100.00% (  1/  1)
 Projom\Http\Request
   Methods:  89.47% (17/19)   Lines:  96.30% ( 52/ 54)
 Projom\Http\Request\Header
@@ -22,6 +38,10 @@ Projom\Http\Response\ResponseBase
   Methods:  66.67% ( 2/ 3)   Lines:  33.33% (  3/  9)
 Projom\Http\Router
   Methods:  11.11% ( 1/ 9)   Lines:  62.79% ( 27/ 43)
+Projom\Http\Router\Dispatcher
+  Methods:  60.00% ( 3/ 5)   Lines:  69.44% ( 25/ 36)
+Projom\Http\Router\Middleware
+  Methods: 100.00% ( 4/ 4)   Lines: 100.00% (  6/  6)
 Projom\Http\Router\ParameterType
   Methods: 100.00% ( 1/ 1)   Lines: 100.00% (  8/  8)
 Projom\Http\Router\Route\Action

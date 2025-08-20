@@ -31,4 +31,9 @@ class ResponseBase extends Exception
 
 		exit;
 	}
+
+	public function getHeaders(): array
+	{
+		return $this->headers;
+	}
 }

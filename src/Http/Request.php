@@ -78,14 +78,14 @@ class Request
         $this->pathParameters = $pathParameters;
     }
 
-    public function pathParameters(null|int|string $name = null): null|array|string
+    public function pathParameters(null|int|string $name = null): mixed
     {
         if ($name !== null)
             return $this->pathParameters[(string)$name] ?? null;
         return $this->pathParameters;
     }
 
-    public function queryParameters(string $name = ''): null|array|string
+    public function queryParameters(string $name = ''): mixed
     {
         if ($name !== '')
             return $this->queryParameters[$name] ?? null;
@@ -111,7 +111,7 @@ class Request
         return $this->input->files;
     }
 
-    public function cookies(null|string $name = null): null|array
+    public function cookies(null|string $name = null): mixed
     {
         if ($name !== null)
             return $this->input->cookies[$name] ?? null;

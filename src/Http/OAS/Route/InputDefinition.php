@@ -13,7 +13,7 @@ use Projom\Http\OAS\Route\Parameter;
 use Projom\Http\OAS\Route\Payload;
 use Projom\Http\OAS\Route\Security;
 
-class Data
+class InputDefinition
 {
 	public array $requiredParameters = [];
 	public array $requiredPayload = [];
@@ -24,9 +24,9 @@ class Data
 
 	public function __construct() {}
 
-	public static function create(Method $method, array $routeData): Data
+	public static function create(Method $method, array $routeData): InputDefinition
 	{
-		$data = new Data();
+		$data = new InputDefinition();
 		$data->method = $method;
 		$data->requiredParameters = Parameter::normalize($routeData['parameters'] ?? []);
 		$data->requiredPayload = Payload::normalize($routeData['requestBody'] ?? []);

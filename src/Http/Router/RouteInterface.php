@@ -7,17 +7,17 @@ namespace Projom\Http\Router;
 use Closure;
 
 use Projom\Http\Middleware\MiddlewareInterface;
-use Projom\Http\Router\Route\DataInterface;
+use Projom\Http\Router\Route\InputDefinitionInterface;
 
 /**
  * Public interface for defining HTTP routes.
  */
 interface RouteInterface
 {
-	public function get(string $controllerMethod = ''): DataInterface;
-	public function post(string $controllerMethod = ''): DataInterface;
-	public function put(string $controllerMethod = ''): DataInterface;
-	public function delete(string $controllerMethod = ''): DataInterface;
-	public function patch(string $controllerMethod = ''): DataInterface;
+	public function get(string $controllerMethod = ''): InputDefinitionInterface;
+	public function post(string $controllerMethod = ''): InputDefinitionInterface;
+	public function put(string $controllerMethod = ''): InputDefinitionInterface;
+	public function delete(string $controllerMethod = ''): InputDefinitionInterface;
+	public function patch(string $controllerMethod = ''): InputDefinitionInterface;
 	public function addMiddleware(MiddlewareInterface|Closure $middleware): void;
 }

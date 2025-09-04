@@ -10,8 +10,8 @@ use Projom\Http\Method;
 use Projom\Http\Middleware\MiddlewareInterface;
 use Projom\Http\Router\Middleware;
 use Projom\Http\Router\RouteInterface;
-use Projom\Http\Router\Route\Data;
-use Projom\Http\Router\Route\DataInterface;
+use Projom\Http\Router\Route\InputDefinition;
+use Projom\Http\Router\Route\InputDefinitionInterface;
 use Projom\Http\Router\Route\RouteBase;
 
 class Route extends RouteBase implements RouteInterface
@@ -21,40 +21,40 @@ class Route extends RouteBase implements RouteInterface
 		$this->middlewares[] = Middleware::create($middleware);
 	}
 
-	public function get(string $controllerMethod = ''): DataInterface
+	public function get(string $controllerMethod = ''): InputDefinitionInterface
 	{
 		return $this->addPath(Method::GET, $controllerMethod);
 	}
 
-	public function post(string $controllerMethod = ''): DataInterface
+	public function post(string $controllerMethod = ''): InputDefinitionInterface
 	{
 		return $this->addPath(Method::POST, $controllerMethod);
 	}
 
-	public function put(string $controllerMethod = ''): DataInterface
+	public function put(string $controllerMethod = ''): InputDefinitionInterface
 	{
 		return $this->addPath(Method::PUT, $controllerMethod);
 	}
 
-	public function delete(string $controllerMethod = ''): DataInterface
+	public function delete(string $controllerMethod = ''): InputDefinitionInterface
 	{
 		return $this->addPath(Method::DELETE, $controllerMethod);
 	}
 
-	public function patch(string $controllerMethod = ''): DataInterface
+	public function patch(string $controllerMethod = ''): InputDefinitionInterface
 	{
 		return $this->addPath(Method::PATCH, $controllerMethod);
 	}
 
-	private function addPath(Method $method, string $controllerMethod): DataInterface
+	private function addPath(Method $method, string $controllerMethod): InputDefinitionInterface
 	{
-		$data = Data::create($method, $controllerMethod);
-		$this->methodData[$method->name] = $data;
-		return $data;
+		$inputDefinition = InputDefinition::create($method, $controllerMethod);
+		$this->inputDefinitions[$method->name] = $inputDefinition;
+		return $inputDefinition;
 	}
 
 	protected function setup(): void
 	{
-		$this->action->setMethod($this->matchedData->method());
+		$this->action->setMethod($this->inputDefinition->method());
 	}
 }

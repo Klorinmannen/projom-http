@@ -8,7 +8,7 @@ use RuntimeException;
 
 use Projom\Http\Method;
 use Projom\Http\OAS\Route;
-use Projom\Http\OAS\Route\Data;
+use Projom\Http\OAS\Route\InputDefinition;
 
 class OAS
 {
@@ -40,7 +40,7 @@ class OAS
 	private static function addRouteData(Route $route, string $httpMethod, array $pathDetails): void
 	{
 		$method = Method::from(strtoupper($httpMethod));
-		$data = Data::create($method, $pathDetails);
+		$data = InputDefinition::create($method, $pathDetails);
 		$route->setData($method, $data);
 	}
 

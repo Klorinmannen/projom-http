@@ -15,8 +15,8 @@ abstract class RouteBase
 {
 	protected null|Path $path = null;
 	protected null|Action $action = null;
-	protected array $methodData = [];
-	protected null|object $matchedData = null;
+	protected array $inputDefinitions = [];
+	protected null|object $inputDefinition = null;
 	protected array $middlewares = [];
 
 	public function __construct(Path $path, null|Action $action = null)
@@ -44,14 +44,14 @@ abstract class RouteBase
 			Response::reject('Method not allowed', Code::METHOD_NOT_ALLOWED);
 
 		$request->setPathParameters($pathParameters);
-		$this->matchedData = $this->methodData[$method->name];
+		$this->inputDefinition = $this->inputDefinitions[$method->name];
 
 		return true;
 	}
 
 	private function hasMethod(Method $method): bool
 	{
-		return array_key_exists($method->name, $this->methodData);
+		return array_key_exists($method->name, $this->inputDefinitions);
 	}
 
 	public function process(Request $request): void
@@ -70,7 +70,7 @@ abstract class RouteBase
 
 	public function isComplete(): void
 	{
-		if ($this->matchedData === null)
+		if ($this->inputDefinition === null)
 			Response::reject('Not found', Code::NOT_FOUND);
 
 		if ($this->action === null)
@@ -82,8 +82,8 @@ abstract class RouteBase
 		return $this->action;
 	}
 
-	public function matchedData(): null|Data
+	public function inputDefinition(): null|InputDefinition
 	{
-		return $this->matchedData;
+		return $this->inputDefinition;
 	}
 }

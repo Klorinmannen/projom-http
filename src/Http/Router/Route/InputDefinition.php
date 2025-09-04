@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Projom\Http\Router\Route;
 
 use Projom\Http\Method;
-use Projom\Http\Router\Route\DataInterface;
+use Projom\Http\Router\Route\InputDefinitionInterface;
 
-class Data implements DataInterface
+class InputDefinition implements InputDefinitionInterface
 {
 	public bool $requiredPayload = false;
 	public array $mandatoryQueryParamDefinitions = [];
@@ -22,9 +22,9 @@ class Data implements DataInterface
 		private string $controllerMethod
 	) {}
 
-	public static function create(Method $method, string $controllerMethod = ''): Data
+	public static function create(Method $method, string $controllerMethod = ''): InputDefinition
 	{
-		return new Data($method, $controllerMethod);
+		return new InputDefinition($method, $controllerMethod);
 	}
 
 	public function method(): string
@@ -43,7 +43,7 @@ class Data implements DataInterface
 	 * Set required payload.
 	 * The payload is required to be present in the request.
 	 */
-	public function requiredPayload(): DataInterface
+	public function requiredPayload(): InputDefinitionInterface
 	{
 		$this->requiredPayload = true;
 		return $this;
@@ -68,7 +68,7 @@ class Data implements DataInterface
 	 * All required query parameters must be present in the request.
 	 * @param array [ 'id' => 'integer', 'name' => 'string', ... ]
 	 */
-	public function requiredQueryParameters(array $definitions): DataInterface
+	public function requiredQueryParameters(array $definitions): InputDefinitionInterface
 	{
 		$this->requiredQueryParamDefinitions = $this->parseDefinitions($definitions);
 		return $this;
@@ -80,7 +80,7 @@ class Data implements DataInterface
 	 * Optional query parameters are not required to be present in the request.
 	 * @param array [ 'id' => 'integer', 'name' => 'string', ... ]
 	 */
-	public function optionalQueryParameters(array $definitions): DataInterface
+	public function optionalQueryParameters(array $definitions): InputDefinitionInterface
 	{
 		$this->optionalQueryParamDefinitions = $this->parseDefinitions($definitions);
 		return $this;
@@ -105,7 +105,7 @@ class Data implements DataInterface
 	 * All required request variables must be present in the request.
 	 * @param array [ 'id' => 'integer', 'name' => 'string', ... ] 
 	 */
-	public function requiredRequestVars(array $definitions): DataInterface
+	public function requiredRequestVars(array $definitions): InputDefinitionInterface
 	{
 		$this->requiredRequestVarDefinitions = $this->parseDefinitions($definitions);
 		return $this;
@@ -117,7 +117,7 @@ class Data implements DataInterface
 	 * Optional request variables are not required to be present in the request.
 	 * @param array [ 'id' => 'integer', 'name' => 'string', ... ] 
 	 */
-	public function optionalRequestVars(array $definitions): DataInterface
+	public function optionalRequestVars(array $definitions): InputDefinitionInterface
 	{
 		$this->optionalRequestVarDefinitions = $this->parseDefinitions($definitions);
 		return $this;

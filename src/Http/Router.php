@@ -14,6 +14,8 @@ use Projom\Http\Middleware\MiddlewareContext;
 use Projom\Http\Middleware\MiddlewareInterface;
 use Projom\Http\Response\Code;
 use Projom\Http\Response\ResponseBase;
+use Projom\Http\Router\InputAssertion;
+use Projom\Http\Router\InputAssertionInterface;
 use Projom\Http\Router\Dispatcher;
 use Projom\Http\Router\DispatcherInterface;
 use Projom\Http\Router\Middleware;
@@ -24,12 +26,16 @@ use Projom\Http\Router\Route\RouteBase;
 class Router
 {
 	private DispatcherInterface $dispatcher;
+	private InputAssertionInterface $inputAssertion;
 	private array $routes = [];
 	private array $middlewares = [];
 
-	public function __construct(DispatcherInterface $dispatcher = new Dispatcher())
-	{
+	public function __construct(
+		DispatcherInterface $dispatcher = new Dispatcher(),
+		InputAssertionInterface $assertion = new InputAssertion()
+	) {
 		$this->dispatcher = $dispatcher;
+		$this->inputAssertion = $assertion;
 	}
 
 	public function addMiddleware(
@@ -91,6 +97,7 @@ class Router
 				Response::reject('Not found', Code::NOT_FOUND);
 
 			$route->process($request);
+			$this->inputAssertion->verify($request, $route);
 		} catch (Response $response) {
 			$response->send();
 		}

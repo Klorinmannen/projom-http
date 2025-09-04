@@ -5,22 +5,17 @@ declare(strict_types=1);
 namespace Projom\Http\Router\Route;
 
 use Projom\Http\Method;
-use Projom\Http\Request;
-use Projom\Http\Response;
 use Projom\Http\Router\Route\DataInterface;
-use Projom\Http\Router\Route\Parameter;
 
 class Data implements DataInterface
 {
-	private bool $requiredPayload = false;
-
-	private array $mandatoryQueryParamDefinitions = [];
-	private array $requiredQueryParamDefinitions = [];
-	private array $optionalQueryParamDefinitions = [];
-
-	private array $mandatoryRequestVarDefinitions = [];
-	private array $requiredRequestVarDefinitions = [];
-	private array $optionalRequestVarDefinitions = [];
+	public bool $requiredPayload = false;
+	public array $mandatoryQueryParamDefinitions = [];
+	public array $requiredQueryParamDefinitions = [];
+	public array $optionalQueryParamDefinitions = [];
+	public array $mandatoryRequestVarDefinitions = [];
+	public array $requiredRequestVarDefinitions = [];
+	public array $optionalRequestVarDefinitions = [];
 
 	public function __construct(
 		private Method $method,
@@ -48,7 +43,7 @@ class Data implements DataInterface
 	 * Set required payload.
 	 * The payload is required to be present in the request.
 	 */
-	public function requiredPayload(): Data
+	public function requiredPayload(): DataInterface
 	{
 		$this->requiredPayload = true;
 		return $this;
@@ -73,7 +68,7 @@ class Data implements DataInterface
 	 * All required query parameters must be present in the request.
 	 * @param array [ 'id' => 'integer', 'name' => 'string', ... ]
 	 */
-	public function requiredQueryParameters(array $definitions): Data
+	public function requiredQueryParameters(array $definitions): DataInterface
 	{
 		$this->requiredQueryParamDefinitions = $this->parseDefinitions($definitions);
 		return $this;
@@ -85,7 +80,7 @@ class Data implements DataInterface
 	 * Optional query parameters are not required to be present in the request.
 	 * @param array [ 'id' => 'integer', 'name' => 'string', ... ]
 	 */
-	public function optionalQueryParameters(array $definitions): Data
+	public function optionalQueryParameters(array $definitions): DataInterface
 	{
 		$this->optionalQueryParamDefinitions = $this->parseDefinitions($definitions);
 		return $this;
@@ -110,7 +105,7 @@ class Data implements DataInterface
 	 * All required request variables must be present in the request.
 	 * @param array [ 'id' => 'integer', 'name' => 'string', ... ] 
 	 */
-	public function requiredRequestVars(array $definitions): Data
+	public function requiredRequestVars(array $definitions): DataInterface
 	{
 		$this->requiredRequestVarDefinitions = $this->parseDefinitions($definitions);
 		return $this;
@@ -122,7 +117,7 @@ class Data implements DataInterface
 	 * Optional request variables are not required to be present in the request.
 	 * @param array [ 'id' => 'integer', 'name' => 'string', ... ] 
 	 */
-	public function optionalRequestVars(array $definitions): Data
+	public function optionalRequestVars(array $definitions): DataInterface
 	{
 		$this->optionalRequestVarDefinitions = $this->parseDefinitions($definitions);
 		return $this;
@@ -145,46 +140,5 @@ class Data implements DataInterface
 		$nameString = str_replace(' ', '', $nameString);
 		$names = explode(',', $nameString);
 		return $names;
-	}
-
-	/**
-	 * Verify the request against set definitions.
-	 * 1. Check mandatory definitions.
-	 * 2. Check required definitions.
-	 * 3. Check optional definitions.
-	 * 4. Check if payload is required.
-	 */
-	public function verify(Request $request): void
-	{
-		// 1. Check mandatory definitions.
-		$normalizedMandatoryQueryParams = Parameter::normalize($this->mandatoryQueryParamDefinitions);
-		if (!Parameter::verifyMandatory($request->queryParameters(), $normalizedMandatoryQueryParams))
-			Response::reject('Mandatory query parameters do not match provided definitions');
-
-		$normalizedMandatoryRequestVars = Parameter::normalize($this->mandatoryRequestVarDefinitions);
-		if (!Parameter::verifyMandatory($request->vars(), $normalizedMandatoryRequestVars))
-			Response::reject('Mandatory request variables do not match provided definitions');
-
-		// 2. Check required definitions.
-		$normalizedRequiredQueryParams = Parameter::normalize($this->requiredQueryParamDefinitions);
-		if (!Parameter::verifyRequired($request->queryParameters(), $normalizedRequiredQueryParams))
-			Response::reject('Required request query parameters do not match provided definitions');
-
-		$normalizedRequiredRequestVars = Parameter::normalize($this->requiredRequestVarDefinitions);
-		if (!Parameter::verifyRequired($request->vars(), $normalizedRequiredRequestVars))
-			Response::reject('Required request variables do not match provided definitions');
-
-		// 3. Check optional definitions.
-		$normalizedOptionalQueryDefinitions = Parameter::normalize($this->optionalQueryParamDefinitions);
-		if (!Parameter::verifyOptional($request->queryParameters(), $normalizedOptionalQueryDefinitions))
-			Response::reject('Optional query parameters do not match provided definitions');
-
-		$normalizedOptionalRequestVarDefinitions = Parameter::normalize($this->optionalRequestVarDefinitions);
-		if (! Parameter::verifyOptional($request->vars(), $normalizedOptionalRequestVarDefinitions))
-			Response::reject('Optional request variables do not match provided definitions');
-
-		// 4. Check payload if required.
-		if (!Payload::verify($request->payload(), $this->requiredPayload))
-			Response::reject('Required request payload missing');
 	}
 }

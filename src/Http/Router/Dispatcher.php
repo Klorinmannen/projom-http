@@ -12,6 +12,8 @@ use Projom\Http\Router\Route\Action;
 
 class Dispatcher implements DispatcherInterface
 {
+	public function __construct() {}
+
 	public function processAction(Action $action, Request $request): void
 	{
 		$action->verify();

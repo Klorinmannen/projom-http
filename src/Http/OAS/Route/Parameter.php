@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Projom\Http\OAS\Route;
 
-use Projom\Http\Router\Route\Parameter as RouterParameter;
+use Projom\Http\Router\InputAssertion\Parameter as P;
 
-class Parameter extends RouterParameter
+class Parameter extends P
 {
     public static function normalize(array $parameterDefinitions): array
     {

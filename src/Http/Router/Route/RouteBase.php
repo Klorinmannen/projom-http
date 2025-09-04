@@ -58,7 +58,6 @@ abstract class RouteBase
 	{
 		$this->processMiddlewares($request);
 		$this->setup();
-		$this->verify($request);
 	}
 
 	private function processMiddlewares(Request $request): void
@@ -69,19 +68,22 @@ abstract class RouteBase
 
 	abstract protected function setup(): void;
 
-	private function verify(Request $request): void
+	public function isComplete(): void
 	{
 		if ($this->matchedData === null)
 			Response::reject('Not found', Code::NOT_FOUND);
 
 		if ($this->action === null)
 			Response::abort('Route action missing');
-
-		$this->matchedData->verify($request);
 	}
 
 	public function action(): Action
 	{
 		return $this->action;
+	}
+
+	public function matchedData(): null|Data
+	{
+		return $this->matchedData;
 	}
 }

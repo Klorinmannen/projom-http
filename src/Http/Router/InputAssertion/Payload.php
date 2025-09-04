@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Projom\Http\Router\Route;
+namespace Projom\Http\Router\InputAssertion;
 
 class Payload
 {

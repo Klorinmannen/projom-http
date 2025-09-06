@@ -70,7 +70,6 @@ class Dispatcher implements DispatcherInterface
 
 	private static function castParameter(mixed $parameter, string $parameterName, string $typeName): mixed
 	{
-		var_dump($parameter, $typeName);
 		$parameter = match ($typeName) {
 			'int' => (int)$parameter,
 			'float' => (float)$parameter,

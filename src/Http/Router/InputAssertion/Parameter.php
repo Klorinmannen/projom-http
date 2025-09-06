@@ -60,6 +60,10 @@ class Parameter
 		$namedDefinitions = static::rekeyOnName($normalizedParameterDefinitions);
 		$namedDefinitionSubset = static::selectSubset($inputParameters, $namedDefinitions);
 
+		// If theres no matching subset between the input and the named definition set, there's nothing to verify.
+		if (!$namedDefinitionSubset)
+			return true;
+
 		$result = static::verify($inputParameters, $namedDefinitionSubset);
 		if (!$result)
 			return false;
@@ -80,8 +84,8 @@ class Parameter
 		$namedDefinitions = static::rekeyOnName($normalizedParameterDefinitions);
 		$namedDefinitionSubset = static::selectSubset($inputParameters, $namedDefinitions);
 
-		// The named definitions must be the same set as the found subset.
-		// There might be more parameters in the input than the definitions.
+		// The named definitions must be the same set as the found subset (meaning: all required parameters are present).
+		// There might be more parameters in the input than the required definition set, so we check against the subset instead of the whole input.
 		$isSameSet = static::isSameSet($namedDefinitions, $namedDefinitionSubset);
 		if (!$isSameSet)
 			return false;
@@ -105,6 +109,8 @@ class Parameter
 
 		$namedDefinitions = static::rekeyOnName($normalizedParameterDefinitions);
 
+		// On the contrary to the required definition, the input parameters must be the exact same set as the mandatory definition.
+		// Checking against the whole input set.
 		$isSameSet = static::isSameSet($inputParameters, $namedDefinitions);
 		if (!$isSameSet)
 			return false;
@@ -154,8 +160,8 @@ class Parameter
 		// The input parameters must be equal of the named parameter definitions.
 		// Any missing or extra parameters are not allowed.
 		$diff = array_diff_key($inputParameters, $namedParameterDefinitions);
-		$isSubset = count($diff) === 0;
-		return $isSubset;
+		$isSameSet = count($diff) === 0;
+		return $isSameSet;
 	}
 
 	private static function selectSubset(array $inputParameters, array $namedParameterDefinitions): array

@@ -6,7 +6,6 @@ namespace Projom\Http\Router\Route\Path;
 
 use Projom\Http\Router\ParameterType;
 use Projom\Http\Router\Route\Path;
-use Projom\Http\Router\Route\Path\Pattern;
 
 class DynamicPath extends Path
 {

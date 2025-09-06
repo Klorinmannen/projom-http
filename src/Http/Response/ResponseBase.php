@@ -28,7 +28,11 @@ class ResponseBase extends Exception
 
 		if ($this->message)
 			echo $this->message;
+	}
 
+	public function sendAndExit(): void
+	{
+		$this->send();
 		exit;
 	}
 

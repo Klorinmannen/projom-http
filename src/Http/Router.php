@@ -32,10 +32,10 @@ class Router
 
 	public function __construct(
 		DispatcherInterface $dispatcher = new Dispatcher(),
-		InputAssertionInterface $assertion = new InputAssertion()
+		InputAssertionInterface $inputAssertion = new InputAssertion()
 	) {
 		$this->dispatcher = $dispatcher;
-		$this->inputAssertion = $assertion;
+		$this->inputAssertion = $inputAssertion;
 	}
 
 	public function addMiddleware(
@@ -99,7 +99,7 @@ class Router
 			$route->process($request);
 			$this->inputAssertion->verify($request, $route);
 		} catch (Response $response) {
-			$response->send();
+			$response->sendAndExit();
 		}
 
 		$action = $route->action();
@@ -134,7 +134,7 @@ class Router
 		} catch (ResponseBase $response) {
 			$request->setResponse($response);
 			$this->processMiddlewares(MiddlewareContext::BEFORE_DISPATCHING_RESPONSE, $request);
-			$response->send();
+			$response->sendAndExit();
 		}
 	}
 

@@ -36,9 +36,13 @@ class Dispatcher implements DispatcherInterface
 
 		$resolvedParameters = [];
 		foreach ($reflectionParameters as $parameter) {
+
 			$parameterName = $parameter->getName();
+			$matchedParameter = static::matchParameter($parameterName, $request);
+
 			$typeName = $parameter->getType()->getName();
-			$parameter = static::matchParameter($parameterName, $typeName, $request);
+			$parameter = static::castParameter($matchedParameter, $parameterName, $typeName);
+
 			$resolvedParameters[] = $parameter;
 		}
 
@@ -47,7 +51,6 @@ class Dispatcher implements DispatcherInterface
 
 	private static function matchParameter(
 		string $parameterName,
-		string $typeName,
 		Request $request
 	): mixed {
 
@@ -62,18 +65,18 @@ class Dispatcher implements DispatcherInterface
 			default => $request->find($parameterName),
 		};
 
-		$parameter = static::castParameter($parameter, $typeName);
-
 		return $parameter;
 	}
 
-	private static function castParameter(mixed $parameter, string $typeName): mixed
+	private static function castParameter(mixed $parameter, string $parameterName, string $typeName): mixed
 	{
+		var_dump($parameter, $typeName);
 		$parameter = match ($typeName) {
 			'int' => (int)$parameter,
 			'float' => (float)$parameter,
 			'string' => (string)$parameter,
 			'bool' => (bool)$parameter,
+			'object' => (object)[$parameterName => $parameter],
 			default => $parameter
 		};
 		return $parameter;

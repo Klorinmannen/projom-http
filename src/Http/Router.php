@@ -7,7 +7,6 @@ namespace Projom\Http;
 use Closure;
 use ValueError;
 
-use Projom\Http\OAS;
 use Projom\Http\Request;
 use Projom\Http\Response;
 use Projom\Http\Middleware\MiddlewareContext;
@@ -43,12 +42,6 @@ class Router
 		MiddlewareContext $context = MiddlewareContext::BEFORE_ROUTING
 	): void {
 		$this->middlewares[] = Middleware::create($middleware, $context);
-	}
-
-	public function addOASRoutes(string $filepath): void
-	{
-		$routes = OAS::load($filepath);
-		$this->routes = array_merge($this->routes, $routes);
 	}
 
 	/**

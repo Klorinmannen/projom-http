@@ -2,13 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Projom\Http\Router\Route;
+namespace Projom\Http\Router\Route\Input;
 
 use Projom\Http\Method;
-use Projom\Http\Router\Route\InputDefinitionInterface;
+use Projom\Http\Router\Route\Input\DefinitionInterface;
 
-class InputDefinition implements InputDefinitionInterface
+/**
+ * Data Transfer Object for route input definitions.
+ */
+class Definition implements DefinitionInterface
 {
+	protected Method $method = Method::GET;
+	protected string $controllerMethod = '';
+
 	public bool $requiredPayload = false;
 	public array $mandatoryQueryParamDefinitions = [];
 	public array $requiredQueryParamDefinitions = [];
@@ -18,13 +24,16 @@ class InputDefinition implements InputDefinitionInterface
 	public array $optionalRequestVarDefinitions = [];
 
 	public function __construct(
-		private Method $method,
-		private string $controllerMethod
-	) {}
+		Method $method,
+		string $controllerMethod
+	) {
+		$this->method = $method;
+		$this->controllerMethod = $controllerMethod;
+	}
 
-	public static function create(Method $method, string $controllerMethod = ''): InputDefinition
+	public static function create(Method $method, string $controllerMethod = ''): Definition
 	{
-		return new InputDefinition($method, $controllerMethod);
+		return new Definition($method, $controllerMethod);
 	}
 
 	public function method(): string
@@ -43,7 +52,7 @@ class InputDefinition implements InputDefinitionInterface
 	 * Set required payload.
 	 * The payload is required to be present in the request.
 	 */
-	public function requiredPayload(): InputDefinitionInterface
+	public function requiredPayload(): DefinitionInterface
 	{
 		$this->requiredPayload = true;
 		return $this;
@@ -68,7 +77,7 @@ class InputDefinition implements InputDefinitionInterface
 	 * All required query parameters must be present in the request.
 	 * @param array [ 'id' => 'integer', 'name' => 'string', ... ]
 	 */
-	public function requiredQueryParameters(array $definitions): InputDefinitionInterface
+	public function requiredQueryParameters(array $definitions): DefinitionInterface
 	{
 		$this->requiredQueryParamDefinitions = $this->parseDefinitions($definitions);
 		return $this;
@@ -80,7 +89,7 @@ class InputDefinition implements InputDefinitionInterface
 	 * Optional query parameters are not required to be present in the request.
 	 * @param array [ 'id' => 'integer', 'name' => 'string', ... ]
 	 */
-	public function optionalQueryParameters(array $definitions): InputDefinitionInterface
+	public function optionalQueryParameters(array $definitions): DefinitionInterface
 	{
 		$this->optionalQueryParamDefinitions = $this->parseDefinitions($definitions);
 		return $this;
@@ -105,7 +114,7 @@ class InputDefinition implements InputDefinitionInterface
 	 * All required request variables must be present in the request.
 	 * @param array [ 'id' => 'integer', 'name' => 'string', ... ] 
 	 */
-	public function requiredRequestVars(array $definitions): InputDefinitionInterface
+	public function requiredRequestVars(array $definitions): DefinitionInterface
 	{
 		$this->requiredRequestVarDefinitions = $this->parseDefinitions($definitions);
 		return $this;
@@ -117,7 +126,7 @@ class InputDefinition implements InputDefinitionInterface
 	 * Optional request variables are not required to be present in the request.
 	 * @param array [ 'id' => 'integer', 'name' => 'string', ... ] 
 	 */
-	public function optionalRequestVars(array $definitions): InputDefinitionInterface
+	public function optionalRequestVars(array $definitions): DefinitionInterface
 	{
 		$this->optionalRequestVarDefinitions = $this->parseDefinitions($definitions);
 		return $this;

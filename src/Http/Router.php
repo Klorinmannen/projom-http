@@ -14,10 +14,10 @@ use Projom\Http\Middleware\MiddlewareContext;
 use Projom\Http\Middleware\MiddlewareInterface;
 use Projom\Http\Response\Code;
 use Projom\Http\Response\ResponseBase;
-use Projom\Http\Router\InputAssertion;
-use Projom\Http\Router\InputAssertionInterface;
 use Projom\Http\Router\Dispatcher;
 use Projom\Http\Router\DispatcherInterface;
+use Projom\Http\Router\Input\Assertion;
+use Projom\Http\Router\Input\AssertionInterface;
 use Projom\Http\Router\Middleware;
 use Projom\Http\Router\Route\Action;
 use Projom\Http\Router\Route\Route;
@@ -26,13 +26,13 @@ use Projom\Http\Router\Route\RouteBase;
 class Router
 {
 	private DispatcherInterface $dispatcher;
-	private InputAssertionInterface $inputAssertion;
+	private AssertionInterface $inputAssertion;
 	private array $routes = [];
 	private array $middlewares = [];
 
 	public function __construct(
 		DispatcherInterface $dispatcher = new Dispatcher(),
-		InputAssertionInterface $inputAssertion = new InputAssertion()
+		AssertionInterface $inputAssertion = new Assertion()
 	) {
 		$this->dispatcher = $dispatcher;
 		$this->inputAssertion = $inputAssertion;
@@ -97,7 +97,7 @@ class Router
 				Response::reject('Not found', Code::NOT_FOUND);
 
 			$route->process($request);
-			$this->inputAssertion->verify($request, $route);
+			$this->inputAssertion->verify($request, $route->inputDefinition());
 		} catch (Response $response) {
 			$response->sendAndExit();
 		}

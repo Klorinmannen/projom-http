@@ -1,12 +1,12 @@
 
 
 Code Coverage Report:
-  2025-09-04 20:16:04
+  2025-09-06 20:29:56
 
  Summary:
-  Classes: 27.59% (8/29)
+  Classes: 27.27% (9/33)
   Methods: 65.25% (92/141)
-  Lines:   73.68% (420/570)
+  Lines:   76.41% (421/551)
 
 Projom\Http\OAS
   Methods:  80.00% ( 4/ 5)   Lines:  97.30% ( 36/ 37)
@@ -16,12 +16,12 @@ Projom\Http\OAS\Response
   Methods:   0.00% ( 0/ 2)   Lines:  33.33% (  3/  9)
 Projom\Http\OAS\Route
   Methods:  50.00% ( 1/ 2)   Lines:  25.00% (  1/  4)
-Projom\Http\OAS\Route\Data
-  Methods:  66.67% ( 2/ 3)   Lines:  52.94% (  9/ 17)
+Projom\Http\OAS\Route\InputDefinition
+  Methods:  50.00% ( 1/ 2)   Lines:  42.86% (  6/ 14)
 Projom\Http\OAS\Route\Parameter
   Methods:   0.00% ( 0/ 1)   Lines:  25.00% (  3/ 12)
 Projom\Http\OAS\Route\Payload
-  Methods:   0.00% ( 0/ 2)   Lines:   8.00% (  2/ 25)
+  Methods: 100.00% ( 1/ 1)   Lines: 100.00% (  2/  2)
 Projom\Http\OAS\Route\Security
   Methods: 100.00% ( 1/ 1)   Lines: 100.00% (  1/  1)
 Projom\Http\Request
@@ -35,17 +35,23 @@ Projom\Http\Request\Timer
 Projom\Http\Response
   Methods:  57.14% ( 4/ 7)   Lines:  88.46% ( 23/ 26)
 Projom\Http\Response\ResponseBase
-  Methods:  66.67% ( 2/ 3)   Lines:  33.33% (  3/  9)
+  Methods:  50.00% ( 2/ 4)   Lines:  30.00% (  3/ 10)
 Projom\Http\Router
   Methods:  11.11% ( 1/ 9)   Lines:  64.44% ( 29/ 45)
 Projom\Http\Router\Dispatcher
-  Methods:  66.67% ( 4/ 6)   Lines:  70.27% ( 26/ 37)
+  Methods:  66.67% ( 4/ 6)   Lines:  68.42% ( 26/ 38)
 Projom\Http\Router\InputAssertion
-  Methods:  50.00% ( 1/ 2)   Lines:  69.57% ( 16/ 23)
-Projom\Http\Router\InputAssertion\Parameter
-  Methods:  54.55% ( 6/11)   Lines:  75.34% ( 55/ 73)
+  Methods:  50.00% ( 1/ 2)   Lines:  75.00% (  3/  4)
+Projom\Http\Router\InputAssertion\Parameter\Mandatory
+  Methods:   0.00% ( 0/ 1)   Lines:  75.00% (  9/ 12)
+Projom\Http\Router\InputAssertion\Parameter\Optional
+  Methods:   0.00% ( 0/ 1)   Lines:  83.33% ( 10/ 12)
+Projom\Http\Router\InputAssertion\Parameter\Required
+  Methods:   0.00% ( 0/ 1)   Lines:  76.92% ( 10/ 13)
 Projom\Http\Router\InputAssertion\Payload
   Methods:   0.00% ( 0/ 1)   Lines:  50.00% (  2/  4)
+Projom\Http\Router\InputAssertion\Util
+  Methods:  85.71% ( 6/ 7)   Lines:  93.33% ( 28/ 30)
 Projom\Http\Router\Middleware
   Methods: 100.00% ( 4/ 4)   Lines: 100.00% (  6/  6)
 Projom\Http\Router\ParameterType
@@ -53,7 +59,7 @@ Projom\Http\Router\ParameterType
 Projom\Http\Router\Route\Action
   Methods:  80.00% ( 4/ 5)   Lines:  26.67% (  4/ 15)
 Projom\Http\Router\Route\InputDefinition
-  Methods:  61.54% ( 8/13)   Lines:  68.75% ( 22/ 32)
+  Methods:  57.14% ( 8/14)   Lines:  67.92% ( 36/ 53)
 Projom\Http\Router\Route\Path
   Methods: 100.00% ( 3/ 3)   Lines: 100.00% (  5/  5)
 Projom\Http\Router\Route\Path\DynamicPath
@@ -63,4 +69,4 @@ Projom\Http\Router\Route\Path\StaticPath
 Projom\Http\Router\Route\Route
   Methods:  37.50% ( 3/ 8)   Lines:  50.00% (  5/ 10)
 Projom\Http\Router\Route\RouteBase
-  Methods:  66.67% ( 6/ 9)   Lines:  80.77% ( 21/ 26)
+  Methods:  66.67% ( 6/ 9)   Lines:  81.48% ( 22/ 27)

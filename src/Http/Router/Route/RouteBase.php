@@ -9,6 +9,7 @@ use Projom\Http\Request;
 use Projom\Http\Response;
 use Projom\Http\Response\Code;
 use Projom\Http\Router\Route\Action;
+use Projom\Http\Router\Route\Input\Definition;
 use Projom\Http\Router\Route\Path;
 
 abstract class RouteBase
@@ -58,6 +59,17 @@ abstract class RouteBase
 	{
 		$this->processMiddlewares($request);
 		$this->setup();
+		if (!$this->verify())
+			Response::reject('Not found', Code::NOT_FOUND);
+	}
+
+	private function verify(): bool
+	{
+		if ($this->inputDefinition === null)
+			return false;
+		if ($this->action === null)
+			return false;
+		return true;
 	}
 
 	private function processMiddlewares(Request $request): void
@@ -68,21 +80,12 @@ abstract class RouteBase
 
 	abstract protected function setup(): void;
 
-	public function isComplete(): void
-	{
-		if ($this->inputDefinition === null)
-			Response::reject('Not found', Code::NOT_FOUND);
-
-		if ($this->action === null)
-			Response::abort('Route action missing');
-	}
-
 	public function action(): Action
 	{
 		return $this->action;
 	}
 
-	public function inputDefinition(): null|InputDefinition
+	public function inputDefinition(): null|Definition
 	{
 		return $this->inputDefinition;
 	}

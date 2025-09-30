@@ -9,9 +9,9 @@ use Closure;
 use Projom\Http\Method;
 use Projom\Http\Middleware\MiddlewareInterface;
 use Projom\Http\Router\Middleware;
+use Projom\Http\Router\Route\Input\Definition;
+use Projom\Http\Router\Route\Input\DefinitionInterface;
 use Projom\Http\Router\RouteInterface;
-use Projom\Http\Router\Route\InputDefinition;
-use Projom\Http\Router\Route\InputDefinitionInterface;
 use Projom\Http\Router\Route\RouteBase;
 
 class Route extends RouteBase implements RouteInterface
@@ -21,34 +21,34 @@ class Route extends RouteBase implements RouteInterface
 		$this->middlewares[] = Middleware::create($middleware);
 	}
 
-	public function get(string $controllerMethod = ''): InputDefinitionInterface
+	public function get(string $controllerMethod = ''): DefinitionInterface
 	{
 		return $this->addPath(Method::GET, $controllerMethod);
 	}
 
-	public function post(string $controllerMethod = ''): InputDefinitionInterface
+	public function post(string $controllerMethod = ''): DefinitionInterface
 	{
 		return $this->addPath(Method::POST, $controllerMethod);
 	}
 
-	public function put(string $controllerMethod = ''): InputDefinitionInterface
+	public function put(string $controllerMethod = ''): DefinitionInterface
 	{
 		return $this->addPath(Method::PUT, $controllerMethod);
 	}
 
-	public function delete(string $controllerMethod = ''): InputDefinitionInterface
+	public function delete(string $controllerMethod = ''): DefinitionInterface
 	{
 		return $this->addPath(Method::DELETE, $controllerMethod);
 	}
 
-	public function patch(string $controllerMethod = ''): InputDefinitionInterface
+	public function patch(string $controllerMethod = ''): DefinitionInterface
 	{
 		return $this->addPath(Method::PATCH, $controllerMethod);
 	}
 
-	private function addPath(Method $method, string $controllerMethod): InputDefinitionInterface
+	private function addPath(Method $method, string $controllerMethod): DefinitionInterface
 	{
-		$inputDefinition = InputDefinition::create($method, $controllerMethod);
+		$inputDefinition = Definition::create($method, $controllerMethod);
 		$this->inputDefinitions[$method->name] = $inputDefinition;
 		return $inputDefinition;
 	}

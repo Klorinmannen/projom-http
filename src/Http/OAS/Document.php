@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Projom\Http;
+namespace Projom\Http\OAS;
 
 use RuntimeException;
 
@@ -10,7 +10,7 @@ use Projom\Http\Method;
 use Projom\Http\OAS\Route;
 use Projom\Http\OAS\Route\InputDefinition;
 
-class OAS
+class Document
 {
 	public static function load(string $filePath): array
 	{
